@@ -65,7 +65,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSuccess }) => {
             <Cloud className="h-12 w-12 text-[#35c677]" />
           </div>
           <CardTitle className="text-2xl font-bold text-[#191919]">
-            Welcome to BareCloudz
+            Welcome to Nardoni Digital
           </CardTitle>
           <p className="text-gray-600">Sign in to your account</p>
         </CardHeader>

@@ -12,9 +12,9 @@ const Testimonials: React.FC = () => {
       role: 'Owner',
       company: 'Bella Vista Restaurant',
       avatar: 'https://images.pexels.com/photos/774909/pexels-photo-774909.jpeg?auto=compress&cs=tinysrgb&w=150',
-      content: 'The AI phone agent has been a game-changer for our restaurant. We\'re taking 40% more orders and our staff can focus on food quality instead of answering phones all day.',
+      content: 'Within 30 days my calendar was packed with new reservations. The paid trial was a no-brainer - I saw results immediately and decided to continue. Best decision for my restaurant.',
       rating: 5,
-      results: '+40% orders'
+      results: 'Full calendar'
     },
     {
       id: 2,
@@ -22,9 +22,9 @@ const Testimonials: React.FC = () => {
       role: 'Manager',
       company: 'Elite Fitness Gym',
       avatar: 'https://images.pexels.com/photos/1222271/pexels-photo-1222271.jpeg?auto=compress&cs=tinysrgb&w=150',
-      content: 'Our AI assistant handles membership inquiries and class bookings 24/7. We\'ve seen a 60% increase in new member sign-ups since implementing the system.',
+      content: 'I was skeptical about the guarantee, but they delivered. No long-term contract meant I could try it risk-free. Now I\'m getting steady stream of new member inquiries every week.',
       rating: 5,
-      results: '+60% sign-ups'
+      results: '+3x leads'
     },
     {
       id: 3,
@@ -32,9 +32,9 @@ const Testimonials: React.FC = () => {
       role: 'Owner',
       company: 'Thompson Dental Care',
       avatar: 'https://images.pexels.com/photos/1239291/pexels-photo-1239291.jpeg?auto=compress&cs=tinysrgb&w=150',
-      content: 'The appointment booking automation has eliminated double bookings and reduced no-shows by 30%. Our patients love the instant confirmation and reminders.',
+      content: 'They handle everything - I literally just answer the phone and book appointments. The custom content works perfectly for my practice. No technical stuff required on my end.',
       rating: 5,
-      results: '-30% no-shows'
+      results: '+60% bookings'
     },
     {
       id: 4,
@@ -42,9 +42,9 @@ const Testimonials: React.FC = () => {
       role: 'Owner',
       company: 'Johnson Auto Repair',
       avatar: 'https://images.pexels.com/photos/1043471/pexels-photo-1043471.jpeg?auto=compress&cs=tinysrgb&w=150',
-      content: 'The AI customer support handles basic inquiries and schedules service appointments. We\'ve cut our phone time in half while improving customer satisfaction.',
+      content: 'The monthly check-ins keep me in the loop. They showed me exactly what was working and adjusted the campaigns. My shop is now booked solid 2 weeks out.',
       rating: 5,
-      results: '+50% efficiency'
+      results: '+2 week waitlist'
     },
     {
       id: 5,
@@ -52,9 +52,9 @@ const Testimonials: React.FC = () => {
       role: 'Manager',
       company: 'Sunset Spa & Wellness',
       avatar: 'https://images.pexels.com/photos/1181686/pexels-photo-1181686.jpeg?auto=compress&cs=tinysrgb&w=150',
-      content: 'Our booking system now works 24/7 and the AI handles customer questions about services and pricing. Revenue is up 45% since we started using BareCloudz.',
+      content: 'Started with the $950 trial, and within a month had more than paid for itself. The flexibility to cancel anytime gave me peace of mind, but I\'m definitely staying.',
       rating: 5,
-      results: '+45% revenue'
+      results: '5x ROI'
     },
     {
       id: 6,
@@ -62,9 +62,9 @@ const Testimonials: React.FC = () => {
       role: 'Owner',
       company: 'Martinez Landscaping',
       avatar: 'https://images.pexels.com/photos/1212984/pexels-photo-1212984.jpeg?auto=compress&cs=tinysrgb&w=150',
-      content: 'The lead qualification system filters serious customers before they reach us. We\'re closing 70% more deals and spending less time on unqualified leads.',
+      content: 'They cover Google, Facebook, Instagram - everything. I don\'t need multiple agencies anymore. One team handling it all with custom strategies for my landscaping business.',
       rating: 5,
-      results: '+70% conversions'
+      results: 'All platforms'
     }
   ]
 
@@ -107,11 +107,11 @@ const Testimonials: React.FC = () => {
           <h2 className="text-5xl md:text-6xl font-bold text-[#191919] mb-6 leading-tight">
             Real results from
             <br />
-            <span className="text-[#35c677]">real businesses</span>
+            <span className="text-[#35c677]">real local businesses</span>
           </h2>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
-            See how local businesses are transforming their operations and boosting 
-            revenue with our AI-powered automation solutions.
+            See how local businesses are filling their calendars with new customers
+            using our proven marketing strategies - risk-free with our 30-day guarantee.
           </p>
         </motion.div>
 

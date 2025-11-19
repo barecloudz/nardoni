@@ -132,7 +132,7 @@ const BlogPost: React.FC = () => {
                 </div>
                 <div className="flex items-center space-x-1">
                   <User className="h-4 w-4" />
-                  <span>BareCloudz Team</span>
+                  <span>Nardoni Digital Team</span>
                 </div>
               </div>
               

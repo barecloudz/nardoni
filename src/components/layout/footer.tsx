@@ -16,45 +16,21 @@ const Footer: React.FC = () => {
     {
       title: 'Services',
       links: [
-        { label: 'AI Customer Support', href: '/services/ai-support' },
-        { label: 'AI Phone Agents', href: '/services/phone-agents' },
-        { label: 'Social Media Marketing', href: '/services/social-media' },
-        { label: 'SEO & Local Search', href: '/services/seo' },
-        { label: 'Paid Advertising', href: '/services/ads' },
-        { label: 'Website & App Development', href: '/services/development' }
+        { label: 'AI Customer Support', href: '/services/ai-customer-support' },
+        { label: 'AI Phone Agents', href: '/services/ai-phone-agents' },
+        { label: 'Social Media Marketing', href: '/services/social-media-marketing' },
+        { label: 'SEO & Local Search', href: '/services/seo-local-search' },
+        { label: 'Paid Advertising', href: '/services/paid-advertising' },
+        { label: 'Websites & Apps', href: '/services/websites-apps' }
       ]
     },
     {
       title: 'Company',
       links: [
-        { label: 'About Us', href: '/about' },
-        { label: 'Case Studies', href: '/case-studies' },
+        { label: 'Home', href: '/' },
+        { label: 'Services', href: '/services' },
         { label: 'Blog', href: '/blog' },
-        { label: 'Our Team', href: '/team' },
-        { label: 'Careers', href: '/careers' },
-        { label: 'Press', href: '/press' }
-      ]
-    },
-    {
-      title: 'Resources',
-      links: [
-        { label: 'Help Center', href: '/help' },
-        { label: 'AI Automation Guide', href: '/guide' },
-        { label: 'API Documentation', href: '/docs' },
-        { label: 'Webinars', href: '/webinars' },
-        { label: 'Templates', href: '/templates' },
-        { label: 'Community', href: '/community' }
-      ]
-    },
-    {
-      title: 'Legal',
-      links: [
-        { label: 'Privacy Policy', href: '/privacy' },
-        { label: 'Terms of Service', href: '/terms' },
-        { label: 'Cookie Policy', href: '/cookies' },
-        { label: 'GDPR', href: '/gdpr' },
-        { label: 'Security', href: '/security' },
-        { label: 'Compliance', href: '/compliance' }
+        { label: 'Book a Call', href: '/book-a-call' }
       ]
     }
   ]
@@ -103,11 +79,13 @@ const Footer: React.FC = () => {
                 transition={{ duration: 0.6 }}
               >
                 <div className="flex items-center space-x-3 mb-6">
-                  <div className="w-12 h-12 bg-[#35c677] rounded-xl flex items-center justify-center shadow-lg">
-                    <Cloud className="h-7 w-7 text-white" />
-                  </div>
+                  <img
+                    src="/images/drawing.svg"
+                    alt="Nardoni Digital Logo"
+                    className="h-12 w-auto"
+                  />
                   <span className="text-2xl font-bold">
-                    {companySettings?.company_name || 'BareCloudz'}
+                    {companySettings?.company_name || 'Nardoni Digital'}
                   </span>
                 </div>
                 <p className="text-gray-400 text-lg leading-relaxed mb-6">
@@ -214,7 +192,7 @@ const Footer: React.FC = () => {
         >
           <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
             <div className="text-gray-400 text-sm">
-              &copy; 2025 BareCloudz. All rights reserved.
+              &copy; 2025 Nardoni Digital. All rights reserved.
             </div>
             <div className="flex items-center space-x-6 text-sm text-gray-400">
               <span>Made with ❤️ for local businesses</span>

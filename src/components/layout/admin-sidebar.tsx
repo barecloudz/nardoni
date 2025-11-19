@@ -40,7 +40,7 @@ const AdminSidebar: React.FC = () => {
       <div className="p-6 border-b border-gray-200">
         <div className="flex items-center space-x-2">
           <Cloud className="h-8 w-8 text-[#35c677]" />
-          <span className="text-xl font-bold text-[#191919]">BareCloudz</span>
+          <span className="text-xl font-bold text-[#191919]">Nardoni Digital</span>
         </div>
         <p className="text-sm text-gray-500 mt-1">Admin Panel</p>
       </div>

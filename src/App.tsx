@@ -3,6 +3,14 @@ import { Route, Switch } from 'wouter'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import HomePage from './pages/home'
+import ServicesPage from './pages/services'
+import BookACall from './pages/book-a-call'
+import AICustomerSupport from './pages/services/ai-customer-support'
+import AIPhoneAgents from './pages/services/ai-phone-agents'
+import SocialMediaMarketing from './pages/services/social-media-marketing'
+import SEOLocalSearch from './pages/services/seo-local-search'
+import PaidAdvertising from './pages/services/paid-advertising'
+import WebsitesApps from './pages/services/websites-apps'
 import LoginPage from './pages/auth/login'
 import AdminDashboard from './pages/admin/dashboard'
 import AdminClients from './pages/admin/clients'
@@ -33,6 +41,14 @@ function App() {
       <div className="min-h-screen bg-white">
         <Switch>
           <Route path="/" component={HomePage} />
+          <Route path="/services" component={ServicesPage} />
+          <Route path="/services/ai-customer-support" component={AICustomerSupport} />
+          <Route path="/services/ai-phone-agents" component={AIPhoneAgents} />
+          <Route path="/services/social-media-marketing" component={SocialMediaMarketing} />
+          <Route path="/services/seo-local-search" component={SEOLocalSearch} />
+          <Route path="/services/paid-advertising" component={PaidAdvertising} />
+          <Route path="/services/websites-apps" component={WebsitesApps} />
+          <Route path="/book-a-call" component={BookACall} />
           <Route path="/blog" component={BlogIndex} />
           <Route path="/blog/:slug" component={BlogPost} />
           <Route path="/auth/login" component={LoginPage} />

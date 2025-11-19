@@ -1,4 +1,5 @@
 import React from 'react'
+import { Link } from 'wouter'
 import { motion } from 'framer-motion'
 import { Button } from '../ui/button'
 import { ArrowRight, CheckCircle, MessageSquare, Settings, Rocket } from 'lucide-react'
@@ -7,41 +8,41 @@ const HowItWorks: React.FC = () => {
   const steps = [
     {
       step: '01',
-      title: 'Discovery & Strategy',
-      description: 'We analyze your business needs, customer journey, and identify the best AI automation opportunities to maximize your ROI.',
+      title: 'Plan Your Success',
+      description: 'We figure out who your customers are and what they want to hear before we start',
       icon: MessageSquare,
       image: 'https://images.pexels.com/photos/3184291/pexels-photo-3184291.jpeg?auto=compress&cs=tinysrgb&w=600',
       features: [
-        'Business process analysis',
-        'Customer journey mapping',
-        'AI opportunity assessment',
-        'Custom strategy development'
+        'Target audience research',
+        'Competitor analysis',
+        'Message development',
+        'Strategic planning'
       ]
     },
     {
       step: '02',
-      title: 'Setup & Integration',
-      description: 'Our team builds and integrates your AI assistants, phone agents, and marketing campaigns with your existing systems.',
+      title: 'Handle Everything Daily',
+      description: 'We create ads, schedule them, and manage all your campaigns so you don\'t have to',
       icon: Settings,
       image: 'https://images.pexels.com/photos/3184360/pexels-photo-3184360.jpeg?auto=compress&cs=tinysrgb&w=600',
       features: [
-        'AI assistant configuration',
-        'Phone system integration',
-        'CRM and tool connections',
-        'Staff training and onboarding'
+        'Ad creation & design',
+        'Campaign scheduling',
+        'Platform management',
+        'Content optimization'
       ]
     },
     {
       step: '03',
-      title: 'Launch & Optimize',
-      description: 'We launch your AI automation and continuously monitor performance, making real-time adjustments for optimal results.',
+      title: 'Track What Works',
+      description: 'We see which posts bring in customers and do more of what\'s working',
       icon: Rocket,
       image: 'https://images.pexels.com/photos/3184465/pexels-photo-3184465.jpeg?auto=compress&cs=tinysrgb&w=600',
       features: [
-        'Soft launch with testing',
-        'Performance monitoring',
-        'Continuous optimization',
-        'Monthly reporting & insights'
+        'Performance tracking',
+        'Data-driven decisions',
+        'Continuous improvement',
+        'ROI optimization'
       ]
     }
   ]
@@ -61,13 +62,11 @@ const HowItWorks: React.FC = () => {
           transition={{ duration: 0.8 }}
         >
           <h2 className="text-5xl md:text-6xl font-bold text-[#191919] mb-6 leading-tight">
-            How we launch your
-            <br />
-            <span className="text-[#35c677]">AI automation</span>
+            It's <span className="text-[#35c677]">Straightforward</span>
           </h2>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
-            Our proven three-step process transforms your business operations from manual 
-            to automated, delivering measurable results that drive growth and efficiency.
+            Our simple three-step process gets your business in front of local customers
+            quickly and efficiently - no complicated tech required.
           </p>
         </motion.div>
 
@@ -128,13 +127,15 @@ const HowItWorks: React.FC = () => {
                       viewport={{ once: true }}
                       transition={{ duration: 0.6, delay: 0.4 }}
                     >
-                      <Button 
-                        size="lg" 
-                        className="text-lg px-8 py-4 h-auto bg-[#35c677] hover:bg-[#2ba866] text-white shadow-lg hover:shadow-xl transition-all duration-300"
-                      >
-                        <span>Start Your Automation</span>
-                        <ArrowRight className="ml-2 h-5 w-5" />
-                      </Button>
+                      <Link href="/book-a-call">
+                        <Button
+                          size="lg"
+                          className="text-lg px-8 py-4 h-auto bg-[#35c677] hover:bg-[#2ba866] text-white shadow-lg hover:shadow-xl transition-all duration-300"
+                        >
+                          <span>Book a Call</span>
+                          <ArrowRight className="ml-2 h-5 w-5" />
+                        </Button>
+                      </Link>
                     </motion.div>
                   )}
                 </div>

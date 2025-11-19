@@ -21,7 +21,6 @@ const Header: React.FC = () => {
     { href: '/services', label: 'Services' },
     { href: '/blog', label: 'Blog' },
     { href: '/about', label: 'About' },
-    { href: '/contact', label: 'Contact' },
   ]
 
   return (
@@ -34,15 +33,19 @@ const Header: React.FC = () => {
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-20">
           <Link href="/">
-            <motion.div 
+            <motion.div
               className="flex items-center"
               whileHover={{ scale: 1.05 }}
               transition={{ duration: 0.2 }}
             >
               <div className="flex items-center space-x-2">
-                <Cloud className="h-8 w-8 text-[#35c677]" />
+                <img
+                  src="/images/drawing.svg"
+                  alt="Nardoni Digital Logo"
+                  className="h-10 w-auto"
+                />
                 <span className="text-xl font-bold text-[#191919]">
-                  {companySettings?.company_name || 'BareCloudz'}
+                  {companySettings?.company_name || 'Nardoni Digital'}
                 </span>
               </div>
             </motion.div>
@@ -79,10 +82,16 @@ const Header: React.FC = () => {
                 Sign In
               </Button>
             </Link>
-            <Link href="/contact">
-              <Button className="text-base px-6 bg-[#35c677] hover:bg-[#2ba866] shadow-lg hover:shadow-xl transition-all duration-300">
-                Book Demo
-              </Button>
+            <Link href="/book-a-call">
+              <motion.div
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                transition={{ type: "spring", stiffness: 400, damping: 17 }}
+              >
+                <Button className="text-base px-6 bg-[#35c677] hover:bg-[#2ba866] shadow-lg hover:shadow-xl transition-colors duration-300">
+                  Book a Call
+                </Button>
+              </motion.div>
             </Link>
           </div>
 
@@ -128,9 +137,9 @@ const Header: React.FC = () => {
                     Sign In
                   </Button>
                 </Link>
-                <Link href="/contact">
+                <Link href="/book-a-call">
                   <Button className="w-full text-base bg-[#35c677] hover:bg-[#2ba866]">
-                    Book Demo
+                    Book a Call
                   </Button>
                 </Link>
               </div>

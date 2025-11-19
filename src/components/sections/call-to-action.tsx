@@ -1,9 +1,10 @@
 import React from 'react'
+import { Link } from 'wouter'
 import { motion } from 'framer-motion'
 import { useQuery } from '@tanstack/react-query'
 import { getCompanySettings } from '../../lib/supabase'
 import { Button } from '../ui/button'
-import { ArrowRight, Calendar, CheckCircle, Phone } from 'lucide-react'
+import { Calendar, CheckCircle } from 'lucide-react'
 
 const CallToAction: React.FC = () => {
   // Fetch company settings for dynamic phone number
@@ -14,8 +15,8 @@ const CallToAction: React.FC = () => {
 
   const benefits = [
     'Free 30-minute consultation',
-    'Custom AI automation strategy',
-    'No setup fees or contracts',
+    'Custom marketing strategy for your business',
+    'No long-term contracts - cancel anytime',
     '30-day money-back guarantee'
   ]
 
@@ -47,7 +48,7 @@ const CallToAction: React.FC = () => {
             <div className="inline-flex items-center space-x-2 bg-[#35c677]/20 border border-[#35c677]/30 rounded-full px-6 py-3">
               <Calendar className="h-5 w-5 text-[#35c677]" />
               <span className="text-sm font-medium text-white">
-                Book Your Free Demo Today
+                Book Your Free Call Today
               </span>
             </div>
           </motion.div>
@@ -60,9 +61,9 @@ const CallToAction: React.FC = () => {
             viewport={{ once: true }}
             transition={{ duration: 0.8, delay: 0.1 }}
           >
-            Ready to automate
+            Your Customer Flood
             <br />
-            <span className="text-white">your business?</span>
+            <span className="text-white">Starts Right Here</span>
           </motion.h2>
 
           {/* Supporting Text */}
@@ -75,9 +76,7 @@ const CallToAction: React.FC = () => {
           >
             <div className="absolute inset-0 bg-black/80 rounded-lg"></div>
             <p className="relative text-xl md:text-2xl text-white p-6 leading-relaxed">
-              Join hundreds of local businesses that have transformed their operations 
-              with AI automation. See how we can help you save time, increase bookings, 
-              and boost revenue starting today.
+              Book a free 30 min call and we'll show you exactly how we'll fill your calendar with new customers.
             </p>
           </motion.div>
 
@@ -115,22 +114,21 @@ const CallToAction: React.FC = () => {
             viewport={{ once: true }}
             transition={{ duration: 0.8, delay: 0.6 }}
           >
-            <Button 
-              size="lg" 
-              className="text-lg px-10 py-5 h-auto bg-[#35c677] hover:bg-[#2ba866] text-white shadow-2xl hover:shadow-3xl transition-all duration-300 transform hover:scale-105"
-            >
-              <Calendar className="mr-2 h-5 w-5" />
-              <span>Book Free Demo</span>
-            </Button>
-            
-            <Button 
-              size="lg" 
-              variant="outline" 
-              className="text-lg px-10 py-5 h-auto border-2 border-white bg-white text-black hover:bg-gray-100 hover:text-[#191919] transition-all duration-300"
-            >
-              <Phone className="mr-2 h-5 w-5" />
-              <span>Call {companySettings?.phone || '(803) 977-4285'}</span>
-            </Button>
+            <Link href="/book-a-call">
+              <motion.div
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                transition={{ type: "spring", stiffness: 400, damping: 17 }}
+              >
+                <Button
+                  size="lg"
+                  className="text-lg px-10 py-5 h-auto bg-white hover:bg-gray-100 text-black shadow-2xl hover:shadow-3xl transition-all duration-300 font-semibold"
+                >
+                  <Calendar className="mr-2 h-5 w-5" />
+                  <span>Book a Call</span>
+                </Button>
+              </motion.div>
+            </Link>
           </motion.div>
 
           {/* Trust Indicators */}
@@ -152,10 +150,6 @@ const CallToAction: React.FC = () => {
               <div className="flex items-center space-x-2">
                 <div className="w-2 h-2 bg-[#35c677] rounded-full"></div>
                 <span className="text-sm">GDPR Compliant</span>
-              </div>
-              <div className="flex items-center space-x-2">
-                <div className="w-2 h-2 bg-[#35c677] rounded-full"></div>
-                <span className="text-sm">SOC 2 Certified</span>
               </div>
             </div>
           </motion.div>

@@ -1,10 +1,10 @@
 import React from 'react'
 import { motion } from 'framer-motion'
 import { Card, CardContent } from '../ui/card'
-import { 
-  Clock, 
-  TrendingUp, 
-  DollarSign, 
+import {
+  Clock,
+  TrendingUp,
+  DollarSign,
   Bot,
   Users,
   Zap,
@@ -15,59 +15,59 @@ import {
 const Benefits: React.FC = () => {
   const benefits = [
     {
-      icon: Clock,
-      title: 'Save Time',
-      description: 'Automate repetitive tasks and free up your team to focus on what matters most - growing your business.',
-      stat: '80%',
-      statLabel: 'Time Saved',
+      icon: Users,
+      title: 'Custom Content',
+      description: 'No generic templates - we create content specifically for your business and your customers.',
+      stat: '100%',
+      statLabel: 'Customized',
       gradient: 'from-blue-500 to-cyan-500'
     },
     {
-      icon: TrendingUp,
-      title: 'Increase Bookings',
-      description: 'AI assistants work 24/7 to capture leads, schedule appointments, and convert visitors into customers.',
-      stat: '3x',
-      statLabel: 'More Bookings',
+      icon: Shield,
+      title: 'Full Flexibility',
+      description: 'No long-term contracts required. Stay flexible and cancel anytime if you\'re not satisfied.',
+      stat: '0',
+      statLabel: 'Commitments',
       gradient: 'from-green-500 to-emerald-500'
     },
     {
-      icon: DollarSign,
-      title: 'Reduce Costs',
-      description: 'Cut staffing costs while improving service quality with intelligent automation that never sleeps.',
-      stat: '50%',
-      statLabel: 'Cost Reduction',
+      icon: BarChart3,
+      title: 'All Platforms',
+      description: 'We handle Facebook, Instagram, Google, and YouTube - everything you need in one place.',
+      stat: 'All',
+      statLabel: 'Platforms',
       gradient: 'from-purple-500 to-pink-500'
     },
     {
-      icon: Bot,
-      title: '24/7 Automation',
-      description: 'Your AI assistants work around the clock, handling customer inquiries and bookings even when you\'re closed.',
-      stat: '24/7',
-      statLabel: 'Availability',
+      icon: DollarSign,
+      title: 'Money-Back Guarantee',
+      description: 'If it doesn\'t work, we refund you. We\'re that confident in our ability to deliver results.',
+      stat: '100%',
+      statLabel: 'Guaranteed',
       gradient: 'from-orange-500 to-red-500'
     }
   ]
 
   const additionalBenefits = [
     {
-      icon: Users,
-      title: 'Better Customer Experience',
-      description: 'Instant responses and personalized service that delights your customers.'
+      icon: Clock,
+      title: 'Regular Check-ins',
+      description: 'Regular calls to review what\'s working, not just monthly reports.'
     },
     {
       icon: Zap,
-      title: 'Faster Response Times',
-      description: 'AI responds to inquiries in seconds, not hours or days.'
+      title: 'Start Small',
+      description: 'Test the waters with a paid trial - see if we\'re a good fit.'
     },
     {
-      icon: Shield,
-      title: 'Consistent Service Quality',
-      description: 'Every customer interaction follows your brand standards perfectly.'
+      icon: TrendingUp,
+      title: 'Proven Results',
+      description: 'Fill your calendar with new customers in 30 days or get your money back.'
     },
     {
-      icon: BarChart3,
-      title: 'Data-Driven Insights',
-      description: 'Get detailed analytics on customer behavior and business performance.'
+      icon: Bot,
+      title: 'Done For You',
+      description: 'We handle everything - you just turn phone calls into customers.'
     }
   ]
 
@@ -108,13 +108,13 @@ const Benefits: React.FC = () => {
           transition={{ duration: 0.8 }}
         >
           <h2 className="text-5xl md:text-6xl font-bold text-[#191919] mb-6 leading-tight">
-            Why local businesses
+            Why we're
             <br />
-            <span className="text-[#35c677]">choose us</span>
+            <span className="text-[#35c677]">different</span>
           </h2>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
-            Our AI-powered solutions deliver measurable results that transform how 
-            local businesses operate, compete, and grow in today's digital landscape.
+            We don't just run ads - we partner with you to deliver real results
+            with custom strategies, full transparency, and zero long-term commitments.
           </p>
         </motion.div>
 

@@ -144,12 +144,12 @@ type CompanySettings = {
 
 const DEFAULT_COMPANY_SETTINGS: CompanySettings = {
   id: 'default',
-  company_name: 'BareCloudz',
-  company_address: '123 Cloud St, Suite 100, San Francisco, CA 94105',
+  company_name: 'Nardoni Digital',
+  company_address: 'Hendersonville, NC',
   phone: '(803) 977-4285',
-  email: 'hello@barecloudz.com',
+  email: 'info@NardoniDigital.com',
   website: 'https://www.barecloudz.com',
-  description: 'Professional marketing and cloud solutions for modern businesses',
+  description: 'Professional marketing for modern businesses',
   social_instagram: null,
   social_facebook: null,
   social_linkedin: null,
