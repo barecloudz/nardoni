@@ -85,15 +85,18 @@ const AdminContacts: React.FC = () => {
           <div className="flex items-center justify-between">
             <div>
               <h1 className="text-3xl font-bold text-[#191919]">
-                Contact Management
+                Book a Call Submissions
               </h1>
               <p className="text-gray-600 mt-1">
-                Manage contact form submissions and leads
+                View and manage all "Book a Call" form submissions
               </p>
             </div>
             <div className="flex items-center space-x-4">
               <Badge variant="warning">
-                {contacts.filter(c => c.status === 'unread').length} Unread
+                {contacts.filter(c => c.status === 'unread').length} New
+              </Badge>
+              <Badge variant="secondary">
+                {contacts.length} Total
               </Badge>
             </div>
           </div>

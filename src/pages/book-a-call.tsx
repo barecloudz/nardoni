@@ -6,6 +6,7 @@ import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";
 import { Textarea } from "../components/ui/textarea";
 import { ArrowRight } from "lucide-react";
+import { createContact } from "../lib/supabase";
 
 const BookACall = () => {
   // Scroll to top when component mounts
@@ -24,25 +25,71 @@ const BookACall = () => {
     urgency: "",
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setIsSubmitting(true);
 
-    // Here you would typically send the form data to your backend
-    console.log("Form submitted:", formData);
+    try {
+      // Prepare message with all details
+      const fullPhone = `${formData.phonePrefix}${formData.phone}`;
+      const message = `
+Website: ${formData.website || 'Not provided'}
+Problem: ${formData.problem || 'Not provided'}
+Urgency: ${formData.urgency || 'Not provided'}
+      `.trim();
 
-    alert("Request Received! We'll contact you within 48 hours.");
+      // Save to contacts table
+      const { data, error } = await createContact({
+        name: formData.name,
+        email: formData.email,
+        phone: fullPhone,
+        company: formData.company,
+        message: message
+      });
 
-    // Reset form
-    setFormData({
-      name: "",
-      email: "",
-      phonePrefix: "+1",
-      phone: "",
-      website: "",
-      company: "",
-      problem: "",
-      urgency: "",
-    });
+      if (error) {
+        console.error('Error saving contact:', error);
+        alert('There was an error submitting your request. Please try again.');
+        return;
+      }
+
+      // Send email notification (don't wait for it to complete)
+      fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/send-booking-notification`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`
+        },
+        body: JSON.stringify({
+          name: formData.name,
+          email: formData.email,
+          phone: fullPhone,
+          company: formData.company,
+          message: message
+        })
+      }).catch(err => console.error('Email notification failed:', err));
+
+      alert("Request Received! We'll contact you within 48 hours.");
+
+      // Reset form
+      setFormData({
+        name: "",
+        email: "",
+        phonePrefix: "+1",
+        phone: "",
+        website: "",
+        company: "",
+        problem: "",
+        urgency: "",
+      });
+    } catch (error) {
+      console.error('Error:', error);
+      alert('There was an error submitting your request. Please try again.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -225,10 +272,11 @@ const BookACall = () => {
                 <Button
                   type="submit"
                   size="lg"
-                  className="w-full bg-black text-white hover:bg-black/90 h-14 mt-8 rounded-full group font-medium"
+                  disabled={isSubmitting}
+                  className="w-full bg-black text-white hover:bg-black/90 h-14 mt-8 rounded-full group font-medium disabled:opacity-50"
                 >
-                  Submit
-                  <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
+                  {isSubmitting ? 'Submitting...' : 'Submit'}
+                  {!isSubmitting && <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />}
                 </Button>
               </form>
             </div>

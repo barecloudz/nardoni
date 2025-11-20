@@ -13,6 +13,8 @@ import PaidAdvertising from './pages/services/paid-advertising'
 import WebsitesApps from './pages/services/websites-apps'
 import LoginPage from './pages/auth/login'
 import AdminDashboard from './pages/admin/dashboard'
+import AdminTeam from './pages/admin/team'
+import AdminOutreach from './pages/admin/outreach'
 import AdminClients from './pages/admin/clients'
 import AdminMarketingPlans from './pages/admin/marketing-plans'
 import AdminInvoices from './pages/admin/invoices'
@@ -60,6 +62,16 @@ function App() {
           <Route path="/admin/dashboard">
             <ProtectedRoute requiredRole="admin">
               <AdminDashboard />
+            </ProtectedRoute>
+          </Route>
+          <Route path="/admin/team">
+            <ProtectedRoute requiredRole="admin">
+              <AdminTeam />
+            </ProtectedRoute>
+          </Route>
+          <Route path="/admin/outreach">
+            <ProtectedRoute requiredRole="admin">
+              <AdminOutreach />
             </ProtectedRoute>
           </Route>
           <Route path="/admin/clients">

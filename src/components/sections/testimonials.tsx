@@ -185,13 +185,13 @@ const Testimonials: React.FC = () => {
           viewport={{ once: true }}
           transition={{ duration: 0.8, delay: 0.4 }}
         >
-          <p className="text-gray-500 mb-8">Trusted by 200+ local businesses</p>
-          <div className="flex flex-wrap justify-center items-center gap-8 opacity-60">
-            <div className="text-2xl font-bold text-gray-400">Restaurants</div>
-            <div className="text-2xl font-bold text-gray-400">Fitness Centers</div>
-            <div className="text-2xl font-bold text-gray-400">Medical Practices</div>
-            <div className="text-2xl font-bold text-gray-400">Auto Repair</div>
-            <div className="text-2xl font-bold text-gray-400">Spas & Salons</div>
+          <p className="text-gray-700 mb-8 text-lg font-semibold" style={{ textShadow: '0 2px 4px rgba(255, 255, 255, 1), 0 0 8px rgba(255, 255, 255, 0.8), 2px 2px 4px rgba(255, 255, 255, 0.9), -2px -2px 4px rgba(255, 255, 255, 0.9)' }}>Trusted by 200+ local businesses</p>
+          <div className="flex flex-wrap justify-center items-center gap-6 md:gap-8">
+            <div className="text-lg md:text-2xl font-bold text-gray-700" style={{ textShadow: '0 2px 4px rgba(255, 255, 255, 1), 0 0 8px rgba(255, 255, 255, 0.8), 2px 2px 4px rgba(255, 255, 255, 0.9), -2px -2px 4px rgba(255, 255, 255, 0.9)' }}>Restaurants</div>
+            <div className="text-lg md:text-2xl font-bold text-gray-700" style={{ textShadow: '0 2px 4px rgba(255, 255, 255, 1), 0 0 8px rgba(255, 255, 255, 0.8), 2px 2px 4px rgba(255, 255, 255, 0.9), -2px -2px 4px rgba(255, 255, 255, 0.9)' }}>Fitness Centers</div>
+            <div className="text-lg md:text-2xl font-bold text-gray-700" style={{ textShadow: '0 2px 4px rgba(255, 255, 255, 1), 0 0 8px rgba(255, 255, 255, 0.8), 2px 2px 4px rgba(255, 255, 255, 0.9), -2px -2px 4px rgba(255, 255, 255, 0.9)' }}>Medical Practices</div>
+            <div className="text-lg md:text-2xl font-bold text-gray-700" style={{ textShadow: '0 2px 4px rgba(255, 255, 255, 1), 0 0 8px rgba(255, 255, 255, 0.8), 2px 2px 4px rgba(255, 255, 255, 0.9), -2px -2px 4px rgba(255, 255, 255, 0.9)' }}>Auto Repair</div>
+            <div className="text-lg md:text-2xl font-bold text-gray-700" style={{ textShadow: '0 2px 4px rgba(255, 255, 255, 1), 0 0 8px rgba(255, 255, 255, 0.8), 2px 2px 4px rgba(255, 255, 255, 0.9), -2px -2px 4px rgba(255, 255, 255, 0.9)' }}>Spas & Salons</div>
           </div>
         </motion.div>
       </div>

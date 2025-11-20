@@ -18,71 +18,31 @@ class AuthService {
 
   async login(email: string, password: string): Promise<{ success: boolean; user?: User; error?: string }> {
     this.authState.isLoading = true
-    
+
     try {
       const { data, error } = await supabaseSignIn(email, password)
-      
+
       if (error) {
-        // If login fails and it's the demo admin account, try to create it
-        if (error.message.includes('Invalid login credentials') && email === 'admin@barecloudz.com') {
-          const { signUpUser } = await import('./supabase')
-          const signUpResult = await signUpUser(email, password)
-          
-          if (signUpResult.error) {
-            return { success: false, error: 'Failed to create demo account. Please contact support.' }
-          }
-          
-          // Try to sign in again after creating the account
-          const retryResult = await supabaseSignIn(email, password)
-          if (retryResult.error) {
-            // Check for email confirmation error
-            if (retryResult.error.message.includes('Email not confirmed')) {
-              return { 
-                success: false, 
-                error: 'Demo admin account created, but email confirmation is required by Supabase settings. Please disable "Email Confirm" in your Supabase project Authentication settings, or check your email for a confirmation link.' 
-              }
-            }
-            return { success: false, error: `Demo account created but login failed: ${retryResult.error.message}` }
-          }
-          
-          if (retryResult.data.user) {
-            const user: User = {
-              id: retryResult.data.user.id,
-              email: retryResult.data.user.email || '',
-              name: retryResult.data.user.user_metadata?.name || retryResult.data.user.email?.split('@')[0] || 'User',
-              role: retryResult.data.user.email === 'admin@barecloudz.com' ? 'admin' : 'client',
-              avatar: retryResult.data.user.user_metadata?.avatar_url || 'https://images.pexels.com/photos/774909/pexels-photo-774909.jpeg?auto=compress&cs=tinysrgb&w=150',
-              createdAt: new Date(retryResult.data.user.created_at),
-              updatedAt: new Date()
-            }
-            
-            this.authState.user = user
-            this.authState.isAuthenticated = true
-            
-            return { success: true, user }
-          }
-        }
-        
         return { success: false, error: error.message }
       }
-      
+
       if (data.user) {
         const user: User = {
           id: data.user.id,
           email: data.user.email || '',
           name: data.user.user_metadata?.name || data.user.email?.split('@')[0] || 'User',
-          role: data.user.email === 'admin@barecloudz.com' ? 'admin' : 'client',
+          role: this.getUserRole(data.user),
           avatar: data.user.user_metadata?.avatar_url || 'https://images.pexels.com/photos/774909/pexels-photo-774909.jpeg?auto=compress&cs=tinysrgb&w=150',
           createdAt: new Date(data.user.created_at),
           updatedAt: new Date()
         }
-        
+
         this.authState.user = user
         this.authState.isAuthenticated = true
-        
+
         return { success: true, user }
       }
-      
+
       return { success: false, error: 'Login failed' }
     } catch (error) {
       return { success: false, error: 'Network error' }
@@ -136,16 +96,11 @@ class AuthService {
   }
 
   private getUserRole(user: any): 'admin' | 'client' {
-    // Check if admin email
-    if (user.email === 'admin@barecloudz.com') {
-      return 'admin'
-    }
-    
     // Check user metadata role
     if (user.user_metadata?.role === 'admin') {
       return 'admin'
     }
-    
+
     // Default to client
     return 'client'
   }

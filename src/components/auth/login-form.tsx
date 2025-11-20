@@ -62,7 +62,11 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSuccess }) => {
       <Card className="shadow-xl">
         <CardHeader className="text-center">
           <div className="flex items-center justify-center mb-4">
-            <Cloud className="h-12 w-12 text-[#35c677]" />
+            <img
+              src="/images/drawing.svg"
+              alt="Nardoni Digital Logo"
+              className="h-16 w-auto"
+            />
           </div>
           <CardTitle className="text-2xl font-bold text-[#191919]">
             Welcome to Nardoni Digital
@@ -128,18 +132,6 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSuccess }) => {
               )}
             </Button>
           </form>
-
-          <div className="mt-6 text-center">
-            <p className="text-sm text-gray-600">
-              Demo credentials (will be created automatically):
-            </p>
-            <p className="text-sm text-[#35c677]">
-              admin@barecloudz.com / admin123
-            </p>
-            <p className="text-xs text-gray-500 mt-1">
-              Or sign up with any email/password
-            </p>
-          </div>
         </CardContent>
       </Card>
     </motion.div>

@@ -166,7 +166,7 @@ const Footer: React.FC = () => {
                       <li key={link.label}>
                         <Link href={link.href}>
                           <motion.a
-                            className="text-gray-400 hover:text-[#35c677] transition-colors duration-200 text-sm"
+                            className="text-gray-300 hover:text-[#35c677] transition-colors duration-200 text-sm font-medium"
                             whileHover={{ x: 4 }}
                             transition={{ duration: 0.2 }}
                           >
@@ -191,10 +191,10 @@ const Footer: React.FC = () => {
           transition={{ duration: 0.6, delay: 0.4 }}
         >
           <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
-            <div className="text-gray-400 text-sm">
+            <div className="text-gray-300 text-sm md:text-gray-400">
               &copy; 2025 Nardoni Digital. All rights reserved.
             </div>
-            <div className="flex items-center space-x-6 text-sm text-gray-400">
+            <div className="flex flex-col md:flex-row items-center space-y-2 md:space-y-0 md:space-x-6 text-sm text-gray-300 md:text-gray-400">
               <span>Made with ❤️ for local businesses</span>
               <div className="flex items-center space-x-2">
                 <div className="w-2 h-2 bg-[#35c677] rounded-full animate-pulse"></div>

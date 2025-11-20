@@ -3,20 +3,22 @@ import { useQuery } from '@tanstack/react-query'
 import { motion } from 'framer-motion'
 import { Link } from 'wouter'
 import { supabase, getCurrentUser } from '../../lib/supabase'
+import { authService } from '../../lib/auth'
 import { Card, CardContent, CardHeader, CardTitle } from '../../components/ui/card'
 import { Button } from '../../components/ui/button'
 import { Badge } from '../../components/ui/badge'
-import { 
-  FileText, 
-  DollarSign, 
-  FolderOpen, 
-  TrendingUp, 
+import {
+  FileText,
+  DollarSign,
+  FolderOpen,
+  TrendingUp,
   Calendar,
   Eye,
   Download,
   MessageSquare,
   User,
-  Building
+  Building,
+  LogOut
 } from 'lucide-react'
 
 const ClientDashboard: React.FC = () => {
@@ -126,6 +128,11 @@ const ClientDashboard: React.FC = () => {
     }
   }
 
+  const handleLogout = async () => {
+    await authService.logout()
+    window.location.href = '/auth/login'
+  }
+
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
@@ -144,14 +151,18 @@ const ClientDashboard: React.FC = () => {
             <div className="flex items-center space-x-4">
               <Button variant="outline" size="sm">
                 <MessageSquare className="h-4 w-4 mr-2" />
-                Contact Support
+                <span className="hidden sm:inline">Contact Support</span>
               </Button>
-              <div className="flex items-center space-x-2">
+              <div className="hidden md:flex items-center space-x-2">
                 <User className="h-5 w-5 text-gray-400" />
                 <span className="text-sm text-gray-700">
                   {currentUser?.email || 'Client'}
                 </span>
               </div>
+              <Button variant="outline" size="sm" onClick={handleLogout}>
+                <LogOut className="h-4 w-4 mr-2" />
+                <span className="hidden sm:inline">Logout</span>
+              </Button>
             </div>
           </div>
         </div>
