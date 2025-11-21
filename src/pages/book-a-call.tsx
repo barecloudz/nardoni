@@ -194,10 +194,10 @@ Urgency: ${formData.urgency || 'Not provided'}
                   <Input
                     id="website"
                     name="website"
-                    type="url"
+                    type="text"
                     value={formData.website}
                     onChange={handleChange}
-                    placeholder="Website *"
+                    placeholder="Website (optional)"
                     className="h-14 border-0 border-b border-gray-300 rounded-none focus-visible:ring-0 focus-visible:border-black bg-transparent px-0 placeholder:text-gray-400 text-xl pb-6 transition-all duration-300"
                     style={{ fontWeight: 500, letterSpacing: '-0.05em' }}
                   />

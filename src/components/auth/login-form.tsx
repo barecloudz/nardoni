@@ -132,6 +132,15 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSuccess }) => {
               )}
             </Button>
           </form>
+
+          <div className="mt-6 text-center">
+            <p className="text-sm text-gray-600">
+              Don't have a login?
+            </p>
+            <p className="text-xs text-gray-500 mt-2">
+              You'll need to <a href="/book-a-call" className="text-[#35c677] hover:underline">book a call with us</a> and start a service. We will provide you with login credentials to access your client portal.
+            </p>
+          </div>
         </CardContent>
       </Card>
     </motion.div>
