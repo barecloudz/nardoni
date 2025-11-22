@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import { Link, useLocation } from 'wouter'
 import { motion } from 'framer-motion'
+import { useQuery } from '@tanstack/react-query'
 import {
   Cloud,
   LayoutDashboard,
@@ -18,10 +19,29 @@ import {
 } from 'lucide-react'
 import { Button } from '../ui/button'
 import { authService } from '../../lib/auth'
+import { supabase } from '../../lib/supabase'
 
 const AdminSidebar: React.FC = () => {
   const [location] = useLocation()
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
+
+  // Fetch unread contacts count
+  const { data: unreadCount = 0 } = useQuery({
+    queryKey: ['unread-contacts-count'],
+    queryFn: async () => {
+      const { count, error } = await supabase
+        .from('contacts')
+        .select('*', { count: 'exact', head: true })
+        .eq('status', 'unread')
+
+      if (error) {
+        console.error('Error fetching unread count:', error)
+        return 0
+      }
+      return count || 0
+    },
+    refetchInterval: 30000, // Refetch every 30 seconds
+  })
 
   const sidebarItems = [
     { icon: LayoutDashboard, label: 'Dashboard', href: '/admin/dashboard' },
@@ -88,7 +108,7 @@ const AdminSidebar: React.FC = () => {
               return (
                 <Link key={item.href} href={item.href}>
                   <motion.a
-                    className={`flex items-center space-x-3 px-4 py-3 rounded-lg transition-colors ${
+                    className={`flex items-center justify-between px-4 py-3 rounded-lg transition-colors ${
                       isActive
                         ? 'bg-[#35c677] text-white'
                         : 'text-gray-600 hover:bg-gray-50 hover:text-[#35c677]'
@@ -97,8 +117,20 @@ const AdminSidebar: React.FC = () => {
                     whileTap={{ scale: 0.98 }}
                     onClick={() => setIsMobileMenuOpen(false)}
                   >
-                    <Icon className="h-5 w-5" />
-                    <span className="text-sm font-medium">{item.label}</span>
+                    <div className="flex items-center space-x-3">
+                      <Icon className="h-5 w-5" />
+                      <span className="text-sm font-medium">{item.label}</span>
+                    </div>
+                    {/* Show badge for Book a Call if there are unread contacts */}
+                    {item.href === '/admin/contacts' && unreadCount > 0 && (
+                      <span className={`text-xs font-bold px-2 py-1 rounded-full ${
+                        isActive
+                          ? 'bg-white text-[#35c677]'
+                          : 'bg-red-500 text-white'
+                      }`}>
+                        {unreadCount}
+                      </span>
+                    )}
                   </motion.a>
                 </Link>
               )
