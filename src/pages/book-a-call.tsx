@@ -17,7 +17,6 @@ const BookACall = () => {
   const [formData, setFormData] = useState({
     name: "",
     email: "",
-    phonePrefix: "+1",
     phone: "",
     website: "",
     company: "",
@@ -33,7 +32,6 @@ const BookACall = () => {
 
     try {
       // Prepare message with all details
-      const fullPhone = `${formData.phonePrefix}${formData.phone}`;
       const message = `
 Website: ${formData.website || 'Not provided'}
 Problem: ${formData.problem || 'Not provided'}
@@ -44,7 +42,7 @@ Urgency: ${formData.urgency || 'Not provided'}
       const { data, error } = await createContact({
         name: formData.name,
         email: formData.email,
-        phone: fullPhone,
+        phone: formData.phone,
         company: formData.company,
         message: message
       });
@@ -65,7 +63,7 @@ Urgency: ${formData.urgency || 'Not provided'}
         body: JSON.stringify({
           name: formData.name,
           email: formData.email,
-          phone: fullPhone,
+          phone: formData.phone,
           company: formData.company,
           message: message
         })
@@ -77,7 +75,6 @@ Urgency: ${formData.urgency || 'Not provided'}
       setFormData({
         name: "",
         email: "",
-        phonePrefix: "+1",
         phone: "",
         website: "",
         company: "",
@@ -166,17 +163,7 @@ Urgency: ${formData.urgency || 'Not provided'}
                   />
                 </div>
 
-                <div className="grid grid-cols-[70px_1fr] gap-4">
-                  <Input
-                    id="phonePrefix"
-                    name="phonePrefix"
-                    type="text"
-                    value={formData.phonePrefix}
-                    onChange={handleChange}
-                    placeholder="+1"
-                    className="h-14 border-0 border-b border-gray-300 rounded-none focus-visible:ring-0 focus-visible:border-black bg-transparent px-0 placeholder:text-gray-400 text-xl pb-6 transition-all duration-300"
-                    style={{ fontWeight: 500, letterSpacing: '-0.05em' }}
-                  />
+                <div>
                   <Input
                     id="phone"
                     name="phone"
