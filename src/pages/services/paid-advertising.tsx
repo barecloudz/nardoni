@@ -1,4 +1,5 @@
-import React, { useEffect } from 'react'
+import React from 'react'
+import { Helmet } from 'react-helmet-async'
 import { Link } from 'wouter'
 import { motion } from 'framer-motion'
 import Header from '../../components/layout/header'
@@ -8,13 +9,6 @@ import { Card, CardContent } from '../../components/ui/card'
 import { Target, Zap, DollarSign, Sliders, CheckCircle, ArrowRight } from 'lucide-react'
 
 const PaidAdvertising: React.FC = () => {
-  useEffect(() => {
-    document.title = 'Paid Advertising - Google Ads & Meta Ads Management | Nardoni Digital'
-    const metaDescription = document.querySelector('meta[name="description"]')
-    if (metaDescription) {
-      metaDescription.setAttribute('content', 'Get immediate results with paid advertising. Expert Google Ads and Meta Ads management for local businesses. Precise targeting, measurable ROI, and complete cost control.')
-    }
-  }, [])
   const benefits = [
     { icon: Target, title: 'Precise Targeting', description: 'Reach your ideal customers with laser-focused targeting based on location, demographics, and behavior.', gradient: 'from-orange-500 to-red-500' },
     { icon: Zap, title: 'Immediate Results', description: 'Get instant visibility and traffic while your organic marketing strategies take time to build.', gradient: 'from-yellow-500 to-orange-500' },
@@ -50,6 +44,13 @@ const PaidAdvertising: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-white">
+      <Helmet>
+        <title>Paid Advertising - Google Ads & Meta Ads Management | Nardoni Digital</title>
+        <meta name="description" content="Get immediate results with paid advertising. Expert Google Ads and Meta Ads management for local businesses. Precise targeting, measurable ROI, and complete cost control." />
+        <meta property="og:title" content="Paid Advertising - Google Ads & Meta Ads Management | Nardoni Digital" />
+        <meta property="og:description" content="Get immediate results with paid advertising. Expert Google Ads and Meta Ads management for local businesses." />
+        <link rel="canonical" href="https://nardonidigital.com/services/paid-advertising" />
+      </Helmet>
       <Header />
 
       <section className="pt-32 pb-16 bg-gradient-to-b from-orange-50 to-white">

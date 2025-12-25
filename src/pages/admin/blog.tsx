@@ -36,19 +36,19 @@ const AdminBlog: React.FC = () => {
   return (
     <div className="flex h-screen bg-gray-50">
       <AdminSidebar />
-      <main className="flex-1 ml-64 p-8 overflow-y-auto">
+      <main className="flex-1 lg:ml-64 p-4 sm:p-8 overflow-y-auto pt-20 lg:pt-8">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
           className="space-y-8"
         >
-          <div className="flex items-center justify-between">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div>
-              <h1 className="text-3xl font-bold text-[#191919]">
+              <h1 className="text-2xl sm:text-3xl font-bold text-[#191919]">
                 Blog Management
               </h1>
-              <p className="text-gray-600 mt-1">
+              <p className="text-gray-600 mt-1 text-sm sm:text-base">
                 Create and manage blog posts
               </p>
             </div>

@@ -75,23 +75,23 @@ const AdminContacts: React.FC = () => {
   return (
     <div className="flex h-screen bg-gray-50">
       <AdminSidebar />
-      <main className="flex-1 ml-64 p-8 overflow-y-auto">
+      <main className="flex-1 lg:ml-64 p-4 sm:p-8 overflow-y-auto pt-20 lg:pt-8">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
           className="space-y-8"
         >
-          <div className="flex items-center justify-between">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div>
-              <h1 className="text-3xl font-bold text-[#191919]">
+              <h1 className="text-2xl sm:text-3xl font-bold text-[#191919]">
                 Book a Call Submissions
               </h1>
-              <p className="text-gray-600 mt-1">
+              <p className="text-gray-600 mt-1 text-sm sm:text-base">
                 View and manage all "Book a Call" form submissions
               </p>
             </div>
-            <div className="flex items-center space-x-4">
+            <div className="flex items-center space-x-2 sm:space-x-4">
               <Badge variant="warning">
                 {contacts.filter(c => c.status === 'unread').length} New
               </Badge>
@@ -132,61 +132,62 @@ const AdminContacts: React.FC = () => {
                       initial={{ opacity: 0, y: 20 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ duration: 0.3 }}
-                      className={`p-6 border rounded-lg hover:shadow-md transition-shadow ${
+                      className={`p-4 sm:p-6 border rounded-lg hover:shadow-md transition-shadow ${
                         contact.status === 'unread' ? 'bg-yellow-50 border-yellow-200' : 'bg-white border-gray-200'
                       }`}
                     >
-                      <div className="flex items-start justify-between">
-                        <div className="flex-1">
-                          <div className="flex items-center space-x-3 mb-3">
-                            <h3 className="text-lg font-semibold text-[#191919]">
+                      <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-4">
+                        <div className="flex-1 min-w-0">
+                          <div className="flex flex-wrap items-center gap-2 sm:gap-3 mb-3">
+                            <h3 className="text-base sm:text-lg font-semibold text-[#191919]">
                               {contact.name}
                             </h3>
                             <Badge variant={getStatusColor(contact.status) as any}>
                               {contact.status}
                             </Badge>
                           </div>
-                          
-                          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-                            <div className="flex items-center space-x-2">
-                              <Mail className="h-4 w-4 text-gray-400" />
-                              <span className="text-sm text-gray-600">{contact.email}</span>
+
+                          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 sm:gap-4 mb-4">
+                            <div className="flex items-center space-x-2 min-w-0">
+                              <Mail className="h-4 w-4 text-gray-400 flex-shrink-0" />
+                              <span className="text-sm text-gray-600 truncate">{contact.email}</span>
                             </div>
                             {contact.phone && (
                               <div className="flex items-center space-x-2">
-                                <Phone className="h-4 w-4 text-gray-400" />
+                                <Phone className="h-4 w-4 text-gray-400 flex-shrink-0" />
                                 <span className="text-sm text-gray-600">{contact.phone}</span>
                               </div>
                             )}
                             {contact.company && (
-                              <div className="flex items-center space-x-2">
-                                <Building className="h-4 w-4 text-gray-400" />
-                                <span className="text-sm text-gray-600">{contact.company}</span>
+                              <div className="flex items-center space-x-2 min-w-0">
+                                <Building className="h-4 w-4 text-gray-400 flex-shrink-0" />
+                                <span className="text-sm text-gray-600 truncate">{contact.company}</span>
                               </div>
                             )}
                           </div>
-                          
+
                           <div className="mb-4">
                             <div className="flex items-center space-x-2 mb-2">
                               <MessageSquare className="h-4 w-4 text-gray-400" />
                               <span className="text-sm font-medium text-gray-700">Message:</span>
                             </div>
-                            <p className="text-gray-600 bg-gray-50 p-3 rounded-md">
+                            <p className="text-sm sm:text-base text-gray-600 bg-gray-50 p-3 rounded-md break-words">
                               {contact.message}
                             </p>
                           </div>
-                          
+
                           <div className="text-xs text-gray-500">
                             Submitted {new Date(contact.created_at).toLocaleString()}
                           </div>
                         </div>
-                        
-                        <div className="flex items-center space-x-2 ml-4">
+
+                        <div className="flex flex-wrap items-center gap-2 lg:ml-4 lg:flex-nowrap">
                           {contact.status === 'unread' && (
                             <Button
                               size="sm"
                               variant="outline"
                               onClick={() => handleStatusChange(contact.id, 'read')}
+                              className="text-xs sm:text-sm"
                             >
                               Mark Read
                             </Button>
@@ -196,6 +197,7 @@ const AdminContacts: React.FC = () => {
                               size="sm"
                               variant="outline"
                               onClick={() => handleStatusChange(contact.id, 'spam')}
+                              className="text-xs sm:text-sm"
                             >
                               Mark Spam
                             </Button>

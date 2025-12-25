@@ -105,7 +105,7 @@ const AdminSettings: React.FC = () => {
   return (
     <div className="flex h-screen bg-gray-50">
       <AdminSidebar />
-      <main className="flex-1 ml-64 p-8 overflow-y-auto">
+      <main className="flex-1 lg:ml-64 p-4 sm:p-8 overflow-y-auto pt-20 lg:pt-8">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -113,17 +113,17 @@ const AdminSettings: React.FC = () => {
           className="space-y-8"
         >
           <div>
-            <h1 className="text-3xl font-bold text-[#191919]">
+            <h1 className="text-2xl sm:text-3xl font-bold text-[#191919]">
               Settings
             </h1>
-            <p className="text-gray-600 mt-1">
+            <p className="text-gray-600 mt-1 text-sm sm:text-base">
               Manage your account and application settings
             </p>
           </div>
 
           {/* Tab Navigation */}
-          <div className="border-b border-gray-200">
-            <nav className="flex space-x-8">
+          <div className="border-b border-gray-200 overflow-x-auto">
+            <nav className="flex space-x-4 sm:space-x-8 min-w-max">
               {tabs.map((tab) => {
                 const Icon = tab.icon
                 return (

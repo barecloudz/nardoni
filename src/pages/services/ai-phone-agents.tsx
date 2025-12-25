@@ -1,4 +1,5 @@
-import React, { useEffect } from 'react'
+import React from 'react'
+import { Helmet } from 'react-helmet-async'
 import { Link } from 'wouter'
 import { motion } from 'framer-motion'
 import Header from '../../components/layout/header'
@@ -20,13 +21,6 @@ import {
 } from 'lucide-react'
 
 const AIPhoneAgents: React.FC = () => {
-  useEffect(() => {
-    document.title = 'AI Phone Agents - Automated Call Handling & Booking | Nardoni Digital'
-    const metaDescription = document.querySelector('meta[name="description"]')
-    if (metaDescription) {
-      metaDescription.setAttribute('content', 'Transform your phone system with AI phone agents. Handle calls 24/7, book appointments automatically, and never miss a customer call again.')
-    }
-  }, [])
   const benefits = [
     {
       icon: Clock,
@@ -96,6 +90,13 @@ const AIPhoneAgents: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-white">
+      <Helmet>
+        <title>AI Phone Agents - Automated Call Handling & Booking | Nardoni Digital</title>
+        <meta name="description" content="Transform your phone system with AI phone agents. Handle calls 24/7, book appointments automatically, and never miss a customer call again." />
+        <meta property="og:title" content="AI Phone Agents - Automated Call Handling & Booking | Nardoni Digital" />
+        <meta property="og:description" content="Transform your phone system with AI phone agents. Handle calls 24/7, book appointments automatically, and never miss a customer call again." />
+        <link rel="canonical" href="https://nardonidigital.com/services/ai-phone-agents" />
+      </Helmet>
       <Header />
 
       {/* Hero Section */}

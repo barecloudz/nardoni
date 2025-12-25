@@ -1,4 +1,5 @@
-import React, { useEffect } from 'react'
+import React from 'react'
+import { Helmet } from 'react-helmet-async'
 import { Link } from 'wouter'
 import { motion } from 'framer-motion'
 import Header from '../../components/layout/header'
@@ -9,13 +10,6 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '..
 import { Search, MapPin, Star, FileText, TrendingUp, Eye, CheckCircle, ArrowRight, BarChart3, Handshake, Rocket, Target } from 'lucide-react'
 
 const SEOLocalSearch: React.FC = () => {
-  useEffect(() => {
-    document.title = 'SEO & Local Search - Top Page of Google in 90 Days | Nardoni Digital'
-    const metaDescription = document.querySelector('meta[name="description"]')
-    if (metaDescription) {
-      metaDescription.setAttribute('content', 'Get your company on the top page of Google in 90 days or your money back. Expert local SEO services for local businesses. Proven results with our 90-day guarantee.')
-    }
-  }, [])
   const faqs = [
     {
       question: "Can you show me examples of other businesses like mine that you've helped?",
@@ -95,6 +89,13 @@ const SEOLocalSearch: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-white">
+      <Helmet>
+        <title>SEO & Local Search - Top Page of Google in 90 Days | Nardoni Digital</title>
+        <meta name="description" content="Get your company on the top page of Google in 90 days or your money back. Expert local SEO services for local businesses. Proven results with our 90-day guarantee." />
+        <meta property="og:title" content="SEO & Local Search - Top Page of Google in 90 Days | Nardoni Digital" />
+        <meta property="og:description" content="Get your company on the top page of Google in 90 days or your money back. Expert local SEO services with proven results." />
+        <link rel="canonical" href="https://nardonidigital.com/services/seo-local-search" />
+      </Helmet>
       <Header />
 
       <section className="pt-32 pb-16 bg-gradient-to-b from-green-50 to-white">

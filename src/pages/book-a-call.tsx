@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { Helmet } from 'react-helmet-async';
 import { motion } from "framer-motion";
 import Header from "../components/layout/header";
 import Footer from "../components/layout/footer";
@@ -105,6 +106,13 @@ Urgency: ${formData.urgency || 'Not provided'}
 
   return (
     <div className="min-h-screen">
+      <Helmet>
+        <title>Book a Free Consultation | Nardoni Digital</title>
+        <meta name="description" content="Schedule a free consultation with our digital marketing experts. Discover how AI-powered marketing, SEO, and social media can grow your local business." />
+        <meta property="og:title" content="Book a Free Consultation | Nardoni Digital" />
+        <meta property="og:description" content="Schedule a free consultation with our digital marketing experts. Discover how we can grow your local business." />
+        <link rel="canonical" href="https://nardonidigital.com/book-a-call" />
+      </Helmet>
       <Header />
 
       <main className="pt-24 pb-8 min-h-screen" style={{ backgroundColor: '#efebe5' }}>

@@ -1,4 +1,5 @@
-import React, { useEffect } from 'react'
+import React from 'react'
+import { Helmet } from 'react-helmet-async'
 import { Link } from 'wouter'
 import { motion } from 'framer-motion'
 import Header from '../../components/layout/header'
@@ -19,13 +20,6 @@ import {
 } from 'lucide-react'
 
 const AICustomerSupport: React.FC = () => {
-  useEffect(() => {
-    document.title = 'AI Customer Support - 24/7 Automated Support | Nardoni Digital'
-    const metaDescription = document.querySelector('meta[name="description"]')
-    if (metaDescription) {
-      metaDescription.setAttribute('content', 'Never miss a customer inquiry with 24/7 AI-powered customer support. Instant responses, multi-language support, and unlimited scalability for local businesses.')
-    }
-  }, [])
   const benefits = [
     {
       icon: Clock,
@@ -93,6 +87,13 @@ const AICustomerSupport: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-white">
+      <Helmet>
+        <title>AI Customer Support - 24/7 Automated Support | Nardoni Digital</title>
+        <meta name="description" content="Never miss a customer inquiry with 24/7 AI-powered customer support. Instant responses, multi-language support, and unlimited scalability for local businesses." />
+        <meta property="og:title" content="AI Customer Support - 24/7 Automated Support | Nardoni Digital" />
+        <meta property="og:description" content="Never miss a customer inquiry with 24/7 AI-powered customer support. Instant responses, multi-language support, and unlimited scalability." />
+        <link rel="canonical" href="https://nardonidigital.com/services/ai-customer-support" />
+      </Helmet>
       <Header />
 
       {/* Hero Section */}

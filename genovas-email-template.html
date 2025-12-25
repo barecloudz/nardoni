@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Genova's Pizza & Pasta - Get Found on Google</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.8;
+            background-color: #f4f4f4;
+            color: #333;
+            font-size: 36px;
+        }
+
+        .email-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background-color: #ffffff;
+        }
+
+        .header {
+            background: #ffffff;
+            color: #333;
+            padding: 30px 40px;
+            text-align: center;
+            border-bottom: 3px solid #c41e3a;
+        }
+
+        .header-logo {
+            width: 140px;
+            height: 140px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-bottom: 10px;
+            border: 3px solid #c0c0c0;
+        }
+
+        .header h1 {
+            font-size: 52px;
+            margin-bottom: 5px;
+            color: #333;
+            font-weight: 600;
+        }
+
+        .header p {
+            font-size: 30px;
+            color: #000;
+        }
+
+        .content {
+            padding: 40px;
+        }
+
+        .greeting {
+            font-size: 36px;
+            margin-bottom: 25px;
+        }
+
+        .problem-section {
+            background-color: #fff8f8;
+            border-left: 4px solid #c41e3a;
+            padding: 25px;
+            margin: 25px 0;
+            border-radius: 0 8px 8px 0;
+        }
+
+        .problem-section h2 {
+            color: #c41e3a;
+            font-size: 44px;
+            margin-bottom: 15px;
+        }
+
+        .problem-section p {
+            font-size: 34px;
+            color: #444;
+            margin-bottom: 15px;
+        }
+
+        .highlight-text {
+            background-color: #fffde7;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 25px 0;
+            border: 1px dashed #ffc107;
+        }
+
+        .highlight-text p {
+            font-size: 34px;
+            color: #555;
+        }
+
+        .image-section {
+            margin: 30px 0;
+            text-align: center;
+        }
+
+        .image-section img {
+            max-width: 100%;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            border: 1px solid #e0e0e0;
+        }
+
+        .image-caption {
+            font-size: 32px;
+            color: #000;
+            margin-top: 10px;
+            font-style: italic;
+        }
+
+        .not-there-banner {
+            background: linear-gradient(135deg, #c41e3a 0%, #8b0000 100%);
+            color: white;
+            padding: 25px;
+            text-align: center;
+            margin: 30px 0;
+            border-radius: 8px;
+        }
+
+        .not-there-banner h3 {
+            font-size: 28px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .offer-section {
+            background: linear-gradient(135deg, #1a5f2a 0%, #0d3d17 100%);
+            color: white;
+            padding: 35px;
+            border-radius: 12px;
+            margin: 30px 0;
+            text-align: center;
+        }
+
+        .offer-section h2 {
+            font-size: 54px;
+            margin-bottom: 20px;
+            color: #90EE90;
+        }
+
+        .price-comparison {
+            margin: 25px 0;
+        }
+
+        .original-price {
+            font-size: 40px;
+            text-decoration: line-through;
+            color: #ffcccc;
+            opacity: 0.8;
+        }
+
+        .sale-price {
+            font-size: 80px;
+            font-weight: bold;
+            color: #90EE90;
+            display: block;
+            margin: 10px 0;
+        }
+
+        .offer-details {
+            font-size: 38px;
+            line-height: 1.8;
+            margin: 20px 0;
+            text-align: left;
+            padding: 0 20px;
+        }
+
+        .guarantee-box {
+            background-color: rgba(255,255,255,0.1);
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            border: 2px solid #90EE90;
+        }
+
+        .guarantee-box p {
+            font-size: 36px;
+            font-style: italic;
+        }
+
+        .cta-button {
+            display: inline-block;
+            background: linear-gradient(135deg, #ffd700 0%, #ffb700 100%);
+            color: #1a1a1a !important;
+            padding: 28px 60px;
+            text-decoration: none;
+            font-size: 32px;
+            font-weight: bold;
+            border-radius: 50px;
+            margin: 20px 0;
+            box-shadow: 0 4px 15px rgba(255,215,0,0.4);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .cta-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(255,215,0,0.5);
+        }
+
+        .divider {
+            text-align: center;
+            margin: 40px 0;
+            position: relative;
+        }
+
+        .divider::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 50%;
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #ddd, transparent);
+        }
+
+        .divider span {
+            background-color: #fff;
+            padding: 0 35px;
+            position: relative;
+            font-size: 42px;
+            font-weight: bold;
+            color: #333;
+            text-transform: uppercase;
+            letter-spacing: 5px;
+        }
+
+        .continuity-section {
+            background-color: #f8f9fa;
+            padding: 35px;
+            border-radius: 12px;
+            margin: 30px 0;
+        }
+
+        .continuity-section h2 {
+            text-align: center;
+            color: #333;
+            font-size: 48px;
+            margin-bottom: 10px;
+        }
+
+        .continuity-subtitle {
+            text-align: center;
+            color: #000;
+            font-size: 32px;
+            margin-bottom: 25px;
+        }
+
+        .services-list {
+            background-color: white;
+            padding: 25px;
+            border-radius: 8px;
+            margin-bottom: 25px;
+            border: 1px solid #e0e0e0;
+        }
+
+        .services-list h3 {
+            color: #c41e3a;
+            margin-bottom: 15px;
+            font-size: 18px;
+        }
+
+        .services-list ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .services-list li {
+            padding: 16px 0;
+            padding-left: 45px;
+            position: relative;
+            font-size: 30px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .services-list li:last-child {
+            border-bottom: none;
+        }
+
+        .services-list li::before {
+            content: '✓';
+            position: absolute;
+            left: 0;
+            color: #1a5f2a;
+            font-weight: bold;
+            font-size: 18px;
+        }
+
+        .pricing-options {
+            display: block;
+            width: 100%;
+            margin-top: 20px;
+        }
+
+        .pricing-card {
+            display: block;
+            width: 100%;
+            padding: 15px 0;
+        }
+
+        .pricing-card-inner {
+            background-color: white;
+            border-radius: 12px;
+            padding: 40px 30px;
+            text-align: center;
+            border: 2px solid #e0e0e0;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .pricing-card-inner:hover {
+            border-color: #c41e3a;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        }
+
+        .pricing-card-inner.featured {
+            border-color: #c41e3a;
+            position: relative;
+        }
+
+        .best-value {
+            background-color: #c41e3a;
+            color: white;
+            padding: 8px 20px;
+            font-size: 18px;
+            font-weight: bold;
+            border-radius: 20px;
+            display: inline-block;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .pricing-card h4 {
+            font-size: 36px;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .pricing-card .price {
+            font-size: 72px;
+            font-weight: bold;
+            color: #c41e3a;
+        }
+
+        .pricing-card .period {
+            font-size: 28px;
+            color: #000;
+            margin-bottom: 20px;
+        }
+
+        .pricing-card .cta-button-small {
+            display: inline-block;
+            background: linear-gradient(135deg, #c41e3a 0%, #8b0000 100%);
+            color: white !important;
+            padding: 22px 50px;
+            text-decoration: none;
+            font-size: 26px;
+            font-weight: bold;
+            border-radius: 25px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .footer {
+            background-color: #2d2d2d;
+            color: #aaa;
+            padding: 30px 40px;
+            text-align: center;
+        }
+
+        .footer p {
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+
+        .footer a {
+            color: #c41e3a;
+            text-decoration: none;
+        }
+
+        /* Mobile Responsive */
+        @media only screen and (max-width: 600px) {
+            .content {
+                padding: 25px;
+            }
+
+            .header {
+                padding: 25px 20px;
+            }
+
+            .header h1 {
+                font-size: 22px;
+            }
+
+            .problem-section {
+                padding: 20px;
+            }
+
+            .offer-section {
+                padding: 25px 20px;
+            }
+
+            .sale-price {
+                font-size: 38px;
+            }
+
+            .cta-button {
+                padding: 15px 35px;
+                font-size: 16px;
+            }
+
+            .pricing-options {
+                display: block;
+            }
+
+            .pricing-card {
+                display: block;
+                width: 100%;
+                padding: 10px 0;
+            }
+
+            .continuity-section {
+                padding: 25px 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="email-container">
+        <!-- Header -->
+        <div class="header">
+            <img src="https://drive.google.com/uc?export=view&id=1aQxrrKY3drunH1W_WUdGMiOzyJgVVhgt" alt="Nardoni Digital Logo" class="header-logo">
+            <h1>Nardoni Digital</h1>
+            <p>A Message About Your Online Visibility</p>
+        </div>
+
+        <!-- Main Content -->
+        <div class="content">
+            <p class="greeting">Hi there,</p>
+
+            <div class="problem-section">
+                <h2>When Someone Searches "Pizza Near Me" in Myrtle Beach...</h2>
+                <p>You don't show up.</p>
+                <p>Right now, hungry customers in your area are searching for exactly what you offer, and they're finding your competitors instead.</p>
+            </div>
+
+            <div style="background: linear-gradient(135deg, #c41e3a 0%, #8b0000 100%); color: white; padding: 20px; text-align: center; margin: 25px 0; border-radius: 8px;">
+                <h3 style="font-size: 22px; margin: 0; text-transform: uppercase; letter-spacing: 1px;">You're Losing Money and New Customers</h3>
+            </div>
+
+            <div class="highlight-text">
+                <p><strong>Sure, you could pay Google to be at the top.</strong> But unless you're planning on having Google debit your credit card every few days <em>for the rest of your life</em>, you'd definitely want to just show up on Google <strong>naturally, for free.</strong></p>
+                <p style="margin-top: 15px;">There's a lot that goes into ranking organically, but the results speak for themselves.</p>
+            </div>
+
+            <!-- Heat Map Image -->
+            <div class="image-section">
+                <h3 style="margin-bottom: 15px; color: #333;">Here's How You Currently Rank in Your Area:</h3>
+                <img src="https://drive.google.com/uc?export=view&id=1PCEACjiUb16zf8ImkhWH2uJdB4GQdJ5l" alt="Local SEO Heat Map showing current rankings">
+                <p class="image-caption">This heat map shows where you appear (or don't appear) when locals search for pizza. Red means you're not visible. Green means you are.</p>
+            </div>
+
+            <!-- Google Search Results Image -->
+            <div class="image-section">
+                <h3 style="margin-bottom: 15px; color: #333;">This Is What Hungry Customers See:</h3>
+                <img src="https://drive.google.com/uc?export=view&id=1C2vdXzvebfB_XP8VYD0ZGpUG5lOSOGN7" alt="Google search results for pizza near Myrtle Beach">
+                <p class="image-caption">When someone searches for pizza in Myrtle Beach, these are the businesses that show up...</p>
+            </div>
+
+            <!-- Not There Banner -->
+            <div class="not-there-banner">
+                <h3>🍕 You're Not There! 🍕</h3>
+            </div>
+
+            <!-- One-Time Offer Section -->
+            <div class="offer-section">
+                <h2>🎯 Here's Our Offer</h2>
+
+                <div class="price-comparison">
+                    <span class="original-price">Normally $950</span>
+                    <span class="sale-price">$650</span>
+                    <span style="font-size: 16px;">One-Time Payment</span>
+                </div>
+
+                <p class="offer-details">
+                    We're looking for more <strong>case studies</strong> to display on our website, so we're offering this service at a reduced rate with the <strong>same guarantee</strong>.
+                </p>
+
+                <div class="guarantee-box">
+                    <p><strong>Our 90-Day Guarantee:</strong> If we don't get your business onto the first page of Google within 90 days, <strong>we will pay you back in full.</strong></p>
+                    <p style="margin-top: 10px;">Because if you're not happy, then we're not happy, and it doesn't make sense for either of us.</p>
+                    <p style="margin-top: 15px;">We've done this with multiple clients and <strong>not a single one has asked for a refund.</strong> In fact, the amount of new customers they gained from being on top of Google practically gave them their money back, plus more.</p>
+                </div>
+
+                <a href="https://buy.stripe.com/3cIfZgdIraB68RCfGS1VK01" class="cta-button">Get Started for $650</a>
+            </div>
+
+            <!-- Divider -->
+            <div class="divider">
+                <span>OR</span>
+            </div>
+
+            <!-- Continuity Offer Section -->
+            <div class="continuity-section">
+                <h2>Want Us to Handle EVERYTHING?</h2>
+                <p class="continuity-subtitle">Our Full-Service Marketing Package</p>
+                <p style="text-align: center; color: #1a5f2a; font-weight: bold; margin-bottom: 20px;">Cancel anytime. No contracts. No hassle.</p>
+
+                <div class="services-list">
+                    <h3>Here's What's Included:</h3>
+                    <ul>
+                        <li><strong>Get Your Page to the Top of Google</strong>: Dominate local search results</li>
+                        <li><strong>Daily Google Business Profile Posts</strong>: Keep your listing active and engaging</li>
+                        <li><strong>Full Social Media Management</strong>: We handle all your platforms</li>
+                        <li><strong>Content Creation</strong>: Professional posts, graphics, and copy</li>
+                        <li><strong>Paid Advertising Management</strong>: Strategic ads that convert</li>
+                        <li><strong>Monthly Sales Boost</strong>: Just like we do with our other clients</li>
+                        <li><strong>Priority Support</strong>: We're available to handle any business issues</li>
+                    </ul>
+                </div>
+
+                <div class="pricing-options">
+                    <div class="pricing-card">
+                        <div class="pricing-card-inner featured">
+                            <span class="best-value">Best Value</span>
+                            <h4>Monthly</h4>
+                            <div class="price">$1,750</div>
+                            <div class="period">per month</div>
+                            <a href="https://buy.stripe.com/3cI14mdIrgZu8RC7am1VK02" class="cta-button-small">Choose Monthly</a>
+                        </div>
+                    </div>
+                    <div class="pricing-card">
+                        <div class="pricing-card-inner">
+                            <h4>Weekly</h4>
+                            <div class="price">$400</div>
+                            <div class="period">per week</div>
+                            <a href="https://buy.stripe.com/3cI9AS7k324A2teeCO1VK03" class="cta-button-small">Choose Weekly</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <p style="text-align: center; font-size: 32px; color: #333; margin-top: 25px; font-style: italic;">
+                We made Favilla's NY Pizza <strong>$30,000 extra in revenue</strong> just in the month of June while you were there.
+            </p>
+
+            <p style="text-align: center; color: #000; font-size: 32px; margin-top: 30px;">
+                <strong>Questions?</strong> Simply reply to this email. We're here to help.
+            </p>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            <p>This email was sent to Genova's Pizza & Pasta</p>
+            <p>© 2024 Nardoni Digital. All rights reserved.</p>
+        </div>
+    </div>
+</body>
+</html>

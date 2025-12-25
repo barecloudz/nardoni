@@ -1,4 +1,5 @@
-import React, { useEffect } from 'react'
+import React from 'react'
+import { Helmet } from 'react-helmet-async'
 import { Link } from 'wouter'
 import { motion } from 'framer-motion'
 import Header from '../../components/layout/header'
@@ -8,13 +9,6 @@ import { Card, CardContent } from '../../components/ui/card'
 import { TrendingUp, Users, Calendar, BarChart, CheckCircle, ArrowRight } from 'lucide-react'
 
 const SocialMediaMarketing: React.FC = () => {
-  useEffect(() => {
-    document.title = 'Social Media Marketing - Instagram, Facebook & TikTok | Nardoni Digital'
-    const metaDescription = document.querySelector('meta[name="description"]')
-    if (metaDescription) {
-      metaDescription.setAttribute('content', 'Grow your local business with strategic social media marketing. Expert management of Instagram, Facebook, and TikTok to build your brand and engage customers.')
-    }
-  }, [])
   const benefits = [
     { icon: TrendingUp, title: 'Increased Brand Awareness', description: 'Build a strong online presence and reach more potential customers in your local area.', gradient: 'from-pink-500 to-rose-500' },
     { icon: Users, title: 'Engaged Community', description: 'Create meaningful connections with your audience through strategic content and engagement.', gradient: 'from-purple-500 to-pink-500' },
@@ -50,6 +44,13 @@ const SocialMediaMarketing: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-white">
+      <Helmet>
+        <title>Social Media Marketing - Instagram, Facebook & TikTok | Nardoni Digital</title>
+        <meta name="description" content="Grow your local business with strategic social media marketing. Expert management of Instagram, Facebook, and TikTok to build your brand and engage customers." />
+        <meta property="og:title" content="Social Media Marketing - Instagram, Facebook & TikTok | Nardoni Digital" />
+        <meta property="og:description" content="Grow your local business with strategic social media marketing. Expert management of Instagram, Facebook, and TikTok." />
+        <link rel="canonical" href="https://nardonidigital.com/services/social-media-marketing" />
+      </Helmet>
       <Header />
 
       <section className="pt-32 pb-16 bg-gradient-to-b from-pink-50 to-white">

@@ -1,4 +1,5 @@
 import React from 'react'
+import { Helmet } from 'react-helmet-async'
 import { useQuery } from '@tanstack/react-query'
 import { useRoute } from 'wouter'
 import { motion } from 'framer-motion'
@@ -106,8 +107,17 @@ const BlogPost: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-white">
+      <Helmet>
+        <title>{post.title} | Nardoni Digital Blog</title>
+        <meta name="description" content={post.excerpt} />
+        <meta property="og:title" content={post.title} />
+        <meta property="og:description" content={post.excerpt} />
+        <meta property="og:type" content="article" />
+        {post.featured_image && <meta property="og:image" content={post.featured_image} />}
+        <link rel="canonical" href={`https://nardonidigital.com/blog/${slug}`} />
+      </Helmet>
       <Header />
-      
+
       <main className="pt-24">
         {/* Hero Section */}
         <section className="py-12 bg-gradient-to-br from-gray-50 to-white">

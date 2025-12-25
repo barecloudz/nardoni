@@ -1,4 +1,5 @@
-import React, { useEffect } from 'react'
+import React from 'react'
+import { Helmet } from 'react-helmet-async'
 import { Link } from 'wouter'
 import { motion } from 'framer-motion'
 import Header from '../../components/layout/header'
@@ -8,13 +9,6 @@ import { Card, CardContent } from '../../components/ui/card'
 import { Laptop, Smartphone, TrendingUp, BarChart, CheckCircle, ArrowRight } from 'lucide-react'
 
 const WebsitesApps: React.FC = () => {
-  useEffect(() => {
-    document.title = 'Website & App Development - Custom Digital Solutions | Nardoni Digital'
-    const metaDescription = document.querySelector('meta[name="description"]')
-    if (metaDescription) {
-      metaDescription.setAttribute('content', 'Professional website and mobile app development for local businesses. Modern, responsive designs that convert visitors into customers. E-commerce, custom apps, and ongoing maintenance.')
-    }
-  }, [])
   const benefits = [
     { icon: Laptop, title: 'Professional Websites', description: 'Modern, responsive websites that convert visitors into customers and reflect your brand perfectly.', gradient: 'from-indigo-500 to-blue-500' },
     { icon: Smartphone, title: 'Mobile Apps', description: 'Native mobile applications that keep your customers engaged and provide seamless experiences.', gradient: 'from-purple-500 to-indigo-500' },
@@ -51,6 +45,13 @@ const WebsitesApps: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-white">
+      <Helmet>
+        <title>Website & App Development - Custom Digital Solutions | Nardoni Digital</title>
+        <meta name="description" content="Professional website and mobile app development for local businesses. Modern, responsive designs that convert visitors into customers. E-commerce, custom apps, and ongoing maintenance." />
+        <meta property="og:title" content="Website & App Development - Custom Digital Solutions | Nardoni Digital" />
+        <meta property="og:description" content="Professional website and mobile app development for local businesses. Modern, responsive designs that convert visitors into customers." />
+        <link rel="canonical" href="https://nardonidigital.com/services/websites-apps" />
+      </Helmet>
       <Header />
 
       <section className="pt-32 pb-16 bg-gradient-to-b from-indigo-50 to-white">

@@ -1,4 +1,5 @@
 import React from 'react'
+import { Helmet } from 'react-helmet-async'
 import { useQuery } from '@tanstack/react-query'
 import { Link } from 'wouter'
 import { motion } from 'framer-motion'
@@ -43,8 +44,15 @@ const BlogIndex: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-white">
+      <Helmet>
+        <title>Marketing Blog - Tips & Insights for Local Businesses | Nardoni Digital</title>
+        <meta name="description" content="Expert marketing tips, digital strategy insights, and business growth advice for local businesses. Stay updated with the latest trends in SEO, social media, and AI marketing." />
+        <meta property="og:title" content="Marketing Blog - Tips & Insights for Local Businesses | Nardoni Digital" />
+        <meta property="og:description" content="Expert marketing tips, digital strategy insights, and business growth advice for local businesses." />
+        <link rel="canonical" href="https://nardonidigital.com/blog" />
+      </Helmet>
       <Header />
-      
+
       <main className="pt-24">
         {/* Hero Section */}
         <section className="py-20 bg-gradient-to-br from-gray-50 to-white">
