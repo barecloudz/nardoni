@@ -16,6 +16,7 @@ import LoginPage from './pages/auth/login'
 import AdminDashboard from './pages/admin/dashboard'
 import AdminTeam from './pages/admin/team'
 import AdminOutreach from './pages/admin/outreach'
+import AdminMarketingEmail from './pages/admin/marketing-email'
 import AdminClients from './pages/admin/clients'
 import AdminMarketingPlans from './pages/admin/marketing-plans'
 import AdminInvoices from './pages/admin/invoices'
@@ -74,6 +75,11 @@ function App() {
           <Route path="/admin/outreach">
             <ProtectedRoute requiredRole="admin">
               <AdminOutreach />
+            </ProtectedRoute>
+          </Route>
+          <Route path="/admin/marketing-email">
+            <ProtectedRoute requiredRole="admin">
+              <AdminMarketingEmail />
             </ProtectedRoute>
           </Route>
           <Route path="/admin/clients">

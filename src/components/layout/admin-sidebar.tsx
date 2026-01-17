@@ -15,7 +15,8 @@ import {
   LogOut,
   Menu,
   X,
-  PhoneCall
+  PhoneCall,
+  Mail
 } from 'lucide-react'
 import { Button } from '../ui/button'
 import { authService } from '../../lib/auth'
@@ -47,6 +48,7 @@ const AdminSidebar: React.FC = () => {
     { icon: LayoutDashboard, label: 'Dashboard', href: '/admin/dashboard' },
     { icon: Users, label: 'Team', href: '/admin/team' },
     { icon: PhoneCall, label: 'Outreach', href: '/admin/outreach' },
+    { icon: Mail, label: 'Marketing Email', href: '/admin/marketing-email' },
     { icon: Users, label: 'Clients', href: '/admin/clients' },
     { icon: FileText, label: 'Marketing Plans', href: '/admin/marketing-plans' },
     { icon: DollarSign, label: 'Invoices', href: '/admin/invoices' },
