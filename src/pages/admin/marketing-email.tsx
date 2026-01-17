@@ -25,7 +25,11 @@ import {
   FileText,
   List,
   History,
-  RefreshCw
+  RefreshCw,
+  Inbox,
+  Eye,
+  Reply,
+  Archive
 } from 'lucide-react'
 
 interface MarketingContact {
@@ -76,14 +80,31 @@ interface ScheduledEmail {
   contact_lists?: { name: string } | null
 }
 
-type TabType = 'compose' | 'contacts' | 'lists' | 'scheduled' | 'history'
+interface ReceivedEmail {
+  id: number
+  from_email: string
+  from_name: string | null
+  to_email: string | null
+  subject: string | null
+  body_text: string | null
+  body_html: string | null
+  is_read: boolean
+  is_archived: boolean
+  received_at: string
+  created_at: string
+}
+
+type TabType = 'inbox' | 'compose' | 'contacts' | 'lists' | 'scheduled' | 'history'
 
 const AdminMarketingEmail: React.FC = () => {
   const queryClient = useQueryClient()
   const fileInputRef = useRef<HTMLInputElement>(null)
 
   // Tab state
-  const [activeTab, setActiveTab] = useState<TabType>('compose')
+  const [activeTab, setActiveTab] = useState<TabType>('inbox')
+
+  // Inbox state
+  const [selectedInboxEmail, setSelectedInboxEmail] = useState<ReceivedEmail | null>(null)
 
   // Email form state
   const [emailForm, setEmailForm] = useState({
@@ -185,6 +206,24 @@ const AdminMarketingEmail: React.FC = () => {
     }
   })
 
+  // Fetch received emails (inbox)
+  const { data: receivedEmails = [], isLoading: inboxLoading, refetch: refetchInbox } = useQuery({
+    queryKey: ['received-emails'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('received_emails')
+        .select('*')
+        .eq('is_archived', false)
+        .order('received_at', { ascending: false })
+        .limit(100)
+      if (error) throw error
+      return (data || []) as ReceivedEmail[]
+    }
+  })
+
+  // Count unread emails
+  const unreadCount = receivedEmails.filter(e => !e.is_read).length
+
   // Add contact mutation
   const addContactMutation = useMutation({
     mutationFn: async (contactData: typeof newContact) => {
@@ -270,6 +309,52 @@ const AdminMarketingEmail: React.FC = () => {
       queryClient.invalidateQueries({ queryKey: ['scheduled-emails'] })
       setEmailSuccess('Scheduled email cancelled')
       setTimeout(() => setEmailSuccess(''), 3000)
+    }
+  })
+
+  // Mark inbox email as read
+  const markAsReadMutation = useMutation({
+    mutationFn: async (id: number) => {
+      const { error } = await supabase
+        .from('received_emails')
+        .update({ is_read: true })
+        .eq('id', id)
+      if (error) throw error
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['received-emails'] })
+    }
+  })
+
+  // Archive inbox email
+  const archiveEmailMutation = useMutation({
+    mutationFn: async (id: number) => {
+      const { error } = await supabase
+        .from('received_emails')
+        .update({ is_archived: true })
+        .eq('id', id)
+      if (error) throw error
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['received-emails'] })
+      setSelectedInboxEmail(null)
+      setEmailSuccess('Email archived')
+      setTimeout(() => setEmailSuccess(''), 3000)
+    }
+  })
+
+  // Delete inbox email
+  const deleteInboxEmailMutation = useMutation({
+    mutationFn: async (id: number) => {
+      const { error } = await supabase
+        .from('received_emails')
+        .delete()
+        .eq('id', id)
+      if (error) throw error
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['received-emails'] })
+      setSelectedInboxEmail(null)
     }
   })
 
@@ -639,6 +724,7 @@ const AdminMarketingEmail: React.FC = () => {
   }
 
   const tabs = [
+    { id: 'inbox' as TabType, label: 'Inbox', icon: Inbox },
     { id: 'compose' as TabType, label: 'Compose', icon: Mail },
     { id: 'contacts' as TabType, label: 'Contacts', icon: Users },
     { id: 'lists' as TabType, label: 'Lists', icon: List },
@@ -699,28 +785,220 @@ const AdminMarketingEmail: React.FC = () => {
           )}
 
           {/* Tabs */}
-          <div className="flex space-x-2 border-b border-gray-200">
-            {tabs.map((tab) => {
-              const Icon = tab.icon
-              return (
-                <button
-                  key={tab.id}
-                  onClick={() => setActiveTab(tab.id)}
-                  className={`flex items-center space-x-2 px-4 py-3 border-b-2 transition-colors ${
-                    activeTab === tab.id
-                      ? 'border-[#35c677] text-[#35c677]'
-                      : 'border-transparent text-gray-600 hover:text-gray-900'
-                  }`}
-                >
-                  <Icon className="h-4 w-4" />
-                  <span>{tab.label}</span>
-                  {tab.id === 'scheduled' && scheduledEmails.length > 0 && (
-                    <Badge variant="secondary">{scheduledEmails.length}</Badge>
-                  )}
-                </button>
-              )
-            })}
+          <div className="border-b border-gray-200 -mx-4 px-4 sm:mx-0 sm:px-0">
+            <div className="flex space-x-1 overflow-x-auto scrollbar-hide pb-px">
+              {tabs.map((tab) => {
+                const Icon = tab.icon
+                const isActive = activeTab === tab.id
+                return (
+                  <button
+                    key={tab.id}
+                    onClick={() => setActiveTab(tab.id)}
+                    className={`flex items-center space-x-2 px-3 sm:px-4 py-3 border-b-2 transition-all duration-150 whitespace-nowrap flex-shrink-0 ${
+                      isActive
+                        ? 'border-[#35c677] text-[#35c677] bg-[#35c677]/5'
+                        : 'border-transparent text-gray-500 hover:text-gray-700 hover:bg-gray-50'
+                    }`}
+                  >
+                    <Icon className={`h-4 w-4 ${isActive ? 'text-[#35c677]' : ''}`} />
+                    <span className="text-sm font-medium">{tab.label}</span>
+                    {tab.id === 'inbox' && unreadCount > 0 && (
+                      <Badge variant="destructive" className="ml-1 h-5 min-w-[20px] text-xs">{unreadCount}</Badge>
+                    )}
+                    {tab.id === 'scheduled' && scheduledEmails.length > 0 && (
+                      <Badge variant="secondary" className="ml-1 h-5 min-w-[20px] text-xs">{scheduledEmails.length}</Badge>
+                    )}
+                  </button>
+                )
+              })}
+            </div>
           </div>
+
+          {/* Inbox Tab */}
+          {activeTab === 'inbox' && (
+            <div className="flex flex-col lg:flex-row gap-4 lg:gap-6 h-[calc(100vh-280px)] min-h-[500px]">
+              {/* Email List - Collapsible on mobile when email selected */}
+              <div className={`${selectedInboxEmail ? 'hidden lg:block' : 'block'} w-full lg:w-80 xl:w-96 flex-shrink-0`}>
+                <Card className="h-full flex flex-col">
+                  <CardHeader className="flex-shrink-0 border-b bg-gray-50/50">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center space-x-2">
+                        <Inbox className="h-5 w-5 text-[#35c677]" />
+                        <CardTitle className="text-lg">Inbox</CardTitle>
+                        {unreadCount > 0 && (
+                          <Badge variant="destructive" className="text-xs">{unreadCount} new</Badge>
+                        )}
+                      </div>
+                      <Button variant="ghost" size="sm" onClick={() => refetchInbox()} className="h-8 w-8 p-0">
+                        <RefreshCw className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  </CardHeader>
+                  <CardContent className="p-0 flex-1 overflow-hidden">
+                    {inboxLoading ? (
+                      <div className="flex items-center justify-center h-32">
+                        <RefreshCw className="h-6 w-6 animate-spin text-gray-400" />
+                      </div>
+                    ) : receivedEmails.length === 0 ? (
+                      <div className="flex flex-col items-center justify-center h-48 text-gray-500">
+                        <Inbox className="h-12 w-12 text-gray-300 mb-3" />
+                        <p className="text-sm">No emails yet</p>
+                        <p className="text-xs text-gray-400 mt-1">Replies will appear here</p>
+                      </div>
+                    ) : (
+                      <div className="divide-y overflow-y-auto h-full">
+                        {receivedEmails.map((email) => (
+                          <div
+                            key={email.id}
+                            onClick={() => {
+                              setSelectedInboxEmail(email)
+                              if (!email.is_read) {
+                                markAsReadMutation.mutate(email.id)
+                              }
+                            }}
+                            className={`p-4 cursor-pointer transition-all duration-150 border-l-4 ${
+                              selectedInboxEmail?.id === email.id
+                                ? 'bg-[#35c677]/10 border-l-[#35c677]'
+                                : !email.is_read
+                                  ? 'bg-blue-50/70 border-l-blue-400 hover:bg-blue-50'
+                                  : 'border-l-transparent hover:bg-gray-50'
+                            }`}
+                          >
+                            <div className="flex items-start gap-3">
+                              <div className="flex-shrink-0 w-10 h-10 rounded-full bg-gradient-to-br from-[#35c677] to-[#2aa35f] flex items-center justify-center text-white font-semibold text-sm">
+                                {(email.from_name || email.from_email).charAt(0).toUpperCase()}
+                              </div>
+                              <div className="flex-1 min-w-0">
+                                <div className="flex items-center justify-between gap-2">
+                                  <p className={`text-sm truncate ${!email.is_read ? 'font-semibold text-gray-900' : 'text-gray-700'}`}>
+                                    {email.from_name || email.from_email.split('@')[0]}
+                                  </p>
+                                  <span className="text-xs text-gray-400 flex-shrink-0">
+                                    {new Date(email.received_at).toLocaleDateString()}
+                                  </span>
+                                </div>
+                                <p className={`text-sm truncate mt-0.5 ${!email.is_read ? 'font-medium text-gray-800' : 'text-gray-600'}`}>
+                                  {email.subject || '(No subject)'}
+                                </p>
+                                <p className="text-xs text-gray-500 truncate mt-1 leading-relaxed">
+                                  {email.body_text?.substring(0, 80) || 'No preview available'}
+                                </p>
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </CardContent>
+                </Card>
+              </div>
+
+              {/* Email Detail */}
+              <div className={`${selectedInboxEmail ? 'block' : 'hidden lg:block'} flex-1 min-w-0`}>
+                <Card className="h-full flex flex-col">
+                  {selectedInboxEmail ? (
+                    <>
+                      {/* Mobile back button */}
+                      <div className="lg:hidden p-3 border-b bg-gray-50">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => setSelectedInboxEmail(null)}
+                          className="text-gray-600"
+                        >
+                          <X className="h-4 w-4 mr-1" />
+                          Back to Inbox
+                        </Button>
+                      </div>
+
+                      {/* Email Header */}
+                      <div className="p-4 lg:p-6 border-b bg-gray-50/50 flex-shrink-0">
+                        <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
+                          <div className="flex items-start gap-4">
+                            <div className="hidden sm:flex flex-shrink-0 w-12 h-12 rounded-full bg-gradient-to-br from-[#35c677] to-[#2aa35f] items-center justify-center text-white font-semibold text-lg">
+                              {(selectedInboxEmail.from_name || selectedInboxEmail.from_email).charAt(0).toUpperCase()}
+                            </div>
+                            <div>
+                              <h2 className="text-lg lg:text-xl font-semibold text-gray-900 leading-tight">
+                                {selectedInboxEmail.subject || '(No subject)'}
+                              </h2>
+                              <p className="text-sm text-gray-600 mt-1">
+                                <span className="font-medium">{selectedInboxEmail.from_name || 'Unknown'}</span>
+                                <span className="text-gray-400 ml-1">&lt;{selectedInboxEmail.from_email}&gt;</span>
+                              </p>
+                              <p className="text-xs text-gray-500 mt-1">
+                                {new Date(selectedInboxEmail.received_at).toLocaleString()}
+                              </p>
+                            </div>
+                          </div>
+                          <div className="flex items-center gap-2 flex-shrink-0">
+                            <Button
+                              size="sm"
+                              onClick={() => {
+                                setEmailForm({
+                                  to: selectedInboxEmail.from_email,
+                                  subject: `Re: ${selectedInboxEmail.subject || ''}`,
+                                  body: `\n\n---\nOn ${new Date(selectedInboxEmail.received_at).toLocaleString()}, ${selectedInboxEmail.from_name || selectedInboxEmail.from_email} wrote:\n\n${selectedInboxEmail.body_text || ''}`,
+                                  useHtmlTemplate: false
+                                })
+                                setActiveTab('compose')
+                              }}
+                              className="bg-[#35c677] hover:bg-[#2aa35f]"
+                            >
+                              <Reply className="h-4 w-4 mr-1" />
+                              <span className="hidden sm:inline">Reply</span>
+                            </Button>
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => archiveEmailMutation.mutate(selectedInboxEmail.id)}
+                            >
+                              <Archive className="h-4 w-4 sm:mr-1" />
+                              <span className="hidden sm:inline">Archive</span>
+                            </Button>
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => deleteInboxEmailMutation.mutate(selectedInboxEmail.id)}
+                              className="text-red-500 hover:text-red-600 hover:bg-red-50"
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Email Body */}
+                      <div className="flex-1 overflow-y-auto p-4 lg:p-6">
+                        <div className="prose prose-sm max-w-none">
+                          {selectedInboxEmail.body_html ? (
+                            <div
+                              dangerouslySetInnerHTML={{ __html: selectedInboxEmail.body_html }}
+                              className="[&_img]:max-w-full [&_a]:text-[#35c677]"
+                            />
+                          ) : (
+                            <pre className="whitespace-pre-wrap font-sans text-sm text-gray-700 leading-relaxed bg-transparent p-0 m-0">
+                              {selectedInboxEmail.body_text}
+                            </pre>
+                          )}
+                        </div>
+                      </div>
+                    </>
+                  ) : (
+                    <div className="flex-1 flex items-center justify-center">
+                      <div className="text-center p-8">
+                        <div className="w-20 h-20 rounded-full bg-gray-100 flex items-center justify-center mx-auto mb-4">
+                          <Mail className="h-10 w-10 text-gray-300" />
+                        </div>
+                        <h3 className="text-lg font-medium text-gray-700 mb-1">No email selected</h3>
+                        <p className="text-sm text-gray-500">Choose an email from the inbox to read</p>
+                      </div>
+                    </div>
+                  )}
+                </Card>
+              </div>
+            </div>
+          )}
 
           {/* Compose Tab */}
           {activeTab === 'compose' && (
