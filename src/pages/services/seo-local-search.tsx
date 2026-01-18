@@ -395,7 +395,6 @@ const SEOLocalSearch: React.FC = () => {
                 </Button>
               </motion.div>
             </Link>
-            <p className="text-white/80 text-lg">Call <a href="tel:8039774285" className="text-white hover:underline font-semibold">(803) 977-4285</a></p>
           </motion.div>
         </div>
       </section>

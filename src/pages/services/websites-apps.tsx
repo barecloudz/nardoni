@@ -60,9 +60,8 @@ const WebsitesApps: React.FC = () => {
             <p className="text-lg text-indigo-600 font-semibold mb-4">Websites & Apps</p>
             <h1 className="text-5xl md:text-6xl font-bold text-[#191919] mb-6">Build Your Digital<br />Presence</h1>
             <p className="text-xl text-gray-600 mb-8">Professional websites and mobile apps that convert visitors into customers, drive business growth, and provide seamless digital experiences.</p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link href="/book-a-call"><Button size="lg" className="bg-indigo-600 hover:bg-indigo-700 text-white px-8 py-6 text-lg">Get Started</Button></Link>
-              <Button size="lg" variant="outline" className="border-indigo-600 text-indigo-600 hover:bg-indigo-50 px-8 py-6 text-lg">Call Now</Button>
+            <div className="flex justify-center">
+              <Link href="/book-a-call"><Button size="lg" className="bg-indigo-600 hover:bg-indigo-700 text-white px-10 py-6 text-lg rounded-full">Get Started<ArrowRight className="ml-2 h-5 w-5" /></Button></Link>
             </div>
           </motion.div>
         </div>
@@ -161,8 +160,7 @@ const WebsitesApps: React.FC = () => {
           <motion.div className="text-center max-w-3xl mx-auto" initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
             <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">Ready to Build Your Digital Presence?</h2>
             <p className="text-xl text-indigo-100 mb-8">Join hundreds of local businesses that have transformed their online presence with our development expertise.</p>
-            <Link href="/book-a-call"><Button size="lg" className="text-lg px-10 py-6 h-auto bg-white text-indigo-600 hover:bg-gray-100 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 mb-6"><span>Get Started Today</span><ArrowRight className="ml-2 h-5 w-5" /></Button></Link>
-            <p className="text-indigo-200">Call <a href="tel:8039774285" className="text-white hover:underline font-semibold">(803) 977-4285</a></p>
+            <Link href="/book-a-call"><Button size="lg" className="text-lg px-10 py-6 h-auto bg-white text-indigo-600 hover:bg-gray-100 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 rounded-full"><span>Get Started Today</span><ArrowRight className="ml-2 h-5 w-5" /></Button></Link>
           </motion.div>
         </div>
       </section>

@@ -115,16 +115,13 @@ const AIPhoneAgents: React.FC = () => {
             <p className="text-xl text-gray-600 mb-8">
               Transform your phone system with intelligent AI agents that answer calls 24/7, handle orders, schedule appointments, and provide customer support automatically.
             </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <div className="flex justify-center">
               <Link href="/book-a-call">
-                <Button size="lg" className="bg-purple-600 hover:bg-purple-700 text-white px-8 py-6 text-lg">
+                <Button size="lg" className="bg-purple-600 hover:bg-purple-700 text-white px-10 py-6 text-lg rounded-full">
                   Get Started
+                  <ArrowRight className="ml-2 h-5 w-5" />
                 </Button>
               </Link>
-              <Button size="lg" variant="outline" className="border-purple-600 text-purple-600 hover:bg-purple-50 px-8 py-6 text-lg">
-                <Phone className="mr-2 h-5 w-5" />
-                Call Now
-              </Button>
             </div>
           </motion.div>
         </div>
@@ -280,15 +277,12 @@ const AIPhoneAgents: React.FC = () => {
             <Link href="/book-a-call">
               <Button
                 size="lg"
-                className="text-lg px-10 py-6 h-auto bg-white text-purple-600 hover:bg-gray-100 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 mb-6"
+                className="text-lg px-10 py-6 h-auto bg-white text-purple-600 hover:bg-gray-100 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 rounded-full"
               >
                 <span>Get Started Today</span>
                 <ArrowRight className="ml-2 h-5 w-5" />
               </Button>
             </Link>
-            <p className="text-purple-200">
-              Call <a href="tel:8039774285" className="text-white hover:underline font-semibold">(803) 977-4285</a>
-            </p>
           </motion.div>
         </div>
       </section>

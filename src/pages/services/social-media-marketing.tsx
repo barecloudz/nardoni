@@ -59,9 +59,8 @@ const SocialMediaMarketing: React.FC = () => {
             <p className="text-lg text-pink-600 font-semibold mb-4">Social Media Marketing</p>
             <h1 className="text-5xl md:text-6xl font-bold text-[#191919] mb-6">Build Your Brand<br />on Social Media</h1>
             <p className="text-xl text-gray-600 mb-8">Connect with your local community through strategic social media marketing that builds brand awareness, drives engagement, and converts followers into loyal customers.</p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link href="/book-a-call"><Button size="lg" className="bg-pink-600 hover:bg-pink-700 text-white px-8 py-6 text-lg">Get Started</Button></Link>
-              <Button size="lg" variant="outline" className="border-pink-600 text-pink-600 hover:bg-pink-50 px-8 py-6 text-lg">Call Now</Button>
+            <div className="flex justify-center">
+              <Link href="/book-a-call"><Button size="lg" className="bg-pink-600 hover:bg-pink-700 text-white px-10 py-6 text-lg rounded-full">Get Started<ArrowRight className="ml-2 h-5 w-5" /></Button></Link>
             </div>
           </motion.div>
         </div>
@@ -159,8 +158,7 @@ const SocialMediaMarketing: React.FC = () => {
           <motion.div className="text-center max-w-3xl mx-auto" initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
             <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">Ready to Grow Your Social Media Presence?</h2>
             <p className="text-xl text-pink-100 mb-8">Join hundreds of local businesses that have transformed their online presence with our social media expertise.</p>
-            <Link href="/book-a-call"><Button size="lg" className="text-lg px-10 py-6 h-auto bg-white text-pink-600 hover:bg-gray-100 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 mb-6"><span>Get Started Today</span><ArrowRight className="ml-2 h-5 w-5" /></Button></Link>
-            <p className="text-pink-200">Call <a href="tel:8039774285" className="text-white hover:underline font-semibold">(803) 977-4285</a></p>
+            <Link href="/book-a-call"><Button size="lg" className="text-lg px-10 py-6 h-auto bg-white text-pink-600 hover:bg-gray-100 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 rounded-full"><span>Get Started Today</span><ArrowRight className="ml-2 h-5 w-5" /></Button></Link>
           </motion.div>
         </div>
       </section>

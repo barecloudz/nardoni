@@ -59,9 +59,8 @@ const PaidAdvertising: React.FC = () => {
             <p className="text-lg text-orange-600 font-semibold mb-4">Paid Advertising</p>
             <h1 className="text-5xl md:text-6xl font-bold text-[#191919] mb-6">Get Instant<br />Results</h1>
             <p className="text-xl text-gray-600 mb-8">Drive immediate traffic and sales with expertly managed paid advertising campaigns on Meta Ads and Google Ads that target your ideal customers.</p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link href="/book-a-call"><Button size="lg" className="bg-orange-600 hover:bg-orange-700 text-white px-8 py-6 text-lg">Get Started</Button></Link>
-              <Button size="lg" variant="outline" className="border-orange-600 text-orange-600 hover:bg-orange-50 px-8 py-6 text-lg">Call Now</Button>
+            <div className="flex justify-center">
+              <Link href="/book-a-call"><Button size="lg" className="bg-orange-600 hover:bg-orange-700 text-white px-10 py-6 text-lg rounded-full">Get Started<ArrowRight className="ml-2 h-5 w-5" /></Button></Link>
             </div>
           </motion.div>
         </div>
@@ -160,8 +159,7 @@ const PaidAdvertising: React.FC = () => {
           <motion.div className="text-center max-w-3xl mx-auto" initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
             <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">Ready to Get Instant Results?</h2>
             <p className="text-xl text-orange-100 mb-8">Join hundreds of local businesses that have increased their revenue with our paid advertising expertise.</p>
-            <Link href="/book-a-call"><Button size="lg" className="text-lg px-10 py-6 h-auto bg-white text-orange-600 hover:bg-gray-100 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 mb-6"><span>Get Started Today</span><ArrowRight className="ml-2 h-5 w-5" /></Button></Link>
-            <p className="text-orange-200">Call <a href="tel:8039774285" className="text-white hover:underline font-semibold">(803) 977-4285</a></p>
+            <Link href="/book-a-call"><Button size="lg" className="text-lg px-10 py-6 h-auto bg-white text-orange-600 hover:bg-gray-100 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 rounded-full"><span>Get Started Today</span><ArrowRight className="ml-2 h-5 w-5" /></Button></Link>
           </motion.div>
         </div>
       </section>

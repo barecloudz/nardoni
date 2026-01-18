@@ -254,9 +254,6 @@ const AICustomerSupport: React.FC = () => {
                 <ArrowRight className="ml-2 h-5 w-5" />
               </Button>
             </Link>
-            <p className="text-gray-400">
-              Call <a href="tel:8039774285" className="text-[#35c677] hover:underline">(803) 977-4285</a>
-            </p>
           </motion.div>
         </div>
       </section>
