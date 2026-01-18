@@ -31,7 +31,8 @@ import {
   ChevronLeft,
   Eye,
   MoreVertical,
-  Search
+  Search,
+  Pencil
 } from 'lucide-react'
 
 interface MarketingContact {
@@ -43,6 +44,7 @@ interface MarketingContact {
   phone: string | null
   city: string | null
   notes: string | null
+  show_in_contacts: boolean | null
   created_at: string
 }
 
@@ -152,6 +154,9 @@ const AdminMarketingEmail: React.FC = () => {
   const [listMembersLoading, setListMembersLoading] = useState(false)
   const [isAddToListModalOpen, setIsAddToListModalOpen] = useState(false)
   const [addToListSearch, setAddToListSearch] = useState('')
+  const [isEditContactModalOpen, setIsEditContactModalOpen] = useState(false)
+  const [editingContact, setEditingContact] = useState<MarketingContact | null>(null)
+  const [selectedContactIds, setSelectedContactIds] = useState<Set<number>>(new Set())
 
   // New contact form
   const [newContact, setNewContact] = useState({
@@ -170,13 +175,14 @@ const AdminMarketingEmail: React.FC = () => {
     description: ''
   })
 
-  // Fetch marketing contacts
+  // Fetch marketing contacts (only show contacts not imported directly to lists)
   const { data: contacts = [], isLoading: contactsLoading } = useQuery({
     queryKey: ['marketing-contacts'],
     queryFn: async () => {
       const { data, error } = await supabase
         .from('marketing_contacts')
         .select('*')
+        .or('show_in_contacts.is.null,show_in_contacts.eq.true')
         .order('created_at', { ascending: false })
       if (error) throw error
       return (data || []) as MarketingContact[]
@@ -274,6 +280,70 @@ const AdminMarketingEmail: React.FC = () => {
       queryClient.invalidateQueries({ queryKey: ['marketing-contacts'] })
     }
   })
+
+  // Edit contact mutation
+  const editContactMutation = useMutation({
+    mutationFn: async (contact: MarketingContact) => {
+      const { error } = await supabase
+        .from('marketing_contacts')
+        .update({
+          email: contact.email,
+          name: contact.name,
+          company: contact.company,
+          role: contact.role,
+          phone: contact.phone,
+          city: contact.city,
+          notes: contact.notes
+        })
+        .eq('id', contact.id)
+      if (error) throw error
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['marketing-contacts'] })
+      setIsEditContactModalOpen(false)
+      setEditingContact(null)
+      showSuccess('Contact updated')
+    }
+  })
+
+  // Bulk delete contacts
+  const bulkDeleteContacts = async () => {
+    if (selectedContactIds.size === 0) return
+    const ids = Array.from(selectedContactIds)
+    const { error } = await supabase
+      .from('marketing_contacts')
+      .delete()
+      .in('id', ids)
+    if (error) {
+      setEmailError('Failed to delete contacts')
+      return
+    }
+    queryClient.invalidateQueries({ queryKey: ['marketing-contacts'] })
+    setSelectedContactIds(new Set())
+    showSuccess(`Deleted ${ids.length} contacts`)
+  }
+
+  // Toggle contact selection
+  const toggleContactSelection = (id: number) => {
+    setSelectedContactIds(prev => {
+      const next = new Set(prev)
+      if (next.has(id)) {
+        next.delete(id)
+      } else {
+        next.add(id)
+      }
+      return next
+    })
+  }
+
+  // Select all contacts
+  const selectAllContacts = () => {
+    if (selectedContactIds.size === contacts.length) {
+      setSelectedContactIds(new Set())
+    } else {
+      setSelectedContactIds(new Set(contacts.map(c => c.id)))
+    }
+  }
 
   // Create list mutation
   const createListMutation = useMutation({
@@ -820,7 +890,8 @@ const AdminMarketingEmail: React.FC = () => {
             company: companyIdx !== -1 ? values[companyIdx] || null : null,
             role: roleIdx !== -1 ? values[roleIdx] || null : null,
             phone: phoneIdx !== -1 ? values[phoneIdx] || null : null,
-            city: cityIdx !== -1 ? values[cityIdx] || null : null
+            city: cityIdx !== -1 ? values[cityIdx] || null : null,
+            show_in_contacts: !importTargetListId // false if importing to a list, true otherwise
           })
         }
       }
@@ -1540,12 +1611,21 @@ const AdminMarketingEmail: React.FC = () => {
             <div className="h-full overflow-y-auto p-4 lg:p-6">
               <div className="max-w-5xl mx-auto">
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
-                  <h2 className="text-lg font-semibold">{contacts.length} Contacts</h2>
+                  <div className="flex items-center gap-3">
+                    <h2 className="text-lg font-semibold">{contacts.length} Contacts</h2>
+                    {selectedContactIds.size > 0 && (
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={bulkDeleteContacts}
+                        className="text-red-500 hover:bg-red-50"
+                      >
+                        <Trash2 className="h-4 w-4 mr-1" />
+                        Delete {selectedContactIds.size}
+                      </Button>
+                    )}
+                  </div>
                   <div className="flex gap-2">
-                    <Button variant="outline" size="sm" onClick={() => setIsImportModalOpen(true)}>
-                      <Upload className="h-4 w-4 mr-2" />
-                      Import
-                    </Button>
                     <Button size="sm" onClick={() => setIsAddContactModalOpen(true)} className="bg-[#35c677] hover:bg-[#2aa35f]">
                       <Plus className="h-4 w-4 mr-2" />
                       Add
@@ -1569,25 +1649,53 @@ const AdminMarketingEmail: React.FC = () => {
                       <table className="w-full text-sm">
                         <thead className="bg-gray-50 border-b">
                           <tr>
+                            <th className="py-3 px-4 w-10">
+                              <input
+                                type="checkbox"
+                                checked={selectedContactIds.size === contacts.length && contacts.length > 0}
+                                onChange={selectAllContacts}
+                                className="rounded"
+                              />
+                            </th>
                             <th className="text-left py-3 px-4 font-medium">Email</th>
                             <th className="text-left py-3 px-4 font-medium hidden sm:table-cell">Name</th>
                             <th className="text-left py-3 px-4 font-medium hidden md:table-cell">Company</th>
+                            <th className="text-left py-3 px-4 font-medium hidden lg:table-cell">City</th>
                             <th className="text-right py-3 px-4 font-medium">Actions</th>
                           </tr>
                         </thead>
                         <tbody>
                           {contacts.map((contact) => (
-                            <tr key={contact.id} className="border-b hover:bg-gray-50">
+                            <tr key={contact.id} className={`border-b hover:bg-gray-50 ${selectedContactIds.has(contact.id) ? 'bg-blue-50' : ''}`}>
+                              <td className="py-3 px-4">
+                                <input
+                                  type="checkbox"
+                                  checked={selectedContactIds.has(contact.id)}
+                                  onChange={() => toggleContactSelection(contact.id)}
+                                  className="rounded"
+                                />
+                              </td>
                               <td className="py-3 px-4">
                                 <div>{contact.email}</div>
                                 <div className="sm:hidden text-xs text-gray-500">{contact.name || '-'}</div>
                               </td>
                               <td className="py-3 px-4 hidden sm:table-cell">{contact.name || '-'}</td>
                               <td className="py-3 px-4 hidden md:table-cell">{contact.company || '-'}</td>
+                              <td className="py-3 px-4 hidden lg:table-cell">{contact.city || '-'}</td>
                               <td className="py-3 px-4 text-right">
-                                <div className="flex justify-end gap-2">
+                                <div className="flex justify-end gap-1">
                                   <Button
-                                    variant="outline"
+                                    variant="ghost"
+                                    size="sm"
+                                    onClick={() => {
+                                      setEditingContact(contact)
+                                      setIsEditContactModalOpen(true)
+                                    }}
+                                  >
+                                    <Pencil className="h-4 w-4" />
+                                  </Button>
+                                  <Button
+                                    variant="ghost"
                                     size="sm"
                                     onClick={() => {
                                       setEmailForm({ ...emailForm, to: contact.email })
@@ -1597,7 +1705,7 @@ const AdminMarketingEmail: React.FC = () => {
                                   >
                                     <Mail className="h-4 w-4" />
                                   </Button>
-                                  <Button variant="outline" size="sm" onClick={() => deleteContactMutation.mutate(contact.id)}>
+                                  <Button variant="ghost" size="sm" onClick={() => deleteContactMutation.mutate(contact.id)}>
                                     <Trash2 className="h-4 w-4 text-red-500" />
                                   </Button>
                                 </div>
@@ -1860,6 +1968,80 @@ const AdminMarketingEmail: React.FC = () => {
                 {addContactMutation.isPending ? 'Adding...' : 'Add Contact'}
               </Button>
             </form>
+          </DialogContent>
+        </Dialog>
+
+        {/* Edit Contact Modal */}
+        <Dialog open={isEditContactModalOpen} onOpenChange={(open) => {
+          setIsEditContactModalOpen(open)
+          if (!open) setEditingContact(null)
+        }}>
+          <DialogContent className="max-w-md">
+            <DialogHeader>
+              <DialogTitle>Edit Contact</DialogTitle>
+            </DialogHeader>
+            {editingContact && (
+              <form
+                onSubmit={(e) => {
+                  e.preventDefault()
+                  if (!editingContact.email) return
+                  editContactMutation.mutate(editingContact)
+                }}
+                className="space-y-4 mt-4"
+              >
+                <div>
+                  <label className="text-sm font-medium mb-1.5 block">Email *</label>
+                  <Input
+                    type="email"
+                    value={editingContact.email}
+                    onChange={(e) => setEditingContact({ ...editingContact, email: e.target.value })}
+                    required
+                  />
+                </div>
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="text-sm font-medium mb-1.5 block">Name</label>
+                    <Input
+                      value={editingContact.name || ''}
+                      onChange={(e) => setEditingContact({ ...editingContact, name: e.target.value })}
+                    />
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium mb-1.5 block">Company</label>
+                    <Input
+                      value={editingContact.company || ''}
+                      onChange={(e) => setEditingContact({ ...editingContact, company: e.target.value })}
+                    />
+                  </div>
+                </div>
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="text-sm font-medium mb-1.5 block">Role</label>
+                    <Input
+                      value={editingContact.role || ''}
+                      onChange={(e) => setEditingContact({ ...editingContact, role: e.target.value })}
+                    />
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium mb-1.5 block">City</label>
+                    <Input
+                      value={editingContact.city || ''}
+                      onChange={(e) => setEditingContact({ ...editingContact, city: e.target.value })}
+                    />
+                  </div>
+                </div>
+                <div>
+                  <label className="text-sm font-medium mb-1.5 block">Phone</label>
+                  <Input
+                    value={editingContact.phone || ''}
+                    onChange={(e) => setEditingContact({ ...editingContact, phone: e.target.value })}
+                  />
+                </div>
+                <Button type="submit" className="w-full bg-[#35c677] hover:bg-[#2aa35f]" disabled={editContactMutation.isPending}>
+                  {editContactMutation.isPending ? 'Saving...' : 'Save Changes'}
+                </Button>
+              </form>
+            )}
           </DialogContent>
         </Dialog>
 

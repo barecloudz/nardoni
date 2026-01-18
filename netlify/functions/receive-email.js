@@ -97,6 +97,9 @@ export async function handler(event, context) {
 
     console.log('Received inbound email webhook:', JSON.stringify(payload, null, 2));
 
+    // Resend webhook wraps email data inside payload.data
+    const emailData = payload.data || payload;
+
     // Resend inbound email format
     // https://resend.com/docs/dashboard/webhooks/event-types#email-received
     const {
@@ -106,8 +109,9 @@ export async function handler(event, context) {
       text,
       html,
       headers: emailHeaders,
-      attachments
-    } = payload;
+      attachments,
+      message_id: payloadMessageId
+    } = emailData;
 
     // Parse from field (could be "Name <email>" or just "email")
     let fromEmail = from;
@@ -124,8 +128,8 @@ export async function handler(event, context) {
     // Get the first "to" address
     const toEmail = Array.isArray(to) ? to[0] : to;
 
-    // Extract Message-ID for threading support
-    const messageId = emailHeaders?.['message-id'] || emailHeaders?.['Message-ID'] || null;
+    // Extract Message-ID for threading support (check both payload and headers)
+    const messageId = payloadMessageId || emailHeaders?.['message-id'] || emailHeaders?.['Message-ID'] || null;
     const inReplyTo = emailHeaders?.['in-reply-to'] || emailHeaders?.['In-Reply-To'] || null;
     const referencesHeader = emailHeaders?.['references'] || emailHeaders?.['References'] || null;
 
@@ -139,11 +143,8 @@ export async function handler(event, context) {
         subject: subject || '(No subject)',
         body_text: text || '',
         body_html: html || '',
-        headers: emailHeaders || {},
         message_id: messageId,
         in_reply_to: inReplyTo,
-        references: referencesHeader,
-        attachments: attachments || [],
         is_read: false,
         is_archived: false,
         received_at: new Date().toISOString()
