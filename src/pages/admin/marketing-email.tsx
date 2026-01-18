@@ -154,6 +154,8 @@ const AdminMarketingEmail: React.FC = () => {
   const [listMembersLoading, setListMembersLoading] = useState(false)
   const [isAddToListModalOpen, setIsAddToListModalOpen] = useState(false)
   const [addToListSearch, setAddToListSearch] = useState('')
+  const [addToListMode, setAddToListMode] = useState<'search' | 'new'>('search')
+  const [newListContact, setNewListContact] = useState({ email: '', name: '', company: '', city: '' })
   const [isEditContactModalOpen, setIsEditContactModalOpen] = useState(false)
   const [editingContact, setEditingContact] = useState<MarketingContact | null>(null)
   const [selectedContactIds, setSelectedContactIds] = useState<Set<number>>(new Set())
@@ -298,8 +300,12 @@ const AdminMarketingEmail: React.FC = () => {
         .eq('id', contact.id)
       if (error) throw error
     },
-    onSuccess: () => {
+    onSuccess: (_, updatedContact) => {
       queryClient.invalidateQueries({ queryKey: ['marketing-contacts'] })
+      // Also update list members if viewing a list
+      if (viewingList) {
+        setListMembers(prev => prev.map(c => c.id === updatedContact.id ? updatedContact : c))
+      }
       setIsEditContactModalOpen(false)
       setEditingContact(null)
       showSuccess('Contact updated')
@@ -493,6 +499,60 @@ const AdminMarketingEmail: React.FC = () => {
       .eq('id', viewingList.id)
 
     queryClient.invalidateQueries({ queryKey: ['contact-lists'] })
+    showSuccess('Contact added to list')
+  }
+
+  // Add new contact directly to list (not shown in main contacts)
+  const addNewContactToList = async () => {
+    if (!viewingList || !newListContact.email) return
+
+    // Create contact with show_in_contacts = false
+    const { data: newContact, error } = await supabase
+      .from('marketing_contacts')
+      .insert([{
+        email: newListContact.email.toLowerCase().trim(),
+        name: newListContact.name || null,
+        company: newListContact.company || null,
+        city: newListContact.city || null,
+        show_in_contacts: false
+      }])
+      .select()
+      .single()
+
+    if (error) {
+      // If duplicate, try to find existing and add to list
+      if (error.code === '23505') {
+        const { data: existing } = await supabase
+          .from('marketing_contacts')
+          .select('*')
+          .eq('email', newListContact.email.toLowerCase().trim())
+          .single()
+
+        if (existing) {
+          await addContactToList(existing as MarketingContact)
+        }
+      } else {
+        setEmailError('Failed to add contact: ' + error.message)
+      }
+      return
+    }
+
+    // Add to list
+    await supabase
+      .from('contact_list_members')
+      .insert([{ list_id: viewingList.id, contact_id: newContact.id }])
+
+    setListMembers(prev => [...prev, newContact as MarketingContact])
+
+    // Update list count
+    await supabase
+      .from('contact_lists')
+      .update({ member_count: listMembers.length + 1 })
+      .eq('id', viewingList.id)
+
+    queryClient.invalidateQueries({ queryKey: ['contact-lists'] })
+    setNewListContact({ email: '', name: '', company: '', city: '' })
+    setAddToListMode('search')
     showSuccess('Contact added to list')
   }
 
@@ -1822,14 +1882,26 @@ const AdminMarketingEmail: React.FC = () => {
                                   <td className="py-3 px-4 hidden md:table-cell">{contact.company || '-'}</td>
                                   <td className="py-3 px-4 hidden lg:table-cell">{contact.city || '-'}</td>
                                   <td className="py-3 px-4 text-right">
-                                    <Button
-                                      variant="outline"
-                                      size="sm"
-                                      onClick={() => removeFromList(contact.id)}
-                                      className="text-red-500 hover:bg-red-50"
-                                    >
-                                      <X className="h-4 w-4" />
-                                    </Button>
+                                    <div className="flex justify-end gap-1">
+                                      <Button
+                                        variant="ghost"
+                                        size="sm"
+                                        onClick={() => {
+                                          setEditingContact(contact)
+                                          setIsEditContactModalOpen(true)
+                                        }}
+                                      >
+                                        <Pencil className="h-4 w-4" />
+                                      </Button>
+                                      <Button
+                                        variant="ghost"
+                                        size="sm"
+                                        onClick={() => removeFromList(contact.id)}
+                                        className="text-red-500 hover:bg-red-50"
+                                      >
+                                        <X className="h-4 w-4" />
+                                      </Button>
+                                    </div>
                                   </td>
                                 </tr>
                               ))}
@@ -2146,89 +2218,147 @@ const AdminMarketingEmail: React.FC = () => {
         </Dialog>
 
         {/* Add to List Modal */}
-        <Dialog open={isAddToListModalOpen} onOpenChange={setIsAddToListModalOpen}>
+        <Dialog open={isAddToListModalOpen} onOpenChange={(open) => {
+          setIsAddToListModalOpen(open)
+          if (!open) {
+            setAddToListMode('search')
+            setNewListContact({ email: '', name: '', company: '', city: '' })
+          }
+        }}>
           <DialogContent className="max-w-lg max-h-[80vh] overflow-hidden flex flex-col">
             <DialogHeader>
-              <DialogTitle>Add Contact to {viewingList?.name}</DialogTitle>
+              <DialogTitle>Add to {viewingList?.name}</DialogTitle>
             </DialogHeader>
             <div className="space-y-4 mt-4 flex-1 overflow-hidden flex flex-col">
-              <div>
-                <Input
-                  placeholder="Search contacts by email, name, or company..."
-                  value={addToListSearch}
-                  onChange={(e) => setAddToListSearch(e.target.value)}
-                />
-              </div>
-              <div className="flex-1 overflow-y-auto border rounded-lg">
-                {contacts
-                  .filter(c => {
-                    if (!addToListSearch) return true
-                    const search = addToListSearch.toLowerCase()
-                    return (
-                      c.email.toLowerCase().includes(search) ||
-                      c.name?.toLowerCase().includes(search) ||
-                      c.company?.toLowerCase().includes(search)
-                    )
-                  })
-                  .slice(0, 50)
-                  .map(contact => {
-                    const isInList = listMembers.some(m => m.id === contact.id)
-                    return (
-                      <div
-                        key={contact.id}
-                        className={`p-3 border-b last:border-b-0 flex items-center justify-between ${
-                          isInList ? 'bg-gray-50' : 'hover:bg-gray-50'
-                        }`}
-                      >
-                        <div className="min-w-0">
-                          <p className="text-sm font-medium truncate">{contact.email}</p>
-                          <p className="text-xs text-gray-500 truncate">
-                            {[contact.name, contact.company, contact.city].filter(Boolean).join(' • ') || 'No details'}
-                          </p>
-                        </div>
-                        {isInList ? (
-                          <Badge variant="secondary" className="text-xs">In list</Badge>
-                        ) : (
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            onClick={() => addContactToList(contact)}
-                          >
-                            <Plus className="h-4 w-4" />
-                          </Button>
-                        )}
-                      </div>
-                    )
-                  })}
-                {contacts.length === 0 && (
-                  <div className="p-8 text-center text-gray-500">
-                    <p>No contacts yet</p>
-                    <Button
-                      variant="link"
-                      onClick={() => {
-                        setIsAddToListModalOpen(false)
-                        setActiveTab('contacts')
-                        setIsAddContactModalOpen(true)
-                      }}
-                    >
-                      Create your first contact
-                    </Button>
-                  </div>
-                )}
-              </div>
-              <div className="pt-2 border-t">
+              {/* Toggle between search and new */}
+              <div className="flex gap-2">
                 <Button
-                  variant="outline"
-                  className="w-full"
-                  onClick={() => {
-                    setIsAddToListModalOpen(false)
-                    setIsAddContactModalOpen(true)
-                  }}
+                  variant={addToListMode === 'search' ? 'default' : 'outline'}
+                  size="sm"
+                  onClick={() => setAddToListMode('search')}
+                  className={addToListMode === 'search' ? 'bg-[#35c677] hover:bg-[#2aa35f]' : ''}
                 >
-                  <Plus className="h-4 w-4 mr-2" />
-                  Create New Contact
+                  Search Existing
+                </Button>
+                <Button
+                  variant={addToListMode === 'new' ? 'default' : 'outline'}
+                  size="sm"
+                  onClick={() => setAddToListMode('new')}
+                  className={addToListMode === 'new' ? 'bg-[#35c677] hover:bg-[#2aa35f]' : ''}
+                >
+                  Add New
                 </Button>
               </div>
+
+              {addToListMode === 'new' ? (
+                // New contact form
+                <div className="space-y-3">
+                  <div>
+                    <label className="text-sm font-medium mb-1 block">Email *</label>
+                    <Input
+                      type="email"
+                      placeholder="email@example.com"
+                      value={newListContact.email}
+                      onChange={(e) => setNewListContact({ ...newListContact, email: e.target.value })}
+                    />
+                  </div>
+                  <div className="grid grid-cols-2 gap-3">
+                    <div>
+                      <label className="text-sm font-medium mb-1 block">Name</label>
+                      <Input
+                        placeholder="John Smith"
+                        value={newListContact.name}
+                        onChange={(e) => setNewListContact({ ...newListContact, name: e.target.value })}
+                      />
+                    </div>
+                    <div>
+                      <label className="text-sm font-medium mb-1 block">Company</label>
+                      <Input
+                        placeholder="Acme Inc"
+                        value={newListContact.company}
+                        onChange={(e) => setNewListContact({ ...newListContact, company: e.target.value })}
+                      />
+                    </div>
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium mb-1 block">City</label>
+                    <Input
+                      placeholder="New York"
+                      value={newListContact.city}
+                      onChange={(e) => setNewListContact({ ...newListContact, city: e.target.value })}
+                    />
+                  </div>
+                  <Button
+                    className="w-full bg-[#35c677] hover:bg-[#2aa35f]"
+                    onClick={addNewContactToList}
+                    disabled={!newListContact.email}
+                  >
+                    <Plus className="h-4 w-4 mr-2" />
+                    Add to List
+                  </Button>
+                </div>
+              ) : (
+                // Search existing contacts
+                <>
+                  <div>
+                    <Input
+                      placeholder="Search contacts by email, name, or company..."
+                      value={addToListSearch}
+                      onChange={(e) => setAddToListSearch(e.target.value)}
+                    />
+                  </div>
+                  <div className="flex-1 overflow-y-auto border rounded-lg">
+                    {contacts
+                      .filter(c => {
+                        if (!addToListSearch) return true
+                        const search = addToListSearch.toLowerCase()
+                        return (
+                          c.email.toLowerCase().includes(search) ||
+                          c.name?.toLowerCase().includes(search) ||
+                          c.company?.toLowerCase().includes(search)
+                        )
+                      })
+                      .slice(0, 50)
+                      .map(contact => {
+                        const isInList = listMembers.some(m => m.id === contact.id)
+                        return (
+                          <div
+                            key={contact.id}
+                            className={`p-3 border-b last:border-b-0 flex items-center justify-between ${
+                              isInList ? 'bg-gray-50' : 'hover:bg-gray-50'
+                            }`}
+                          >
+                            <div className="min-w-0">
+                              <p className="text-sm font-medium truncate">{contact.email}</p>
+                              <p className="text-xs text-gray-500 truncate">
+                                {[contact.name, contact.company, contact.city].filter(Boolean).join(' • ') || 'No details'}
+                              </p>
+                            </div>
+                            {isInList ? (
+                              <Badge variant="secondary" className="text-xs">In list</Badge>
+                            ) : (
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                onClick={() => addContactToList(contact)}
+                              >
+                                <Plus className="h-4 w-4" />
+                              </Button>
+                            )}
+                          </div>
+                        )
+                      })}
+                    {contacts.length === 0 && (
+                      <div className="p-8 text-center text-gray-500">
+                        <p>No contacts yet</p>
+                        <Button variant="link" onClick={() => setAddToListMode('new')}>
+                          Add a new one
+                        </Button>
+                      </div>
+                    )}
+                  </div>
+                </>
+              )}
             </div>
           </DialogContent>
         </Dialog>
