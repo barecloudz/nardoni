@@ -1,15 +1,10 @@
 import React from 'react'
+import { Link } from 'wouter'
 import { motion } from 'framer-motion'
 import { Button } from '../ui/button'
-import { Shield, ArrowDown } from 'lucide-react'
+import { Shield, ArrowRight } from 'lucide-react'
 
 const Guarantee: React.FC = () => {
-  const scrollToHowItWorks = () => {
-    const section = document.getElementById('how-it-works')
-    if (section) {
-      section.scrollIntoView({ behavior: 'smooth' })
-    }
-  }
 
   return (
     <section className="py-24 bg-[#191919] relative overflow-hidden">
@@ -76,20 +71,21 @@ const Guarantee: React.FC = () => {
             viewport={{ once: true }}
             transition={{ duration: 0.8, delay: 0.3 }}
           >
-            <motion.div
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              transition={{ type: "spring", stiffness: 400, damping: 17 }}
-            >
-              <Button
-                onClick={scrollToHowItWorks}
-                size="lg"
-                className="text-lg px-10 py-6 h-auto bg-white hover:bg-gray-100 text-[#191919] shadow-lg hover:shadow-xl transition-colors duration-300 font-semibold"
+            <Link href="/book-a-call">
+              <motion.div
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                transition={{ type: "spring", stiffness: 400, damping: 17 }}
               >
-                <span>See How It Works</span>
-                <ArrowDown className="ml-2 h-5 w-5" />
-              </Button>
-            </motion.div>
+                <Button
+                  size="lg"
+                  className="text-lg px-10 py-6 h-auto bg-[#35c677] hover:bg-[#2ba866] text-white shadow-lg hover:shadow-xl transition-colors duration-300 font-semibold rounded-full"
+                >
+                  <span>Book a Call</span>
+                  <ArrowRight className="ml-2 h-5 w-5" />
+                </Button>
+              </motion.div>
+            </Link>
           </motion.div>
 
         </div>
