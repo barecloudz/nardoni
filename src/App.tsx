@@ -1,6 +1,6 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { HelmetProvider } from 'react-helmet-async'
-import { Route, Switch } from 'wouter'
+import { Route, Switch, useLocation } from 'wouter'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import HomePage from './pages/home'
@@ -39,10 +39,22 @@ const queryClient = new QueryClient({
   },
 })
 
+// Scroll to top on route change
+function ScrollToTop() {
+  const [location] = useLocation()
+
+  useEffect(() => {
+    window.scrollTo(0, 0)
+  }, [location])
+
+  return null
+}
+
 function App() {
   return (
     <HelmetProvider>
       <QueryClientProvider client={queryClient}>
+        <ScrollToTop />
         <div className="min-h-screen bg-white">
         <Switch>
           <Route path="/" component={HomePage} />
