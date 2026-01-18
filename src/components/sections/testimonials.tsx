@@ -18,7 +18,7 @@ const Testimonials: React.FC = () => {
     },
     {
       id: 2,
-      name: 'David Chen',
+      name: 'Marcus Williams',
       role: 'Manager',
       company: 'Elite Fitness Gym',
       avatar: 'https://images.pexels.com/photos/1222271/pexels-photo-1222271.jpeg?auto=compress&cs=tinysrgb&w=150',

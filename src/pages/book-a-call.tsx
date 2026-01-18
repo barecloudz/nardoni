@@ -1,282 +1,119 @@
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
 import { Helmet } from 'react-helmet-async';
 import { motion } from "framer-motion";
 import Header from "../components/layout/header";
 import Footer from "../components/layout/footer";
-import { Button } from "../components/ui/button";
-import { Input } from "../components/ui/input";
-import { Textarea } from "../components/ui/textarea";
-import { ArrowRight } from "lucide-react";
-import { createContact } from "../lib/supabase";
+import { CheckCircle, Clock, Shield, Phone } from "lucide-react";
 
 const BookACall = () => {
-  // Scroll to top when component mounts
   useEffect(() => {
     window.scrollTo(0, 0);
+
+    // Load Calendly widget script
+    const script = document.createElement('script');
+    script.src = 'https://assets.calendly.com/assets/external/widget.js';
+    script.async = true;
+    document.body.appendChild(script);
+
+    return () => {
+      // Cleanup script on unmount
+      const existingScript = document.querySelector('script[src="https://assets.calendly.com/assets/external/widget.js"]');
+      if (existingScript) {
+        existingScript.remove();
+      }
+    };
   }, []);
 
-  const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    phone: "",
-    website: "",
-    company: "",
-    problem: "",
-    urgency: "",
-  });
-
-  const [isSubmitting, setIsSubmitting] = useState(false);
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsSubmitting(true);
-
-    try {
-      // Prepare message with all details
-      const message = `
-Website: ${formData.website || 'Not provided'}
-Problem: ${formData.problem || 'Not provided'}
-Urgency: ${formData.urgency || 'Not provided'}
-      `.trim();
-
-      // Save to contacts table
-      const { data, error } = await createContact({
-        name: formData.name,
-        email: formData.email,
-        phone: formData.phone,
-        company: formData.company,
-        message: message
-      });
-
-      if (error) {
-        console.error('Error saving contact:', error);
-        alert('There was an error submitting your request. Please try again.');
-        return;
-      }
-
-      // Send email notification (don't wait for it to complete)
-      fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/send-booking-notification`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`
-        },
-        body: JSON.stringify({
-          name: formData.name,
-          email: formData.email,
-          phone: formData.phone,
-          company: formData.company,
-          message: message
-        })
-      }).catch(err => console.error('Email notification failed:', err));
-
-      alert("Request Received! We'll contact you within 48 hours.");
-
-      // Reset form
-      setFormData({
-        name: "",
-        email: "",
-        phone: "",
-        website: "",
-        company: "",
-        problem: "",
-        urgency: "",
-      });
-    } catch (error) {
-      console.error('Error:', error);
-      alert('There was an error submitting your request. Please try again.');
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    });
-  };
-
-  const handleRadioChange = (name: string, value: string) => {
-    setFormData({
-      ...formData,
-      [name]: value,
-    });
-  };
+  const benefits = [
+    { icon: Clock, text: "30-minute strategy session" },
+    { icon: Shield, text: "No obligation, no pressure" },
+    { icon: CheckCircle, text: "Custom plan for your business" },
+    { icon: Phone, text: "Talk to a real person" },
+  ];
 
   return (
     <div className="min-h-screen">
       <Helmet>
-        <title>Book a Free Consultation | Nardoni Digital</title>
-        <meta name="description" content="Schedule a free consultation with our digital marketing experts. Discover how AI-powered marketing, SEO, and social media can grow your local business." />
-        <meta property="og:title" content="Book a Free Consultation | Nardoni Digital" />
-        <meta property="og:description" content="Schedule a free consultation with our digital marketing experts. Discover how we can grow your local business." />
+        <title>Book a Free Strategy Call | Nardoni Digital</title>
+        <meta name="description" content="Schedule a free 30-minute strategy call. We'll show you exactly how to get on page 1 of Google and grow your local business." />
+        <meta property="og:title" content="Book a Free Strategy Call | Nardoni Digital" />
+        <meta property="og:description" content="Schedule a free 30-minute strategy call. We'll show you exactly how to get on page 1 of Google." />
         <link rel="canonical" href="https://nardonidigital.com/book-a-call" />
       </Helmet>
       <Header />
 
-      <main className="pt-24 pb-8 min-h-screen" style={{ backgroundColor: '#efebe5' }}>
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: -20 }}
-          transition={{ duration: 0.5, ease: "easeOut" }}
-          className="max-w-[1200px] mx-auto px-6 md:px-16 w-full"
-        >
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
-            {/* Left Column - Heading */}
-            <div className="flex flex-col items-center text-center lg:pr-12">
-              <div className="inline-block bg-white rounded-full px-4 py-2 mb-6">
-                <span className="text-xs font-normal text-black">Book a call</span>
-              </div>
-              <h1 className="text-6xl md:text-[90px] leading-[0.85] mb-6 text-black" style={{ fontFamily: 'Inter, system-ui, sans-serif', fontWeight: 500, letterSpacing: '-0.02em' }}>
-                Let's<br />Make<br />Money
-              </h1>
-              <div className="space-y-4 text-[16px] leading-[1.5]" style={{ color: '#6b6b6b', fontFamily: 'Inter, system-ui, sans-serif' }}>
-                <p>Fill out the form below and we will contact you within 48 hours to find out if we can help you.</p>
-                <p className="text-black">
-                  No costs, no obligations, no annoying sales pitch. Guaranteed.
-                </p>
-              </div>
+      <main className="pt-24 pb-16 min-h-screen bg-gradient-to-b from-white to-gray-50">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+
+          {/* Hero Section */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+            className="text-center max-w-3xl mx-auto mb-12"
+          >
+            <div className="inline-flex items-center gap-2 bg-[#35c677]/10 border border-[#35c677]/20 rounded-full px-4 py-2 mb-6">
+              <span className="text-sm font-medium text-[#35c677]">Free Strategy Call</span>
             </div>
 
-            {/* Right Column - Form */}
-            <div className="bg-white rounded-[28px] p-10" style={{ fontFamily: 'Inter, system-ui, sans-serif' }}>
-              <form onSubmit={handleSubmit} className="space-y-7">
-                <div>
-                  <Input
-                    id="name"
-                    name="name"
-                    type="text"
-                    required
-                    value={formData.name}
-                    onChange={handleChange}
-                    placeholder="Full Name *"
-                    className="h-14 border-0 border-b border-gray-300 rounded-none focus-visible:ring-0 focus-visible:border-black bg-transparent px-0 placeholder:text-gray-400 text-xl pb-6 transition-all duration-300"
-                    style={{ fontWeight: 500, letterSpacing: '-0.05em' }}
-                  />
-                </div>
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-[#191919] mb-6 leading-tight">
+              Let's get you on{" "}
+              <span className="text-[#35c677]">page 1 of Google</span>
+            </h1>
 
-                <div>
-                  <Input
-                    id="email"
-                    name="email"
-                    type="email"
-                    required
-                    value={formData.email}
-                    onChange={handleChange}
-                    placeholder="Business Email *"
-                    className="h-14 border-0 border-b border-gray-300 rounded-none focus-visible:ring-0 focus-visible:border-black bg-transparent px-0 placeholder:text-gray-400 text-xl pb-6 transition-all duration-300"
-                    style={{ fontWeight: 500, letterSpacing: '-0.05em' }}
-                  />
-                </div>
+            <p className="text-xl text-gray-600 mb-8">
+              Pick a time that works for you. We'll show you exactly how we can help your business get more customers.
+            </p>
 
-                <div>
-                  <Input
-                    id="phone"
-                    name="phone"
-                    type="tel"
-                    required
-                    value={formData.phone}
-                    onChange={handleChange}
-                    placeholder="Phone Number *"
-                    className="h-14 border-0 border-b border-gray-300 rounded-none focus-visible:ring-0 focus-visible:border-black bg-transparent px-0 placeholder:text-gray-400 text-xl pb-6 transition-all duration-300"
-                    style={{ fontWeight: 500, letterSpacing: '-0.05em' }}
-                  />
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <Input
-                    id="website"
-                    name="website"
-                    type="text"
-                    value={formData.website}
-                    onChange={handleChange}
-                    placeholder="Website (optional)"
-                    className="h-14 border-0 border-b border-gray-300 rounded-none focus-visible:ring-0 focus-visible:border-black bg-transparent px-0 placeholder:text-gray-400 text-xl pb-6 transition-all duration-300"
-                    style={{ fontWeight: 500, letterSpacing: '-0.05em' }}
-                  />
-                  <Input
-                    id="company"
-                    name="company"
-                    type="text"
-                    value={formData.company}
-                    onChange={handleChange}
-                    placeholder="Company Name *"
-                    className="h-14 border-0 border-b border-gray-300 rounded-none focus-visible:ring-0 focus-visible:border-black bg-transparent px-0 placeholder:text-gray-400 text-xl pb-6 transition-all duration-300"
-                    style={{ fontWeight: 500, letterSpacing: '-0.05em' }}
-                  />
-                </div>
-
-                <div>
-                  <label htmlFor="problem" className="text-xl mb-3 block text-black font-medium" style={{ letterSpacing: '-0.05em', lineHeight: '1.5' }}>
-                    What is the current problem you're experiencing?
-                  </label>
-                  <Textarea
-                    id="problem"
-                    name="problem"
-                    value={formData.problem}
-                    onChange={handleChange}
-                    placeholder="Describe your current challenges..."
-                    className="min-h-[100px] text-xl resize-none border border-gray-300 rounded-lg focus-visible:ring-0 focus-visible:border-black bg-transparent placeholder:text-gray-400 p-3 transition-all duration-300"
-                    style={{ fontWeight: 500, letterSpacing: '-0.05em' }}
-                  />
-                </div>
-
-                <div className="pt-4">
-                  <label className="text-xl mb-4 block text-black font-medium" style={{ letterSpacing: '-0.05em', lineHeight: '1.5' }}>
-                    By when do you want to solve this problem? *
-                  </label>
-                  <div className="flex flex-wrap gap-6">
-                    <label className="flex items-center space-x-2 cursor-pointer">
-                      <input
-                        type="radio"
-                        name="urgency"
-                        value="today"
-                        checked={formData.urgency === "today"}
-                        onChange={(e) => handleRadioChange("urgency", e.target.value)}
-                        className="w-5 h-5"
-                      />
-                      <span className="text-lg">Today</span>
-                    </label>
-                    <label className="flex items-center space-x-2 cursor-pointer">
-                      <input
-                        type="radio"
-                        name="urgency"
-                        value="tomorrow"
-                        checked={formData.urgency === "tomorrow"}
-                        onChange={(e) => handleRadioChange("urgency", e.target.value)}
-                        className="w-5 h-5"
-                      />
-                      <span className="text-lg">Tomorrow</span>
-                    </label>
-                    <label className="flex items-center space-x-2 cursor-pointer">
-                      <input
-                        type="radio"
-                        name="urgency"
-                        value="few-weeks"
-                        checked={formData.urgency === "few-weeks"}
-                        onChange={(e) => handleRadioChange("urgency", e.target.value)}
-                        className="w-5 h-5"
-                      />
-                      <span className="text-lg">In a few weeks</span>
-                    </label>
-                  </div>
-                </div>
-
-                <Button
-                  type="submit"
-                  size="lg"
-                  disabled={isSubmitting}
-                  className="w-full bg-black text-white hover:bg-black/90 h-14 mt-8 rounded-full group font-medium disabled:opacity-50"
-                >
-                  {isSubmitting ? 'Submitting...' : 'Submit'}
-                  {!isSubmitting && <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />}
-                </Button>
-              </form>
+            {/* Benefits */}
+            <div className="flex flex-wrap justify-center gap-4 md:gap-6">
+              {benefits.map((benefit, index) => {
+                const Icon = benefit.icon;
+                return (
+                  <motion.div
+                    key={index}
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.4, delay: 0.1 * index }}
+                    className="flex items-center gap-2 text-gray-700"
+                  >
+                    <Icon className="h-5 w-5 text-[#35c677]" />
+                    <span className="text-sm font-medium">{benefit.text}</span>
+                  </motion.div>
+                );
+              })}
             </div>
-          </div>
-        </motion.div>
+          </motion.div>
+
+          {/* Calendly Embed */}
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.2 }}
+            className="max-w-4xl mx-auto"
+          >
+            <div className="bg-white rounded-3xl shadow-xl overflow-hidden">
+              <div
+                className="calendly-inline-widget"
+                data-url="https://calendly.com/nardonidigital/30min?hide_gdpr_banner=1&background_color=ffffff&text_color=191919&primary_color=35c677"
+                style={{ minWidth: '320px', height: '700px' }}
+              />
+            </div>
+          </motion.div>
+
+          {/* Trust Section */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.6, delay: 0.4 }}
+            className="text-center mt-12"
+          >
+            <p className="text-gray-500 text-sm">
+              90-day page 1 guarantee or your money back. No long-term contracts.
+            </p>
+          </motion.div>
+
+        </div>
       </main>
 
       <Footer />
