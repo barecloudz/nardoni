@@ -144,6 +144,8 @@ const AdminMarketingEmail: React.FC = () => {
   const [isAddContactModalOpen, setIsAddContactModalOpen] = useState(false)
   const [isCreateListModalOpen, setIsCreateListModalOpen] = useState(false)
   const [isImportModalOpen, setIsImportModalOpen] = useState(false)
+  const [importTargetListId, setImportTargetListId] = useState<number | null>(null)
+  const [importLoading, setImportLoading] = useState(false)
 
   // New contact form
   const [newContact, setNewContact] = useState({
@@ -699,49 +701,117 @@ const AdminMarketingEmail: React.FC = () => {
     const file = e.target.files?.[0]
     if (!file) return
 
-    const text = await file.text()
-    const lines = text.split('\n').filter(line => line.trim())
-    const headers = lines[0].toLowerCase().split(',').map(h => h.trim())
+    setImportLoading(true)
+    setEmailError('')
 
-    const emailIdx = headers.findIndex(h => h.includes('email'))
-    const nameIdx = headers.findIndex(h => h.includes('name'))
-    const companyIdx = headers.findIndex(h => h.includes('company'))
-    const roleIdx = headers.findIndex(h => h.includes('role') || h.includes('title'))
+    try {
+      const text = await file.text()
+      const lines = text.split('\n').filter(line => line.trim())
+      const headers = lines[0].toLowerCase().split(',').map(h => h.trim())
 
-    if (emailIdx === -1) {
-      setEmailError('CSV must have an email column')
-      return
-    }
+      const emailIdx = headers.findIndex(h => h.includes('email'))
+      const nameIdx = headers.findIndex(h => h.includes('name') && !h.includes('company'))
+      const companyIdx = headers.findIndex(h => h.includes('company') || h.includes('organization') || h.includes('business'))
+      const roleIdx = headers.findIndex(h => h.includes('role') || h.includes('title') || h.includes('position') || h.includes('job'))
+      const phoneIdx = headers.findIndex(h => h.includes('phone') || h.includes('tel'))
 
-    const contactsToImport = []
-    for (let i = 1; i < lines.length; i++) {
-      const values = lines[i].split(',').map(v => v.trim().replace(/^"|"$/g, ''))
-      const email = values[emailIdx]
-      if (email && email.includes('@')) {
-        contactsToImport.push({
-          email,
-          name: nameIdx !== -1 ? values[nameIdx] || null : null,
-          company: companyIdx !== -1 ? values[companyIdx] || null : null,
-          role: roleIdx !== -1 ? values[roleIdx] || null : null
-        })
+      if (emailIdx === -1) {
+        setEmailError('CSV must have an email column')
+        setImportLoading(false)
+        return
       }
-    }
 
-    if (contactsToImport.length === 0) {
-      setEmailError('No valid contacts found in CSV')
-      return
-    }
+      const contactsToImport = []
+      for (let i = 1; i < lines.length; i++) {
+        // Handle CSV values with commas inside quotes
+        const values: string[] = []
+        let current = ''
+        let inQuotes = false
+        for (const char of lines[i]) {
+          if (char === '"') {
+            inQuotes = !inQuotes
+          } else if (char === ',' && !inQuotes) {
+            values.push(current.trim().replace(/^"|"$/g, ''))
+            current = ''
+          } else {
+            current += char
+          }
+        }
+        values.push(current.trim().replace(/^"|"$/g, ''))
 
-    const { error } = await supabase
-      .from('marketing_contacts')
-      .upsert(contactsToImport, { onConflict: 'email' })
+        const email = values[emailIdx]?.toLowerCase().trim()
+        if (email && email.includes('@')) {
+          contactsToImport.push({
+            email,
+            name: nameIdx !== -1 ? values[nameIdx] || null : null,
+            company: companyIdx !== -1 ? values[companyIdx] || null : null,
+            role: roleIdx !== -1 ? values[roleIdx] || null : null,
+            phone: phoneIdx !== -1 ? values[phoneIdx] || null : null
+          })
+        }
+      }
 
-    if (error) {
-      setEmailError('Error importing contacts: ' + error.message)
-    } else {
-      showSuccess(`Imported ${contactsToImport.length} contacts!`)
+      if (contactsToImport.length === 0) {
+        setEmailError('No valid contacts found in CSV')
+        setImportLoading(false)
+        return
+      }
+
+      // Insert contacts
+      const { data: insertedContacts, error } = await supabase
+        .from('marketing_contacts')
+        .upsert(contactsToImport, { onConflict: 'email' })
+        .select()
+
+      if (error) {
+        setEmailError('Error importing contacts: ' + error.message)
+        setImportLoading(false)
+        return
+      }
+
+      // If a list is selected, add contacts to the list
+      if (importTargetListId) {
+        // Get all contact IDs (need to fetch them since upsert might not return all)
+        const emails = contactsToImport.map(c => c.email)
+        const { data: contactsData } = await supabase
+          .from('marketing_contacts')
+          .select('id, email')
+          .in('email', emails)
+
+        if (contactsData && contactsData.length > 0) {
+          // Add to list members
+          const listMembers = contactsData.map(contact => ({
+            list_id: importTargetListId,
+            contact_id: contact.id
+          }))
+
+          await supabase
+            .from('contact_list_members')
+            .upsert(listMembers, { onConflict: 'list_id,contact_id', ignoreDuplicates: true })
+
+          // Update list member count
+          await supabase
+            .from('contact_lists')
+            .update({ member_count: contactsData.length })
+            .eq('id', importTargetListId)
+
+          queryClient.invalidateQueries({ queryKey: ['contact-lists'] })
+          showSuccess(`Imported ${contactsToImport.length} contacts to list!`)
+        }
+      } else {
+        showSuccess(`Imported ${contactsToImport.length} contacts!`)
+      }
+
       queryClient.invalidateQueries({ queryKey: ['marketing-contacts'] })
       setIsImportModalOpen(false)
+      setImportTargetListId(null)
+
+      // Reset file input
+      e.target.value = ''
+    } catch (err: any) {
+      setEmailError('Error processing file: ' + err.message)
+    } finally {
+      setImportLoading(false)
     }
   }
 
@@ -1623,25 +1693,63 @@ const AdminMarketingEmail: React.FC = () => {
         </Dialog>
 
         {/* Import Modal */}
-        <Dialog open={isImportModalOpen} onOpenChange={setIsImportModalOpen}>
+        <Dialog open={isImportModalOpen} onOpenChange={(open) => {
+          setIsImportModalOpen(open)
+          if (!open) setImportTargetListId(null)
+        }}>
           <DialogContent className="max-w-md">
             <DialogHeader>
-              <DialogTitle>Import Contacts</DialogTitle>
+              <DialogTitle>Import Contacts from Spreadsheet</DialogTitle>
             </DialogHeader>
             <div className="space-y-4 mt-4">
               <p className="text-sm text-gray-600">
-                Upload a CSV with columns for email (required), name, company, and role.
+                Upload a CSV or Excel export. We'll automatically detect columns for email, name, company, role, and phone.
               </p>
+
+              {/* List selector */}
+              <div>
+                <label className="text-sm font-medium mb-1.5 block">Add to List (optional)</label>
+                <select
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm"
+                  value={importTargetListId || ''}
+                  onChange={(e) => setImportTargetListId(e.target.value ? Number(e.target.value) : null)}
+                >
+                  <option value="">Just add to contacts</option>
+                  {contactLists.map(list => (
+                    <option key={list.id} value={list.id}>
+                      {list.name} ({list.member_count} contacts)
+                    </option>
+                  ))}
+                </select>
+              </div>
+
               <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
                 <Upload className="h-8 w-8 mx-auto text-gray-400 mb-2" />
-                <input
-                  type="file"
-                  accept=".csv"
-                  onChange={handleCSVImport}
-                  className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-[#35c677] file:text-white hover:file:bg-[#2aa35f]"
-                />
+                {importLoading ? (
+                  <div className="flex items-center justify-center gap-2 text-sm text-gray-600">
+                    <RefreshCw className="h-4 w-4 animate-spin" />
+                    Importing...
+                  </div>
+                ) : (
+                  <input
+                    type="file"
+                    accept=".csv,.xlsx,.xls"
+                    onChange={handleCSVImport}
+                    className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-[#35c677] file:text-white hover:file:bg-[#2aa35f] cursor-pointer"
+                  />
+                )}
               </div>
-              <p className="text-xs text-gray-500">Format: email,name,company,role</p>
+
+              <div className="bg-gray-50 rounded-lg p-3">
+                <p className="text-xs font-medium text-gray-700 mb-2">Supported columns:</p>
+                <div className="grid grid-cols-2 gap-1 text-xs text-gray-500">
+                  <span>email (required)</span>
+                  <span>name</span>
+                  <span>company / organization</span>
+                  <span>role / title / position</span>
+                  <span>phone</span>
+                </div>
+              </div>
             </div>
           </DialogContent>
         </Dialog>
