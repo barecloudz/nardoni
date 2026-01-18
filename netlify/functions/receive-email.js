@@ -97,21 +97,74 @@ export async function handler(event, context) {
 
     console.log('Received inbound email webhook:', JSON.stringify(payload, null, 2));
 
-    // Resend webhook wraps email data inside payload.data
-    const emailData = payload.data || payload;
+    // Resend webhook format: { type: 'email.received', data: { ... } }
+    const { type, data: emailData } = payload;
 
-    // Resend inbound email format
-    // https://resend.com/docs/dashboard/webhooks/event-types#email-received
+    // Only process email.received events
+    if (type !== 'email.received') {
+      console.log('Ignoring non-email event:', type);
+      return {
+        statusCode: 200,
+        headers,
+        body: JSON.stringify({ success: true, message: 'Event ignored' })
+      };
+    }
+
+    // Extract email metadata from webhook
     const {
       from,
       to,
       subject,
-      text,
-      html,
-      headers: emailHeaders,
-      attachments,
-      message_id: payloadMessageId
+      email_id,
+      message_id: payloadMessageId,
+      in_reply_to: payloadInReplyTo,
+      created_at
     } = emailData;
+
+    // Resend webhooks don't include email body - need to fetch via API
+    let text = '';
+    let html = '';
+
+    const RESEND_API_KEY = process.env.RESEND_API_KEY;
+    if (RESEND_API_KEY && email_id) {
+      try {
+        console.log('Fetching inbound email content for email_id:', email_id);
+        const emailResponse = await fetch(`https://api.resend.com/emails/receiving/${email_id}`, {
+          method: 'GET',
+          headers: {
+            'Authorization': `Bearer ${RESEND_API_KEY}`,
+            'Content-Type': 'application/json'
+          }
+        });
+
+        const responseText = await emailResponse.text();
+        console.log('Resend API response status:', emailResponse.status);
+
+        if (emailResponse.ok && responseText) {
+          try {
+            const fetchedData = JSON.parse(responseText);
+            // Handle both direct and wrapped response
+            if (fetchedData.data) {
+              text = fetchedData.data.text || '';
+              html = fetchedData.data.html || '';
+            } else {
+              text = fetchedData.text || '';
+              html = fetchedData.html || '';
+            }
+            console.log('Extracted text length:', text.length);
+            console.log('Extracted html length:', html.length);
+          } catch (parseError) {
+            console.error('Failed to parse email content response:', parseError);
+          }
+        } else {
+          console.error('Failed to fetch email content:', emailResponse.status, responseText);
+        }
+      } catch (fetchError) {
+        console.error('Error fetching email content:', fetchError.message);
+      }
+    } else {
+      console.warn('Cannot fetch email body - RESEND_API_KEY:', !!RESEND_API_KEY, 'email_id:', email_id);
+    }
 
     // Parse from field (could be "Name <email>" or just "email")
     let fromEmail = from;
@@ -128,11 +181,6 @@ export async function handler(event, context) {
     // Get the first "to" address
     const toEmail = Array.isArray(to) ? to[0] : to;
 
-    // Extract Message-ID for threading support (check both payload and headers)
-    const messageId = payloadMessageId || emailHeaders?.['message-id'] || emailHeaders?.['Message-ID'] || null;
-    const inReplyTo = emailHeaders?.['in-reply-to'] || emailHeaders?.['In-Reply-To'] || null;
-    const referencesHeader = emailHeaders?.['references'] || emailHeaders?.['References'] || null;
-
     // Insert into database
     const { data, error } = await supabase
       .from('received_emails')
@@ -141,13 +189,13 @@ export async function handler(event, context) {
         from_name: fromName,
         to_email: toEmail,
         subject: subject || '(No subject)',
-        body_text: text || '',
-        body_html: html || '',
-        message_id: messageId,
-        in_reply_to: inReplyTo,
+        body_text: text,
+        body_html: html,
+        message_id: payloadMessageId,
+        in_reply_to: payloadInReplyTo,
         is_read: false,
         is_archived: false,
-        received_at: new Date().toISOString()
+        received_at: created_at || new Date().toISOString()
       }])
       .select()
       .single();
