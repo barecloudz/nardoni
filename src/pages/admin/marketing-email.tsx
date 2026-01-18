@@ -150,6 +150,8 @@ const AdminMarketingEmail: React.FC = () => {
   const [viewingList, setViewingList] = useState<ContactList | null>(null)
   const [listMembers, setListMembers] = useState<MarketingContact[]>([])
   const [listMembersLoading, setListMembersLoading] = useState(false)
+  const [isAddToListModalOpen, setIsAddToListModalOpen] = useState(false)
+  const [addToListSearch, setAddToListSearch] = useState('')
 
   // New contact form
   const [newContact, setNewContact] = useState({
@@ -396,6 +398,32 @@ const AdminMarketingEmail: React.FC = () => {
       .eq('id', viewingList.id)
 
     queryClient.invalidateQueries({ queryKey: ['contact-lists'] })
+  }
+
+  // Add contact to list
+  const addContactToList = async (contact: MarketingContact) => {
+    if (!viewingList) return
+
+    // Check if already in list
+    if (listMembers.some(m => m.id === contact.id)) {
+      showSuccess('Contact already in list')
+      return
+    }
+
+    await supabase
+      .from('contact_list_members')
+      .insert([{ list_id: viewingList.id, contact_id: contact.id }])
+
+    setListMembers(prev => [...prev, contact])
+
+    // Update list count
+    await supabase
+      .from('contact_lists')
+      .update({ member_count: listMembers.length + 1 })
+      .eq('id', viewingList.id)
+
+    queryClient.invalidateQueries({ queryKey: ['contact-lists'] })
+    showSuccess('Contact added to list')
   }
 
   const showSuccess = (msg: string) => {
@@ -1608,12 +1636,23 @@ const AdminMarketingEmail: React.FC = () => {
                           variant="outline"
                           size="sm"
                           onClick={() => {
+                            setAddToListSearch('')
+                            setIsAddToListModalOpen(true)
+                          }}
+                        >
+                          <Plus className="h-4 w-4 mr-2" />
+                          Add
+                        </Button>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => {
                             setImportTargetListId(viewingList.id)
                             setIsImportModalOpen(true)
                           }}
                         >
                           <Upload className="h-4 w-4 mr-2" />
-                          Import CSV
+                          Import
                         </Button>
                         <Button
                           size="sm"
@@ -1625,7 +1664,7 @@ const AdminMarketingEmail: React.FC = () => {
                           className="bg-[#35c677] hover:bg-[#2aa35f]"
                         >
                           <Mail className="h-4 w-4 mr-2" />
-                          Email List
+                          Email
                         </Button>
                       </div>
                     </div>
@@ -1919,6 +1958,94 @@ const AdminMarketingEmail: React.FC = () => {
                   <span>city / location</span>
                   <span>phone</span>
                 </div>
+              </div>
+            </div>
+          </DialogContent>
+        </Dialog>
+
+        {/* Add to List Modal */}
+        <Dialog open={isAddToListModalOpen} onOpenChange={setIsAddToListModalOpen}>
+          <DialogContent className="max-w-lg max-h-[80vh] overflow-hidden flex flex-col">
+            <DialogHeader>
+              <DialogTitle>Add Contact to {viewingList?.name}</DialogTitle>
+            </DialogHeader>
+            <div className="space-y-4 mt-4 flex-1 overflow-hidden flex flex-col">
+              <div>
+                <Input
+                  placeholder="Search contacts by email, name, or company..."
+                  value={addToListSearch}
+                  onChange={(e) => setAddToListSearch(e.target.value)}
+                />
+              </div>
+              <div className="flex-1 overflow-y-auto border rounded-lg">
+                {contacts
+                  .filter(c => {
+                    if (!addToListSearch) return true
+                    const search = addToListSearch.toLowerCase()
+                    return (
+                      c.email.toLowerCase().includes(search) ||
+                      c.name?.toLowerCase().includes(search) ||
+                      c.company?.toLowerCase().includes(search)
+                    )
+                  })
+                  .slice(0, 50)
+                  .map(contact => {
+                    const isInList = listMembers.some(m => m.id === contact.id)
+                    return (
+                      <div
+                        key={contact.id}
+                        className={`p-3 border-b last:border-b-0 flex items-center justify-between ${
+                          isInList ? 'bg-gray-50' : 'hover:bg-gray-50'
+                        }`}
+                      >
+                        <div className="min-w-0">
+                          <p className="text-sm font-medium truncate">{contact.email}</p>
+                          <p className="text-xs text-gray-500 truncate">
+                            {[contact.name, contact.company, contact.city].filter(Boolean).join(' • ') || 'No details'}
+                          </p>
+                        </div>
+                        {isInList ? (
+                          <Badge variant="secondary" className="text-xs">In list</Badge>
+                        ) : (
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => addContactToList(contact)}
+                          >
+                            <Plus className="h-4 w-4" />
+                          </Button>
+                        )}
+                      </div>
+                    )
+                  })}
+                {contacts.length === 0 && (
+                  <div className="p-8 text-center text-gray-500">
+                    <p>No contacts yet</p>
+                    <Button
+                      variant="link"
+                      onClick={() => {
+                        setIsAddToListModalOpen(false)
+                        setActiveTab('contacts')
+                        setIsAddContactModalOpen(true)
+                      }}
+                    >
+                      Create your first contact
+                    </Button>
+                  </div>
+                )}
+              </div>
+              <div className="pt-2 border-t">
+                <Button
+                  variant="outline"
+                  className="w-full"
+                  onClick={() => {
+                    setIsAddToListModalOpen(false)
+                    setIsAddContactModalOpen(true)
+                  }}
+                >
+                  <Plus className="h-4 w-4 mr-2" />
+                  Create New Contact
+                </Button>
               </div>
             </div>
           </DialogContent>
