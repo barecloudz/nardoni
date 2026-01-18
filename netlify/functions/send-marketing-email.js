@@ -24,7 +24,17 @@ export async function handler(event, context) {
   }
 
   try {
-    const { to, subject, body: rawBody, attachments = [], attachmentUrls = [], useHtmlTemplate = false } = JSON.parse(event.body);
+    const {
+      to,
+      subject,
+      body: rawBody,
+      attachments = [],
+      attachmentUrls = [],
+      useHtmlTemplate = false,
+      // Threading support for replies
+      replyToMessageId = null,
+      references = null
+    } = JSON.parse(event.body);
 
     // Add automatic signature
     const signature = `
@@ -166,6 +176,14 @@ Nardoni Digital LLC
       text: body,
       attachments: allAttachments.length > 0 ? allAttachments : undefined
     };
+
+    // Add threading headers for replies
+    if (replyToMessageId) {
+      emailPayload.headers = {
+        'In-Reply-To': replyToMessageId,
+        'References': references || replyToMessageId
+      };
+    }
 
     // Only add HTML template if explicitly requested
     if (useHtmlTemplate) {

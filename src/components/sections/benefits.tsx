@@ -15,36 +15,36 @@ import {
 const Benefits: React.FC = () => {
   const benefits = [
     {
-      icon: Users,
-      title: 'Custom Content',
-      description: 'No generic templates - we create content specifically for your business and your customers.',
-      stat: '100%',
-      statLabel: 'Customized',
-      gradient: 'from-blue-500 to-cyan-500'
-    },
-    {
       icon: Shield,
-      title: 'Full Flexibility',
-      description: 'No long-term contracts required. Stay flexible and cancel anytime if you\'re not satisfied.',
+      title: 'No Long Contracts',
+      description: 'Month-to-month. No lock-ins. Cancel anytime if you\'re not happy.',
       stat: '0',
-      statLabel: 'Commitments',
+      statLabel: 'Lock-ins',
       gradient: 'from-green-500 to-emerald-500'
     },
     {
-      icon: BarChart3,
-      title: 'All Platforms',
-      description: 'We handle Facebook, Instagram, Google, and YouTube - everything you need in one place.',
-      stat: 'All',
-      statLabel: 'Platforms',
+      icon: DollarSign,
+      title: '90-Day Guarantee',
+      description: 'Page 1 of Google in 90 days or your money back. No excuses.',
+      stat: '90',
+      statLabel: 'Day Promise',
+      gradient: 'from-orange-500 to-red-500'
+    },
+    {
+      icon: Bot,
+      title: 'Done For You',
+      description: 'We handle all the marketing. You just answer the phone and close deals.',
+      stat: '100%',
+      statLabel: 'Hands-off',
       gradient: 'from-purple-500 to-pink-500'
     },
     {
-      icon: DollarSign,
-      title: 'Money-Back Guarantee',
-      description: 'If it doesn\'t work, we refund you. We\'re that confident in our ability to deliver results.',
-      stat: '100%',
-      statLabel: 'Guaranteed',
-      gradient: 'from-orange-500 to-red-500'
+      icon: BarChart3,
+      title: 'Transparent Reporting',
+      description: 'See exactly what we\'re doing and how it\'s working. No black box.',
+      stat: 'Full',
+      statLabel: 'Visibility',
+      gradient: 'from-blue-500 to-cyan-500'
     }
   ]
 
@@ -52,22 +52,22 @@ const Benefits: React.FC = () => {
     {
       icon: Clock,
       title: 'Regular Check-ins',
-      description: 'Regular calls to review what\'s working, not just monthly reports.'
+      description: 'We actually talk to you. Not just monthly reports in your inbox.'
     },
     {
       icon: Zap,
-      title: 'Start Small',
-      description: 'Test the waters with a paid trial - see if we\'re a good fit.'
+      title: 'Fast Results',
+      description: 'Most clients see ranking improvements within the first 30 days.'
     },
     {
       icon: TrendingUp,
-      title: 'Proven Results',
-      description: 'Fill your calendar with new customers in 30 days or get your money back.'
+      title: 'Local Focus',
+      description: 'We specialize in local businesses. We know what works in your market.'
     },
     {
-      icon: Bot,
-      title: 'Done For You',
-      description: 'We handle everything - you just turn phone calls into customers.'
+      icon: Users,
+      title: 'Real Humans',
+      description: 'Your account manager is a real person who answers when you call.'
     }
   ]
 

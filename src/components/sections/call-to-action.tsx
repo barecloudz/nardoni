@@ -14,10 +14,10 @@ const CallToAction: React.FC = () => {
   })
 
   const benefits = [
-    'Free 30-minute consultation',
-    'Custom marketing strategy for your business',
-    'No long-term contracts - cancel anytime',
-    '30-day money-back guarantee'
+    'Free 30-minute strategy call',
+    'See exactly how we\'ll get you ranking',
+    'No long-term contracts required',
+    '90-day page 1 guarantee or your money back'
   ]
 
   return (
@@ -61,9 +61,9 @@ const CallToAction: React.FC = () => {
             viewport={{ once: true }}
             transition={{ duration: 0.8, delay: 0.1 }}
           >
-            Your Customer Flood
+            Ready to stop losing
             <br />
-            <span className="text-white">Starts Right Here</span>
+            <span className="text-[#35c677]">customers to your competition?</span>
           </motion.h2>
 
           {/* Supporting Text */}
@@ -76,7 +76,7 @@ const CallToAction: React.FC = () => {
           >
             <div className="absolute inset-0 bg-black/80 rounded-lg"></div>
             <p className="relative text-xl md:text-2xl text-white p-6 leading-relaxed">
-              Book a free 30 min call and we'll show you exactly how we'll fill your calendar with new customers.
+              Book a free call and we'll show you exactly how we'll get you on page 1 of Google and what it'll mean for your business.
             </p>
           </motion.div>
 

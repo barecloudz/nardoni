@@ -124,6 +124,11 @@ export async function handler(event, context) {
     // Get the first "to" address
     const toEmail = Array.isArray(to) ? to[0] : to;
 
+    // Extract Message-ID for threading support
+    const messageId = emailHeaders?.['message-id'] || emailHeaders?.['Message-ID'] || null;
+    const inReplyTo = emailHeaders?.['in-reply-to'] || emailHeaders?.['In-Reply-To'] || null;
+    const referencesHeader = emailHeaders?.['references'] || emailHeaders?.['References'] || null;
+
     // Insert into database
     const { data, error } = await supabase
       .from('received_emails')
@@ -135,6 +140,9 @@ export async function handler(event, context) {
         body_text: text || '',
         body_html: html || '',
         headers: emailHeaders || {},
+        message_id: messageId,
+        in_reply_to: inReplyTo,
+        references: referencesHeader,
         attachments: attachments || [],
         is_read: false,
         is_archived: false,
