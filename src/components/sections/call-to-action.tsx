@@ -63,7 +63,7 @@ const CallToAction: React.FC = () => {
           >
             Ready to stop losing
             <br />
-            <span className="text-[#35c677]">customers to your competition?</span>
+            customers to your competition?
           </motion.h2>
 
           {/* Supporting Text */}

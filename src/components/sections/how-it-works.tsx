@@ -148,12 +148,11 @@ const HowItWorks: React.FC = () => {
             <p className="text-gray-600 mb-6">
               No problem. We build fast, mobile-friendly websites that Google loves.
             </p>
-            <Link href="/services/websites-apps">
+            <Link href="/services/websites-apps" onClick={() => window.scrollTo(0, 0)}>
               <Button
-                variant="outline"
-                className="w-full border-[#191919] text-[#191919] hover:bg-[#191919] hover:text-white"
+                className="w-full bg-[#35c677] hover:bg-[#2ba866] text-white rounded-full"
               >
-                Learn More
+                Get one now
                 <ArrowRight className="ml-2 h-4 w-4" />
               </Button>
             </Link>
@@ -168,10 +167,10 @@ const HowItWorks: React.FC = () => {
           viewport={{ once: true }}
           transition={{ duration: 0.6, delay: 0.6 }}
         >
-          <Link href="/services/seo-local-search">
+          <Link href="/services/seo-local-search" onClick={() => window.scrollTo(0, 0)}>
             <Button
               size="lg"
-              className="text-lg px-10 py-6 h-auto bg-[#35c677] hover:bg-[#2ba866] text-white shadow-lg hover:shadow-xl transition-all duration-300"
+              className="text-lg px-10 py-6 h-auto bg-[#35c677] hover:bg-[#2ba866] text-white shadow-lg hover:shadow-xl transition-all duration-300 rounded-full"
             >
               <span>See Our SEO Services</span>
               <ArrowRight className="ml-2 h-5 w-5" />

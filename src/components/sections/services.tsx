@@ -13,7 +13,8 @@ const Services: React.FC = () => {
       painPoint: "Tired of waiting months for SEO to kick in?",
       description: "Get in front of customers today with Google & Meta ads. We manage everything. You just answer the phone.",
       path: '/services/paid-advertising',
-      gradient: 'from-orange-500 to-red-500'
+      gradient: 'from-orange-500 to-red-500',
+      buttonText: "Let's go"
     },
     {
       icon: Share2,
@@ -21,7 +22,8 @@ const Services: React.FC = () => {
       painPoint: "You know you should be posting. But who has time?",
       description: "We handle your Instagram, Facebook & TikTok so you don't have to. Custom content, scheduled daily.",
       path: '/services/social-media-marketing',
-      gradient: 'from-pink-500 to-rose-500'
+      gradient: 'from-pink-500 to-rose-500',
+      buttonText: "Get started"
     },
     {
       icon: Phone,
@@ -29,7 +31,8 @@ const Services: React.FC = () => {
       painPoint: "Missing calls means missing money.",
       description: "Our AI answers 24/7. Takes orders, books appointments, never drops the ball. Even at 2am.",
       path: '/services/ai-phone-agents',
-      gradient: 'from-purple-500 to-pink-500'
+      gradient: 'from-purple-500 to-pink-500',
+      buttonText: "Learn more"
     },
     {
       icon: MessageCircle,
@@ -37,7 +40,8 @@ const Services: React.FC = () => {
       painPoint: "Customers expect instant answers.",
       description: "Our chatbots handle inquiries around the clock while you sleep. Smart enough to know when to escalate.",
       path: '/services/ai-customer-support',
-      gradient: 'from-blue-500 to-cyan-500'
+      gradient: 'from-blue-500 to-cyan-500',
+      buttonText: "Learn more"
     },
     {
       icon: Laptop,
@@ -45,7 +49,8 @@ const Services: React.FC = () => {
       painPoint: "Your website is either making you money or costing you customers.",
       description: "We build fast, mobile-friendly sites that actually convert visitors into paying customers.",
       path: '/services/websites-apps',
-      gradient: 'from-indigo-500 to-purple-500'
+      gradient: 'from-indigo-500 to-purple-500',
+      buttonText: "Learn more"
     }
   ]
 
@@ -94,13 +99,12 @@ const Services: React.FC = () => {
 
                     <p className="text-gray-600 mb-6 flex-grow">{service.description}</p>
 
-                    <Link href={service.path}>
+                    <Link href={service.path} onClick={() => window.scrollTo(0, 0)}>
                       <Button
-                        variant="ghost"
-                        className="w-full justify-between text-[#191919] hover:bg-[#191919]/5"
+                        className="w-full bg-[#35c677] hover:bg-[#2ba866] text-white rounded-full"
                       >
-                        <span>Learn More</span>
-                        <ArrowRight className="h-4 w-4" />
+                        <span>{service.buttonText}</span>
+                        <ArrowRight className="ml-2 h-4 w-4" />
                       </Button>
                     </Link>
                   </CardContent>
