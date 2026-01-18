@@ -41,6 +41,7 @@ interface MarketingContact {
   company: string | null
   role: string | null
   phone: string | null
+  city: string | null
   notes: string | null
   created_at: string
 }
@@ -146,6 +147,9 @@ const AdminMarketingEmail: React.FC = () => {
   const [isImportModalOpen, setIsImportModalOpen] = useState(false)
   const [importTargetListId, setImportTargetListId] = useState<number | null>(null)
   const [importLoading, setImportLoading] = useState(false)
+  const [viewingList, setViewingList] = useState<ContactList | null>(null)
+  const [listMembers, setListMembers] = useState<MarketingContact[]>([])
+  const [listMembersLoading, setListMembersLoading] = useState(false)
 
   // New contact form
   const [newContact, setNewContact] = useState({
@@ -154,6 +158,7 @@ const AdminMarketingEmail: React.FC = () => {
     company: '',
     role: '',
     phone: '',
+    city: '',
     notes: ''
   })
 
@@ -249,7 +254,7 @@ const AdminMarketingEmail: React.FC = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['marketing-contacts'] })
       setIsAddContactModalOpen(false)
-      setNewContact({ email: '', name: '', company: '', role: '', phone: '', notes: '' })
+      setNewContact({ email: '', name: '', company: '', role: '', phone: '', city: '', notes: '' })
       showSuccess('Contact added successfully')
     },
     onError: (error: any) => {
@@ -364,9 +369,50 @@ const AdminMarketingEmail: React.FC = () => {
     return (data || []).map((item: any) => item.marketing_contacts).filter(Boolean)
   }
 
+  // View list details
+  const viewList = async (list: ContactList) => {
+    setViewingList(list)
+    setListMembersLoading(true)
+    const members = await loadListContacts(list.id)
+    setListMembers(members)
+    setListMembersLoading(false)
+  }
+
+  // Remove contact from list
+  const removeFromList = async (contactId: number) => {
+    if (!viewingList) return
+    await supabase
+      .from('contact_list_members')
+      .delete()
+      .eq('list_id', viewingList.id)
+      .eq('contact_id', contactId)
+
+    setListMembers(prev => prev.filter(c => c.id !== contactId))
+
+    // Update list count
+    await supabase
+      .from('contact_lists')
+      .update({ member_count: listMembers.length - 1 })
+      .eq('id', viewingList.id)
+
+    queryClient.invalidateQueries({ queryKey: ['contact-lists'] })
+  }
+
   const showSuccess = (msg: string) => {
     setEmailSuccess(msg)
     setTimeout(() => setEmailSuccess(''), 3000)
+  }
+
+  // Replace placeholders in text (case-insensitive)
+  const replacePlaceholders = (text: string, contact: MarketingContact): string => {
+    return text
+      .replace(/\[name\]/gi, (contact.name || 'there').split(' ')[0])
+      .replace(/\[fullname\]/gi, contact.name || '')
+      .replace(/\[company\]/gi, contact.company || '')
+      .replace(/\[role\]/gi, contact.role || '')
+      .replace(/\[city\]/gi, contact.city || '')
+      .replace(/\[email\]/gi, contact.email || '')
+      .replace(/\[phone\]/gi, contact.phone || '')
   }
 
   // Handle file attachment
@@ -640,17 +686,15 @@ const AdminMarketingEmail: React.FC = () => {
       setMassEmailProgress(prev => ({ ...prev, current: i + 1 }))
 
       try {
-        const personalizedBody = emailForm.body
-          .replace(/\[Name\]/g, (contact.name || 'there').split(' ')[0])
-          .replace(/\[Company\]/g, contact.company || '')
-          .replace(/\[Role\]/g, contact.role || '')
+        const personalizedSubject = replacePlaceholders(emailForm.subject, contact)
+        const personalizedBody = replacePlaceholders(emailForm.body, contact)
 
         const response = await fetch('/.netlify/functions/send-marketing-email', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             to: contact.email,
-            subject: emailForm.subject,
+            subject: personalizedSubject,
             body: personalizedBody,
             attachments: attachmentsBase64,
             attachmentUrls: attachmentUrls,
@@ -664,7 +708,7 @@ const AdminMarketingEmail: React.FC = () => {
           successCount++
           await supabase.from('sent_emails').insert([{
             recipient_email: contact.email,
-            subject: emailForm.subject,
+            subject: personalizedSubject,
             body: personalizedBody,
             used_html_template: emailForm.useHtmlTemplate,
             attachment_count: attachments.length,
@@ -714,6 +758,7 @@ const AdminMarketingEmail: React.FC = () => {
       const companyIdx = headers.findIndex(h => h.includes('company') || h.includes('organization') || h.includes('business'))
       const roleIdx = headers.findIndex(h => h.includes('role') || h.includes('title') || h.includes('position') || h.includes('job'))
       const phoneIdx = headers.findIndex(h => h.includes('phone') || h.includes('tel'))
+      const cityIdx = headers.findIndex(h => h.includes('city') || h.includes('location') || h.includes('town'))
 
       if (emailIdx === -1) {
         setEmailError('CSV must have an email column')
@@ -746,7 +791,8 @@ const AdminMarketingEmail: React.FC = () => {
             name: nameIdx !== -1 ? values[nameIdx] || null : null,
             company: companyIdx !== -1 ? values[companyIdx] || null : null,
             role: roleIdx !== -1 ? values[roleIdx] || null : null,
-            phone: phoneIdx !== -1 ? values[phoneIdx] || null : null
+            phone: phoneIdx !== -1 ? values[phoneIdx] || null : null,
+            city: cityIdx !== -1 ? values[cityIdx] || null : null
           })
         }
       }
@@ -1176,7 +1222,7 @@ const AdminMarketingEmail: React.FC = () => {
                             </option>
                           ))}
                         </select>
-                        <p className="text-xs text-gray-500 mt-1">Use [Name], [Company], [Role] for personalization</p>
+                        <p className="text-xs text-gray-500 mt-1">Placeholders available: [name], [company], [city], [role]</p>
                       </div>
                     )}
 
@@ -1184,21 +1230,29 @@ const AdminMarketingEmail: React.FC = () => {
                     <div>
                       <label className="text-sm font-medium mb-1.5 block">Subject</label>
                       <Input
-                        placeholder="Email subject"
+                        placeholder={sendMode === 'list' ? "Problem with [company]'s ranking in [city]" : "Email subject"}
                         value={emailForm.subject}
                         onChange={(e) => setEmailForm({ ...emailForm, subject: e.target.value })}
                       />
+                      {sendMode === 'list' && (
+                        <p className="text-xs text-gray-500 mt-1">Use placeholders: [name], [company], [city], [role]</p>
+                      )}
                     </div>
 
                     {/* Body */}
                     <div>
                       <label className="text-sm font-medium mb-1.5 block">Message</label>
                       <Textarea
-                        placeholder="Write your message..."
+                        placeholder={sendMode === 'list' ? "Hi [name],\n\nI was looking at [company] and noticed..." : "Write your message..."}
                         rows={10}
                         value={emailForm.body}
                         onChange={(e) => setEmailForm({ ...emailForm, body: e.target.value })}
                       />
+                      {sendMode === 'list' && (
+                        <p className="text-xs text-gray-500 mt-1">
+                          Placeholders: [name] (first name), [fullname], [company], [city], [role], [email], [phone]
+                        </p>
+                      )}
                     </div>
 
                     {/* Attachments */}
@@ -1535,57 +1589,165 @@ const AdminMarketingEmail: React.FC = () => {
           {activeTab === 'lists' && (
             <div className="h-full overflow-y-auto p-4 lg:p-6">
               <div className="max-w-4xl mx-auto">
-                <div className="flex items-center justify-between mb-4">
-                  <h2 className="text-lg font-semibold">{contactLists.length} Lists</h2>
-                  <Button size="sm" onClick={() => setIsCreateListModalOpen(true)} className="bg-[#35c677] hover:bg-[#2aa35f]">
-                    <Plus className="h-4 w-4 mr-2" />
-                    Create
-                  </Button>
-                </div>
-                {listsLoading ? (
-                  <div className="flex items-center justify-center h-32">
-                    <RefreshCw className="h-5 w-5 animate-spin text-gray-400" />
-                  </div>
-                ) : contactLists.length === 0 ? (
-                  <Card>
-                    <CardContent className="py-12 text-center text-gray-500">
-                      <List className="h-10 w-10 mx-auto mb-2 text-gray-300" />
-                      <p>No lists yet</p>
-                    </CardContent>
-                  </Card>
-                ) : (
-                  <div className="space-y-3">
-                    {contactLists.map((list) => (
-                      <Card key={list.id}>
-                        <CardContent className="p-4">
-                          <div className="flex items-center justify-between gap-4">
-                            <div>
-                              <h3 className="font-medium">{list.name}</h3>
-                              <p className="text-sm text-gray-500">{list.description || 'No description'}</p>
-                              <p className="text-xs text-gray-400 mt-1">{list.member_count} contacts</p>
-                            </div>
-                            <div className="flex gap-2">
-                              <Button
-                                variant="outline"
-                                size="sm"
-                                onClick={() => {
-                                  setSelectedListForSend(list.id)
-                                  setSendMode('list')
-                                  setActiveTab('compose')
-                                }}
-                              >
-                                <Mail className="h-4 w-4 mr-1" />
-                                <span className="hidden sm:inline">Email</span>
-                              </Button>
-                              <Button variant="outline" size="sm" onClick={() => deleteListMutation.mutate(list.id)}>
-                                <Trash2 className="h-4 w-4 text-red-500" />
-                              </Button>
-                            </div>
-                          </div>
+                {viewingList ? (
+                  // List Detail View
+                  <>
+                    <div className="flex items-center justify-between mb-4">
+                      <div className="flex items-center gap-3">
+                        <Button variant="ghost" size="sm" onClick={() => setViewingList(null)}>
+                          <ChevronLeft className="h-4 w-4 mr-1" />
+                          Back
+                        </Button>
+                        <div>
+                          <h2 className="text-lg font-semibold">{viewingList.name}</h2>
+                          <p className="text-sm text-gray-500">{listMembers.length} contacts</p>
+                        </div>
+                      </div>
+                      <div className="flex gap-2">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => {
+                            setImportTargetListId(viewingList.id)
+                            setIsImportModalOpen(true)
+                          }}
+                        >
+                          <Upload className="h-4 w-4 mr-2" />
+                          Import CSV
+                        </Button>
+                        <Button
+                          size="sm"
+                          onClick={() => {
+                            setSelectedListForSend(viewingList.id)
+                            setSendMode('list')
+                            setActiveTab('compose')
+                          }}
+                          className="bg-[#35c677] hover:bg-[#2aa35f]"
+                        >
+                          <Mail className="h-4 w-4 mr-2" />
+                          Email List
+                        </Button>
+                      </div>
+                    </div>
+
+                    {listMembersLoading ? (
+                      <div className="flex items-center justify-center h-32">
+                        <RefreshCw className="h-5 w-5 animate-spin text-gray-400" />
+                      </div>
+                    ) : listMembers.length === 0 ? (
+                      <Card>
+                        <CardContent className="py-12 text-center text-gray-500">
+                          <Users className="h-10 w-10 mx-auto mb-2 text-gray-300" />
+                          <p className="mb-4">No contacts in this list yet</p>
+                          <Button
+                            variant="outline"
+                            onClick={() => {
+                              setImportTargetListId(viewingList.id)
+                              setIsImportModalOpen(true)
+                            }}
+                          >
+                            <Upload className="h-4 w-4 mr-2" />
+                            Import from CSV
+                          </Button>
                         </CardContent>
                       </Card>
-                    ))}
-                  </div>
+                    ) : (
+                      <Card>
+                        <div className="overflow-x-auto">
+                          <table className="w-full text-sm">
+                            <thead className="bg-gray-50 border-b">
+                              <tr>
+                                <th className="text-left py-3 px-4 font-medium">Email</th>
+                                <th className="text-left py-3 px-4 font-medium hidden sm:table-cell">Name</th>
+                                <th className="text-left py-3 px-4 font-medium hidden md:table-cell">Company</th>
+                                <th className="text-left py-3 px-4 font-medium hidden lg:table-cell">City</th>
+                                <th className="text-right py-3 px-4 font-medium">Actions</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              {listMembers.map((contact) => (
+                                <tr key={contact.id} className="border-b hover:bg-gray-50">
+                                  <td className="py-3 px-4">
+                                    <div>{contact.email}</div>
+                                    <div className="sm:hidden text-xs text-gray-500">{contact.name || '-'}</div>
+                                  </td>
+                                  <td className="py-3 px-4 hidden sm:table-cell">{contact.name || '-'}</td>
+                                  <td className="py-3 px-4 hidden md:table-cell">{contact.company || '-'}</td>
+                                  <td className="py-3 px-4 hidden lg:table-cell">{contact.city || '-'}</td>
+                                  <td className="py-3 px-4 text-right">
+                                    <Button
+                                      variant="outline"
+                                      size="sm"
+                                      onClick={() => removeFromList(contact.id)}
+                                      className="text-red-500 hover:bg-red-50"
+                                    >
+                                      <X className="h-4 w-4" />
+                                    </Button>
+                                  </td>
+                                </tr>
+                              ))}
+                            </tbody>
+                          </table>
+                        </div>
+                      </Card>
+                    )}
+                  </>
+                ) : (
+                  // Lists Overview
+                  <>
+                    <div className="flex items-center justify-between mb-4">
+                      <h2 className="text-lg font-semibold">{contactLists.length} Lists</h2>
+                      <Button size="sm" onClick={() => setIsCreateListModalOpen(true)} className="bg-[#35c677] hover:bg-[#2aa35f]">
+                        <Plus className="h-4 w-4 mr-2" />
+                        Create
+                      </Button>
+                    </div>
+                    {listsLoading ? (
+                      <div className="flex items-center justify-center h-32">
+                        <RefreshCw className="h-5 w-5 animate-spin text-gray-400" />
+                      </div>
+                    ) : contactLists.length === 0 ? (
+                      <Card>
+                        <CardContent className="py-12 text-center text-gray-500">
+                          <List className="h-10 w-10 mx-auto mb-2 text-gray-300" />
+                          <p>No lists yet</p>
+                        </CardContent>
+                      </Card>
+                    ) : (
+                      <div className="space-y-3">
+                        {contactLists.map((list) => (
+                          <Card key={list.id} className="cursor-pointer hover:shadow-md transition-shadow" onClick={() => viewList(list)}>
+                            <CardContent className="p-4">
+                              <div className="flex items-center justify-between gap-4">
+                                <div>
+                                  <h3 className="font-medium">{list.name}</h3>
+                                  <p className="text-sm text-gray-500">{list.description || 'No description'}</p>
+                                  <p className="text-xs text-gray-400 mt-1">{list.member_count} contacts</p>
+                                </div>
+                                <div className="flex gap-2" onClick={(e) => e.stopPropagation()}>
+                                  <Button
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={() => {
+                                      setSelectedListForSend(list.id)
+                                      setSendMode('list')
+                                      setActiveTab('compose')
+                                    }}
+                                  >
+                                    <Mail className="h-4 w-4 mr-1" />
+                                    <span className="hidden sm:inline">Email</span>
+                                  </Button>
+                                  <Button variant="outline" size="sm" onClick={() => deleteListMutation.mutate(list.id)}>
+                                    <Trash2 className="h-4 w-4 text-red-500" />
+                                  </Button>
+                                </div>
+                              </div>
+                            </CardContent>
+                          </Card>
+                        ))}
+                      </div>
+                    )}
+                  </>
                 )}
               </div>
             </div>
@@ -1641,12 +1803,19 @@ const AdminMarketingEmail: React.FC = () => {
                   />
                 </div>
                 <div>
-                  <label className="text-sm font-medium mb-1.5 block">Phone</label>
+                  <label className="text-sm font-medium mb-1.5 block">City</label>
                   <Input
-                    value={newContact.phone}
-                    onChange={(e) => setNewContact({ ...newContact, phone: e.target.value })}
+                    value={newContact.city}
+                    onChange={(e) => setNewContact({ ...newContact, city: e.target.value })}
                   />
                 </div>
+              </div>
+              <div>
+                <label className="text-sm font-medium mb-1.5 block">Phone</label>
+                <Input
+                  value={newContact.phone}
+                  onChange={(e) => setNewContact({ ...newContact, phone: e.target.value })}
+                />
               </div>
               <Button type="submit" className="w-full bg-[#35c677] hover:bg-[#2aa35f]" disabled={addContactMutation.isPending}>
                 {addContactMutation.isPending ? 'Adding...' : 'Add Contact'}
@@ -1747,6 +1916,7 @@ const AdminMarketingEmail: React.FC = () => {
                   <span>name</span>
                   <span>company / organization</span>
                   <span>role / title / position</span>
+                  <span>city / location</span>
                   <span>phone</span>
                 </div>
               </div>
