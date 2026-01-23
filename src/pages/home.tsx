@@ -8,7 +8,6 @@ import Guarantee from '../components/sections/guarantee'
 import HowItWorks from '../components/sections/how-it-works'
 import Services from '../components/sections/services'
 import Benefits from '../components/sections/benefits'
-import Testimonials from '../components/sections/testimonials'
 import CallToAction from '../components/sections/call-to-action'
 
 const HomePage: React.FC = () => {
@@ -30,7 +29,6 @@ const HomePage: React.FC = () => {
         <HowItWorks />
         <Services />
         <Benefits />
-        <Testimonials />
         <CallToAction />
       </main>
       <Footer />
