@@ -87,7 +87,7 @@ const Contact: React.FC = () => {
     {
       icon: MapPin,
       title: 'Visit Us',
-      content: companySettings?.company_address || 'San Francisco, CA',
+      content: companySettings?.company_address || '224 Thompson St, Unit #2030, Hendersonville, NC 28792',
       description: 'Come say hello at our office'
     }
   ]

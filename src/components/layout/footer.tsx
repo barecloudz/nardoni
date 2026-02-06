@@ -3,7 +3,7 @@ import { Link } from 'wouter'
 import { motion } from 'framer-motion'
 import { useQuery } from '@tanstack/react-query'
 import { getCompanySettings } from '../../lib/supabase'
-import { Cloud, Mail, Phone, MapPin, Twitter, Linkedin, Instagram, Youtube } from 'lucide-react'
+import { Cloud, Mail, Phone, MapPin, Facebook, Linkedin, Instagram } from 'lucide-react'
 
 const Footer: React.FC = () => {
   // Fetch company settings for dynamic footer content
@@ -38,23 +38,18 @@ const Footer: React.FC = () => {
   const socialLinks = [
     { 
       icon: Instagram, 
-      href: companySettings?.social_instagram || 'https://www.instagram.com/barecloudz/', 
+      href: companySettings?.social_instagram || 'https://www.instagram.com/nardonidigital/', 
       label: 'Instagram' 
     },
-    { 
-      icon: Twitter, 
-      href: companySettings?.social_facebook || 'https://www.facebook.com/barecloudz', 
-      label: 'Facebook' 
+    {
+      icon: Facebook,
+      href: companySettings?.social_facebook || 'https://www.facebook.com/nardonidigital',
+      label: 'Facebook'
     },
-    { 
-      icon: Linkedin, 
-      href: companySettings?.social_linkedin || 'https://linkedin.com/company/barecloudz', 
-      label: 'LinkedIn' 
-    },
-    { 
-      icon: Youtube, 
-      href: companySettings?.social_youtube || 'https://youtube.com/barecloudz', 
-      label: 'YouTube' 
+    {
+      icon: Linkedin,
+      href: companySettings?.social_linkedin || 'https://www.linkedin.com/company/nardoni-digital-llc',
+      label: 'LinkedIn'
     }
   ]
 
@@ -116,7 +111,7 @@ const Footer: React.FC = () => {
                 <div className="flex items-center space-x-3">
                   <MapPin className="h-5 w-5 text-[#35c677]" />
                   <span className="text-gray-300">
-                    {companySettings?.company_address || 'San Francisco, CA'}
+                    {companySettings?.company_address || '224 Thompson St, Unit #2030, Hendersonville, NC 28792'}
                   </span>
                 </div>
               </motion.div>
