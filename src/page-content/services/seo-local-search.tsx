@@ -114,7 +114,7 @@ const SEOLocalSearch: React.FC = () => {
               Stop losing customers to your competitors. For $500/month, we guarantee first-page rankings for your local business — and if we don't hit it in 90 days, we keep working for free until we do.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center mb-8">
-              <Link href="/book-a-call">
+              <Link href="/book-a-call?service=seo">
                 <motion.div
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
@@ -256,7 +256,7 @@ const SEOLocalSearch: React.FC = () => {
               viewport={{ once: true }}
               transition={{ delay: 0.3 }}
             >
-              <Link href="/book-a-call">
+              <Link href="/book-a-call?service=seo">
                 <motion.div
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
@@ -374,7 +374,7 @@ const SEOLocalSearch: React.FC = () => {
             <p className="text-xl text-white/90 mb-8 max-w-2xl mx-auto">
               We're confident in our SEO system because we've done it for many businesses just like yours. If we don't get you on the first page of Google within 90 days, we keep working until we do — at no extra cost.
             </p>
-            <Link href="/book-a-call">
+            <Link href="/book-a-call?service=seo">
               <motion.div
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}

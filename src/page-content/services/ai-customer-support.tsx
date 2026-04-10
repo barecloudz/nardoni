@@ -236,7 +236,7 @@ const AICustomerSupport: React.FC = () => {
             <p className="text-xl text-gray-300 mb-8">
               Join hundreds of local businesses that have already upgraded their customer support with AI.
             </p>
-            <Link href="/book-a-call">
+            <Link href="/book-a-call?service=ai-support">
               <Button
                 size="lg"
                 className="text-lg px-10 py-6 h-auto bg-[#35c677] hover:bg-[#2ba866] text-white shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 mb-6"

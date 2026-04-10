@@ -107,7 +107,7 @@ const AIPhoneAgents: React.FC = () => {
               Transform your phone system with intelligent AI agents that answer calls 24/7, handle orders, schedule appointments, and provide customer support automatically.
             </p>
             <div className="flex justify-center">
-              <Link href="/book-a-call">
+              <Link href="/book-a-call?service=ai-phone">
                 <Button size="lg" className="bg-purple-600 hover:bg-purple-700 text-white px-10 py-6 text-lg rounded-full">
                   Get Started
                   <ArrowRight className="ml-2 h-5 w-5" />
@@ -265,7 +265,7 @@ const AIPhoneAgents: React.FC = () => {
             <p className="text-xl text-purple-100 mb-8">
               Join hundreds of local businesses that have already automated their phone systems with AI.
             </p>
-            <Link href="/book-a-call">
+            <Link href="/book-a-call?service=ai-phone">
               <Button
                 size="lg"
                 className="text-lg px-10 py-6 h-auto bg-white text-purple-600 hover:bg-gray-100 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 rounded-full"
