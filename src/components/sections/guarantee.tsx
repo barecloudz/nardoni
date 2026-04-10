@@ -1,5 +1,7 @@
+'use client'
+
 import React from 'react'
-import { Link } from 'wouter'
+import Link from 'next/link'
 import { motion } from 'framer-motion'
 import { Button } from '../ui/button'
 import { Shield, ArrowRight } from 'lucide-react'
@@ -57,10 +59,10 @@ const Guarantee: React.FC = () => {
             className="mb-12"
           >
             <p className="text-xl md:text-2xl text-gray-300 mb-6">
-              Guaranteed. If we don't deliver, you get your money back.
+              Guaranteed. If we don't deliver in 90 days, we keep working for free until we do.
             </p>
             <p className="text-lg text-gray-400">
-              No questions asked. No fine print. No excuses.
+              $500/month. No long-term contracts. No excuses.
             </p>
           </motion.div>
 
