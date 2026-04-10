@@ -2,23 +2,25 @@ import type { Metadata } from 'next'
 import { createClient } from '@supabase/supabase-js'
 import BlogPostContent from '../../../../src/page-content/blog/post'
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || ''
+const supabaseAnonKey = process.env.NEXT_PUBLIC_ANON_KEY || ''
 
 function getSupabase() {
   return createClient(supabaseUrl, supabaseAnonKey)
 }
 
 export async function generateStaticParams() {
-  const supabase = getSupabase()
-  const { data: posts } = await supabase
-    .from('blog_posts')
-    .select('slug')
-    .eq('status', 'published')
-
-  return (posts || []).map((post) => ({
-    slug: post.slug,
-  }))
+  if (!supabaseUrl || !supabaseAnonKey) return []
+  try {
+    const supabase = getSupabase()
+    const { data: posts } = await supabase
+      .from('blog_posts')
+      .select('slug')
+      .eq('status', 'published')
+    return (posts || []).map((post) => ({ slug: post.slug }))
+  } catch {
+    return []
+  }
 }
 
 export async function generateMetadata({
@@ -26,6 +28,7 @@ export async function generateMetadata({
 }: {
   params: { slug: string }
 }): Promise<Metadata> {
+  if (!supabaseUrl || !supabaseAnonKey) return { title: 'Blog | Nardoni Digital' }
   const supabase = getSupabase()
   const { data: post } = await supabase
     .from('blog_posts')
