@@ -176,7 +176,7 @@ const HowItWorks: React.FC = () => {
               <span>See Our SEO Services</span>
               <ArrowRight className="ml-2 h-5 w-5" />
             </Button>
-          </Link>
+          </a>
         </motion.div>
       </div>
     </section>
