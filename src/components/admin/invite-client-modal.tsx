@@ -1,3 +1,5 @@
+'use client'
+
 import React from 'react'
 import { motion } from 'framer-motion'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
@@ -74,7 +76,7 @@ const InviteClientModal: React.FC<InviteClientModalProps> = ({ isOpen, onClose, 
       if (!session) throw new Error('Not authenticated')
 
       // Call the edge function to create the client account
-      const apiUrl = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/invite-client`
+      const apiUrl = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/functions/v1/invite-client`
       
       const response = await fetch(apiUrl, {
         method: 'POST',

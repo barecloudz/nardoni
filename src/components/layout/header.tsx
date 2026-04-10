@@ -1,5 +1,8 @@
+'use client'
+
 import React from 'react'
-import { Link, useLocation } from 'wouter'
+import Link from 'next/link'
+import { usePathname } from 'next/navigation'
 import { motion } from 'framer-motion'
 import { useQuery } from '@tanstack/react-query'
 import { getCompanySettings } from '../../lib/supabase'
@@ -7,7 +10,7 @@ import { Button } from '../ui/button'
 import { Cloud, Menu, X, Phone } from 'lucide-react'
 
 const Header: React.FC = () => {
-  const [location] = useLocation()
+  const location = usePathname()
   const [isMenuOpen, setIsMenuOpen] = React.useState(false)
 
   // Fetch company settings for dynamic header content
@@ -54,13 +57,16 @@ const Header: React.FC = () => {
           {/* Desktop Navigation */}
           <nav className="hidden lg:flex items-center space-x-8">
             {navItems.map((item) => (
-              <Link key={item.href} href={item.href}>
-                <motion.a
-                  className={`text-base font-medium transition-colors relative ${
-                    location === item.href
-                      ? 'text-[#35c677]'
-                      : 'text-gray-700 hover:text-[#35c677]'
-                  }`}
+              <Link
+                key={item.href}
+                href={item.href}
+                className={`text-base font-medium transition-colors relative ${
+                  location === item.href
+                    ? 'text-[#35c677]'
+                    : 'text-gray-700 hover:text-[#35c677]'
+                }`}
+              >
+                <motion.span
                   whileHover={{ y: -2 }}
                   transition={{ duration: 0.2 }}
                 >
@@ -71,7 +77,7 @@ const Header: React.FC = () => {
                       layoutId="activeTab"
                     />
                   )}
-                </motion.a>
+                </motion.span>
               </Link>
             ))}
           </nav>
@@ -116,19 +122,22 @@ const Header: React.FC = () => {
           >
             <div className="flex flex-col space-y-4">
               {navItems.map((item) => (
-                <Link key={item.href} href={item.href}>
-                  <motion.a
-                    className={`block text-base font-medium transition-colors py-3 ${
-                      location === item.href
-                        ? 'text-[#35c677]'
-                        : 'text-gray-700 hover:text-[#35c677]'
-                    }`}
-                    onClick={() => setIsMenuOpen(false)}
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className={`block text-base font-medium transition-colors py-3 ${
+                    location === item.href
+                      ? 'text-[#35c677]'
+                      : 'text-gray-700 hover:text-[#35c677]'
+                  }`}
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  <motion.span
                     whileHover={{ x: 4 }}
                     transition={{ duration: 0.2 }}
                   >
                     {item.label}
-                  </motion.a>
+                  </motion.span>
                 </Link>
               ))}
               <div className="flex flex-col space-y-3 pt-4 border-t border-gray-200">

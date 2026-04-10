@@ -1,3 +1,5 @@
+'use client'
+
 import React from 'react'
 import { motion } from 'framer-motion'
 import { useMutation, useQueryClient, useQuery } from '@tanstack/react-query'
@@ -18,7 +20,7 @@ const documentSchema = z.object({
   size: z.number().min(0, 'Size must be positive').default(0),
 })
 
-type DocumentFormData = z.infer<typeof documentSchema>
+type DocumentFormData = z.input<typeof documentSchema>
 
 interface UploadDocumentModalProps {
   isOpen: boolean

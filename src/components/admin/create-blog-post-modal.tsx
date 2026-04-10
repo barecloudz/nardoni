@@ -1,3 +1,5 @@
+'use client'
+
 import React from 'react'
 import { motion } from 'framer-motion'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
@@ -20,7 +22,7 @@ const blogPostSchema = z.object({
   status: z.enum(['draft', 'published']).default('draft'),
 })
 
-type BlogPostFormData = z.infer<typeof blogPostSchema>
+type BlogPostFormData = z.input<typeof blogPostSchema>
 
 interface CreateBlogPostModalProps {
   isOpen: boolean

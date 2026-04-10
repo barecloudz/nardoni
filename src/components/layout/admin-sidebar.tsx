@@ -1,5 +1,8 @@
+'use client'
+
 import React, { useState } from 'react'
-import { Link, useLocation } from 'wouter'
+import Link from 'next/link'
+import { usePathname } from 'next/navigation'
 import { motion } from 'framer-motion'
 import { useQuery } from '@tanstack/react-query'
 import {
@@ -23,7 +26,7 @@ import { authService } from '../../lib/auth'
 import { supabase } from '../../lib/supabase'
 
 const AdminSidebar: React.FC = () => {
-  const [location] = useLocation()
+  const location = usePathname()
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
 
   // Fetch unread contacts count
@@ -108,16 +111,20 @@ const AdminSidebar: React.FC = () => {
               const isActive = location === item.href
 
               return (
-                <Link key={item.href} href={item.href}>
-                  <motion.a
-                    className={`flex items-center justify-between px-4 py-3 rounded-lg transition-colors ${
-                      isActive
-                        ? 'bg-[#35c677] text-white'
-                        : 'text-gray-600 hover:bg-gray-50 hover:text-[#35c677]'
-                    }`}
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className={`flex items-center justify-between px-4 py-3 rounded-lg transition-colors ${
+                    isActive
+                      ? 'bg-[#35c677] text-white'
+                      : 'text-gray-600 hover:bg-gray-50 hover:text-[#35c677]'
+                  }`}
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  <motion.span
+                    className="flex items-center justify-between w-full"
                     whileHover={{ x: 4 }}
                     whileTap={{ scale: 0.98 }}
-                    onClick={() => setIsMobileMenuOpen(false)}
                   >
                     <div className="flex items-center space-x-3">
                       <Icon className="h-5 w-5" />
@@ -133,7 +140,7 @@ const AdminSidebar: React.FC = () => {
                         {unreadCount}
                       </span>
                     )}
-                  </motion.a>
+                  </motion.span>
                 </Link>
               )
             })}

@@ -11,8 +11,8 @@ export const config = {
 export async function handler(event, context) {
   console.log('Processing scheduled emails at:', new Date().toISOString());
 
-  const supabaseUrl = process.env.VITE_SUPABASE_URL || process.env.SUPABASE_URL;
-  const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.VITE_SUPABASE_ANON_KEY;
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL;
+  const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
   const RESEND_API_KEY = process.env.RESEND_API_KEY;
 
   if (!supabaseUrl || !supabaseKey) {

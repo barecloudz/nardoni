@@ -1,14 +1,16 @@
+'use client'
+
 import React from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { motion } from 'framer-motion'
-import { useLocation } from 'wouter'
+import { useRouter } from 'next/navigation'
 import { getClients, getMarketingPlans, getInvoices, getContacts } from '../../lib/supabase'
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card'
 import { Badge } from '../ui/badge'
 import { Users, DollarSign, FileText, TrendingUp, Clock, MessageSquare } from 'lucide-react'
 
 const DashboardOverview: React.FC = () => {
-  const [, navigate] = useLocation()
+  const router = useRouter()
 
   // Fetch dashboard data
   const { data: clients = [] } = useQuery({
@@ -241,7 +243,7 @@ const DashboardOverview: React.FC = () => {
                   className="p-4 bg-[#35c677] text-white rounded-lg hover:bg-[#2ba866] transition-colors"
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
-                  onClick={() => navigate('/admin/clients')}
+                  onClick={() => router.push('/admin/clients')}
                 >
                   <Users className="h-6 w-6 mb-2" />
                   <span className="text-sm font-medium">Add Client</span>
@@ -250,7 +252,7 @@ const DashboardOverview: React.FC = () => {
                   className="p-4 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
-                  onClick={() => navigate('/admin/marketing-plans')}
+                  onClick={() => router.push('/admin/marketing-plans')}
                 >
                   <FileText className="h-6 w-6 mb-2" />
                   <span className="text-sm font-medium">Create Plan</span>
@@ -259,7 +261,7 @@ const DashboardOverview: React.FC = () => {
                   className="p-4 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
-                  onClick={() => navigate('/admin/invoices')}
+                  onClick={() => router.push('/admin/invoices')}
                 >
                   <DollarSign className="h-6 w-6 mb-2" />
                   <span className="text-sm font-medium">Send Invoice</span>
@@ -268,7 +270,7 @@ const DashboardOverview: React.FC = () => {
                   className="p-4 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition-colors"
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
-                  onClick={() => navigate('/admin/contacts')}
+                  onClick={() => router.push('/admin/contacts')}
                 >
                   <MessageSquare className="h-6 w-6 mb-2" />
                   <span className="text-sm font-medium">View Contacts</span>

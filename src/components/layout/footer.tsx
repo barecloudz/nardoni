@@ -1,5 +1,7 @@
+'use client'
+
 import React from 'react'
-import { Link } from 'wouter'
+import Link from 'next/link'
 import { motion } from 'framer-motion'
 import { useQuery } from '@tanstack/react-query'
 import { getCompanySettings } from '../../lib/supabase'
@@ -159,14 +161,13 @@ const Footer: React.FC = () => {
                   <ul className="space-y-3">
                     {section.links.map((link) => (
                       <li key={link.label}>
-                        <Link href={link.href}>
-                          <motion.a
-                            className="text-gray-300 hover:text-[#35c677] transition-colors duration-200 text-sm font-medium"
+                        <Link href={link.href} className="text-gray-300 hover:text-[#35c677] transition-colors duration-200 text-sm font-medium">
+                          <motion.span
                             whileHover={{ x: 4 }}
                             transition={{ duration: 0.2 }}
                           >
                             {link.label}
-                          </motion.a>
+                          </motion.span>
                         </Link>
                       </li>
                     ))}

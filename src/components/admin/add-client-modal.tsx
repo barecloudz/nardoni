@@ -1,3 +1,5 @@
+'use client'
+
 import React from 'react'
 import { motion } from 'framer-motion'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
@@ -20,7 +22,7 @@ const clientSchema = z.object({
   status: z.enum(['active', 'inactive', 'pending']).default('active'),
 })
 
-type ClientFormData = z.infer<typeof clientSchema>
+type ClientFormData = z.input<typeof clientSchema>
 
 interface AddClientModalProps {
   isOpen: boolean
