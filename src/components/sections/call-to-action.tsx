@@ -1,5 +1,7 @@
+'use client'
+
 import React from 'react'
-import { Link } from 'wouter'
+import Link from 'next/link'
 import { motion } from 'framer-motion'
 import { useQuery } from '@tanstack/react-query'
 import { getCompanySettings } from '../../lib/supabase'
@@ -17,7 +19,7 @@ const CallToAction: React.FC = () => {
     'Free 30-minute strategy call',
     'See exactly how we\'ll get you ranking',
     'No long-term contracts required',
-    '90-day page 1 guarantee or your money back'
+    '90-day page 1 guarantee or we keep working for free'
   ]
 
   return (

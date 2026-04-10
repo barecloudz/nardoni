@@ -1,3 +1,5 @@
+'use client'
+
 import React from 'react'
 import { motion } from 'framer-motion'
 import { Card, CardContent } from '../ui/card'
@@ -25,7 +27,7 @@ const Benefits: React.FC = () => {
     {
       icon: DollarSign,
       title: '90-Day Guarantee',
-      description: 'Page 1 of Google in 90 days or your money back. No excuses.',
+      description: 'Page 1 of Google in 90 days or we keep working for free until you get there.',
       stat: '90',
       statLabel: 'Day Promise',
       gradient: 'from-orange-500 to-red-500'
