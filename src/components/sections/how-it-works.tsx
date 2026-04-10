@@ -1,5 +1,6 @@
+'use client'
+
 import React from 'react'
-import { Link } from 'wouter'
 import { motion } from 'framer-motion'
 import { Button } from '../ui/button'
 import { ArrowRight, CheckCircle, MapPin, Code, Globe, Star, BarChart3, Laptop } from 'lucide-react'
@@ -148,14 +149,14 @@ const HowItWorks: React.FC = () => {
             <p className="text-gray-600 mb-6">
               No problem. We build fast, mobile-friendly websites that Google loves.
             </p>
-            <Link href="/services/websites-apps" onClick={() => window.scrollTo(0, 0)}>
+            <a href="/services/websites-apps">
               <Button
                 className="w-full bg-[#35c677] hover:bg-[#2ba866] text-white rounded-full"
               >
                 Get one now
                 <ArrowRight className="ml-2 h-4 w-4" />
               </Button>
-            </Link>
+            </a>
           </motion.div>
         </div>
 
@@ -167,7 +168,7 @@ const HowItWorks: React.FC = () => {
           viewport={{ once: true }}
           transition={{ duration: 0.6, delay: 0.6 }}
         >
-          <Link href="/services/seo-local-search" onClick={() => window.scrollTo(0, 0)}>
+          <a href="/services/seo-local-search">
             <Button
               size="lg"
               className="text-lg px-10 py-6 h-auto bg-[#35c677] hover:bg-[#2ba866] text-white shadow-lg hover:shadow-xl transition-all duration-300 rounded-full"

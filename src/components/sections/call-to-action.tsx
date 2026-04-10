@@ -1,7 +1,6 @@
 'use client'
 
 import React from 'react'
-import Link from 'next/link'
 import { motion } from 'framer-motion'
 import { useQuery } from '@tanstack/react-query'
 import { getCompanySettings } from '../../lib/supabase'
@@ -116,7 +115,7 @@ const CallToAction: React.FC = () => {
             viewport={{ once: true }}
             transition={{ duration: 0.8, delay: 0.6 }}
           >
-            <Link href="/book-a-call">
+            <a href="/book-a-call">
               <motion.div
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
@@ -130,7 +129,7 @@ const CallToAction: React.FC = () => {
                   <span>Book a Call</span>
                 </Button>
               </motion.div>
-            </Link>
+            </a>
           </motion.div>
 
           {/* Trust Indicators */}

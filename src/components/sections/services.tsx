@@ -1,5 +1,6 @@
+'use client'
+
 import React from 'react'
-import { Link } from 'wouter'
 import { motion } from 'framer-motion'
 import { Card, CardContent } from '../ui/card'
 import { Button } from '../ui/button'
@@ -99,14 +100,14 @@ const Services: React.FC = () => {
 
                     <p className="text-gray-600 mb-6 flex-grow">{service.description}</p>
 
-                    <Link href={service.path} onClick={() => window.scrollTo(0, 0)}>
+                    <a href={service.path}>
                       <Button
                         className="w-full bg-[#35c677] hover:bg-[#2ba866] text-white rounded-full"
                       >
                         <span>{service.buttonText}</span>
                         <ArrowRight className="ml-2 h-4 w-4" />
                       </Button>
-                    </Link>
+                    </a>
                   </CardContent>
                 </Card>
               </motion.div>

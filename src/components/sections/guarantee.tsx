@@ -1,7 +1,6 @@
 'use client'
 
 import React from 'react'
-import Link from 'next/link'
 import { motion } from 'framer-motion'
 import { Button } from '../ui/button'
 import { Shield, ArrowRight } from 'lucide-react'
@@ -73,7 +72,7 @@ const Guarantee: React.FC = () => {
             viewport={{ once: true }}
             transition={{ duration: 0.8, delay: 0.3 }}
           >
-            <Link href="/book-a-call">
+            <a href="/book-a-call">
               <motion.div
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
@@ -87,7 +86,7 @@ const Guarantee: React.FC = () => {
                   <ArrowRight className="ml-2 h-5 w-5" />
                 </Button>
               </motion.div>
-            </Link>
+            </a>
           </motion.div>
 
         </div>

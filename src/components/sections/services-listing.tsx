@@ -1,5 +1,6 @@
+'use client'
+
 import React from 'react'
-import { Link } from 'wouter'
 import { motion } from 'framer-motion'
 import { Card, CardContent } from '../ui/card'
 import {
@@ -160,7 +161,7 @@ const ServicesListing: React.FC = () => {
                       ))}
                     </div>
 
-                    <Link href={service.path}>
+                    <a href={service.path}>
                       <Button
                         variant="ghost"
                         className="w-full justify-between text-[#35c677] hover:bg-[#35c677]/10 group-hover:translate-x-1 transition-transform duration-300"
@@ -168,7 +169,7 @@ const ServicesListing: React.FC = () => {
                         <span>Learn More</span>
                         <ArrowRight className="h-4 w-4" />
                       </Button>
-                    </Link>
+                    </a>
                   </CardContent>
                 </Card>
               </motion.div>
@@ -183,12 +184,12 @@ const ServicesListing: React.FC = () => {
           viewport={{ once: true }}
           transition={{ duration: 0.6, delay: 0.4 }}
         >
-          <Link href="/book-a-call">
+          <a href="/book-a-call">
             <Button size="lg" className="flex items-center space-x-2 bg-[#35c677] hover:bg-[#2ba866] text-white px-8 py-4 text-lg">
               <span>Book a Call</span>
               <ArrowRight className="h-5 w-5" />
             </Button>
-          </Link>
+          </a>
         </motion.div>
       </div>
     </section>
