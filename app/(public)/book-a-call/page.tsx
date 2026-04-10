@@ -1,4 +1,5 @@
 import type { Metadata } from 'next'
+import { Suspense } from 'react'
 import BookACallContent from '../../../src/page-content/book-a-call'
 
 export const metadata: Metadata = {
@@ -14,5 +15,9 @@ export const metadata: Metadata = {
 }
 
 export default function BookACallPage() {
-  return <BookACallContent />
+  return (
+    <Suspense>
+      <BookACallContent />
+    </Suspense>
+  )
 }
