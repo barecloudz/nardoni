@@ -1,14 +1,10 @@
 import { createClient } from '@supabase/supabase-js'
 import { Database } from './database.types'
 
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL
-const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY
+const supabaseUrl = (import.meta as any).env?.VITE_SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL || ''
+const supabaseAnonKey = (import.meta as any).env?.VITE_SUPABASE_ANON_KEY || process.env.NEXT_PUBLIC_ANON_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || ''
 
-if (!supabaseUrl || !supabaseAnonKey) {
-  throw new Error('Missing Supabase environment variables')
-}
-
-export const supabase = createClient<Database>(supabaseUrl, supabaseAnonKey, {
+export const supabase = createClient<Database>(supabaseUrl || 'https://placeholder.supabase.co', supabaseAnonKey || 'placeholder', {
   auth: {
     autoRefreshToken: true,
     persistSession: true,
@@ -17,7 +13,7 @@ export const supabase = createClient<Database>(supabaseUrl, supabaseAnonKey, {
 })
 
 // Admin client for user management (requires service role key in production)
-export const supabaseAdmin = createClient(supabaseUrl, supabaseAnonKey, {
+export const supabaseAdmin = createClient(supabaseUrl || 'https://placeholder.supabase.co', supabaseAnonKey || 'placeholder', {
   auth: {
     autoRefreshToken: false,
     persistSession: false
@@ -68,7 +64,7 @@ export const getClients = async () => {
     .from('clients')
     .select('*')
     .order('created_at', { ascending: false })
-  
+
   return { data, error }
 }
 
@@ -86,7 +82,7 @@ export const insertClient = async (clientData: {
     .insert([clientData])
     .select()
     .single()
-  
+
   return { data, error }
 }
 
@@ -97,7 +93,7 @@ export const updateClient = async (id: string, updates: any) => {
     .eq('id', id)
     .select()
     .single()
-  
+
   return { data, error }
 }
 
@@ -106,7 +102,7 @@ export const deleteClient = async (id: string) => {
     .from('clients')
     .delete()
     .eq('id', id)
-  
+
   return { error }
 }
 
@@ -121,7 +117,7 @@ export const getMarketingPlans = async () => {
       )
     `)
     .order('created_at', { ascending: false })
-  
+
   return { data, error }
 }
 
@@ -178,9 +174,9 @@ export const updateCompanySettings = async (settings: {
 }) => {
   // Return success with default settings since table doesn't exist yet
   console.warn('Company settings table not available, changes not saved')
-  return { 
-    data: { ...DEFAULT_COMPANY_SETTINGS, ...settings }, 
-    error: null 
+  return {
+    data: { ...DEFAULT_COMPANY_SETTINGS, ...settings },
+    error: null
   }
 }
 
@@ -201,7 +197,7 @@ export const createMarketingPlan = async (planData: {
     .insert([planData])
     .select()
     .single()
-  
+
   return { data, error }
 }
 
@@ -217,7 +213,7 @@ export const getInvoices = async () => {
       invoice_items (*)
     `)
     .order('created_at', { ascending: false })
-  
+
   return { data, error }
 }
 
@@ -233,7 +229,7 @@ export const createInvoice = async (invoiceData: {
     .insert([invoiceData])
     .select()
     .single()
-  
+
   return { data, error }
 }
 
@@ -242,7 +238,7 @@ export const getBlogPosts = async () => {
     .from('blog_posts')
     .select('id, title, slug, excerpt, content, featured_image, status, author_id, created_at, updated_at')
     .order('created_at', { ascending: false })
-  
+
   return { data, error }
 }
 
@@ -252,7 +248,7 @@ export const getPublishedBlogPosts = async () => {
     .select('id, title, slug, excerpt, featured_image, created_at, author_id')
     .eq('status', 'published')
     .order('created_at', { ascending: false })
-  
+
   return { data, error }
 }
 
@@ -263,7 +259,7 @@ export const getBlogPostBySlug = async (slug: string) => {
     .eq('slug', slug)
     .eq('status', 'published')
     .single()
-  
+
   return { data, error }
 }
 
@@ -272,7 +268,7 @@ export const getContacts = async () => {
     .from('contacts')
     .select('*')
     .order('created_at', { ascending: false })
-  
+
   return { data, error }
 }
 
@@ -288,7 +284,7 @@ export const createContact = async (contactData: {
     .insert([contactData])
     .select()
     .single()
-  
+
   return { data, error }
 }
 
@@ -303,6 +299,6 @@ export const getDocuments = async () => {
       )
     `)
     .order('created_at', { ascending: false })
-  
+
   return { data, error }
 }
