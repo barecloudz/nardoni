@@ -188,7 +188,7 @@ const Footer: React.FC = () => {
         >
           <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
             <div className="text-gray-300 text-sm md:text-gray-400">
-              &copy; 2025 Nardoni Digital. All rights reserved.
+              &copy; 2026 Nardoni Digital LLC. All rights reserved. Registered in North Carolina.
             </div>
             <div className="flex flex-col md:flex-row items-center space-y-2 md:space-y-0 md:space-x-6 text-sm text-gray-300 md:text-gray-400">
               <span>Made with ❤️ for local businesses</span>
