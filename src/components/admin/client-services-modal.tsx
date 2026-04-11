@@ -36,24 +36,24 @@ const PERIOD_LABELS: Record<string, string> = {
   'yearly': '/yr',
 }
 
+// Market rates sourced from Clutch, Reachoutly, Outbound Sales Pro, Merchynt, AgencyAnalytics, WebFX (2025-2026)
 const PRESET_SERVICES = [
-  { service_name: 'Custom E-Commerce Website', description: 'Fully custom-built online merch store — no templates, custom design, product catalog, cart & checkout', market_price: 8000, our_price: null, period: 'one-time' as const },
-  { service_name: 'Domain Registration & Setup', description: 'Purchase, configure DNS, redirects & brand protection across multiple domains', market_price: 400, our_price: null, period: 'one-time' as const },
-  { service_name: 'Domain Management (ongoing)', description: 'Ongoing renewals, DNS management, and domain portfolio maintenance', market_price: 100, our_price: null, period: 'monthly' as const },
-  { service_name: 'Private Business Email Hosting', description: 'Branded email setup with SPF/DKIM/DMARC configuration and ongoing management', market_price: 150, our_price: 7, period: 'monthly' as const },
-  { service_name: 'Cold Email Outreach Management', description: 'B2B lead gen via cold email — targeting, copywriting, sequences, reply handling & reporting', market_price: 3500, our_price: null, period: 'monthly' as const },
-  { service_name: 'Lead List Building & Prospecting', description: '3,000+ scraped & verified local business contacts, enriched and segmented by industry', market_price: 1200, our_price: null, period: 'one-time' as const },
-  { service_name: 'Monthly Prospecting (fresh lists)', description: 'Ongoing monthly list building and prospect enrichment', market_price: 1500, our_price: null, period: 'monthly' as const },
-  { service_name: 'Domain Warming & Deliverability', description: 'Multi-domain warmup via Instantly — gradual send volume ramp to protect inbox placement', market_price: 600, our_price: null, period: 'monthly' as const },
-  { service_name: 'B2B Catering Sales Outreach', description: 'Outsourced SDR function targeting corporate accounts, event planners & office managers', market_price: 3000, our_price: null, period: 'monthly' as const },
-  { service_name: 'Merchandise Deal Coordination', description: 'Secured Opossum Works partnership — branded beach merch at zero upfront cost, pay only on sales', market_price: 2500, our_price: null, period: 'one-time' as const },
-  { service_name: 'Weekly Performance Reports', description: 'Detailed weekly breakdowns: activity, metrics, opportunities, and next steps', market_price: 500, our_price: null, period: 'monthly' as const },
-  { service_name: 'Social Media Management', description: 'Content creation, posting, and community management across platforms', market_price: 1500, our_price: null, period: 'monthly' as const },
-  { service_name: 'Local SEO (Google Rankings)', description: 'Ranking for competitive local keywords — e.g. "best pizza in Myrtle Beach"', market_price: 1500, our_price: null, period: 'monthly' as const },
-  { service_name: 'Google Business Profile Management', description: 'Daily GBP posts, review responses, Q&A, and profile optimization', market_price: 600, our_price: null, period: 'monthly' as const },
-  { service_name: 'Digital Advertising (Google/Meta Ads)', description: 'Paid ad campaign setup, creative, management, and optimization', market_price: 1200, our_price: null, period: 'monthly' as const },
-  { service_name: 'Hiring & Recruiting Support', description: 'Indeed job post management and applicant funnel support', market_price: 500, our_price: null, period: 'monthly' as const },
-  { service_name: 'Dedicated Technical Support', description: 'Call us anytime — website, email, DNS, software, anything digital. We answer and fix it.', market_price: 800, our_price: null, period: 'monthly' as const },
+  { service_name: 'Custom E-Commerce Website', description: 'Fully custom-built online merch store — no templates, custom React build, product catalog, cart & checkout', market_price: 12000, our_price: null, period: 'one-time' as const },
+  { service_name: 'Domain Registration & Setup', description: 'Purchase & configure DNS, SPF/DKIM/DMARC, redirects & brand protection across multiple domains', market_price: 500, our_price: null, period: 'one-time' as const },
+  { service_name: 'Domain Warming Setup (Instantly)', description: 'Infrastructure setup: provision sending domains, configure deliverability records, onboard into Instantly warmup sequences', market_price: 1000, our_price: null, period: 'one-time' as const },
+  { service_name: 'Domain Warming Management', description: 'Ongoing warmup management via Instantly — ramp scheduling, deliverability monitoring, inbox placement scores across all domains', market_price: 500, our_price: null, period: 'monthly' as const },
+  { service_name: 'Private Business Email Hosting', description: 'Branded email setup with SPF/DKIM/DMARC + ongoing account management (3 accounts)', market_price: 125, our_price: 7, period: 'monthly' as const },
+  { service_name: 'Cold Email Outreach Management', description: 'B2B lead gen via cold email — ICP targeting, sequence copywriting, A/B testing, reply handling & weekly reporting', market_price: 3500, our_price: null, period: 'monthly' as const },
+  { service_name: 'Lead List Building (3,330+ contacts, 19 industries)', description: 'Custom-scraped & verified prospect database: hotels, real estate, construction, dental, healthcare, law firms, car dealers, insurance, schools, property management + more', market_price: 1200, our_price: null, period: 'one-time' as const },
+  { service_name: 'Monthly Prospecting (fresh lists)', description: 'Ongoing monthly list builds — new industries, new contacts, continuously enriched and verified', market_price: 1500, our_price: null, period: 'monthly' as const },
+  { service_name: 'B2B Catering & Sales Outreach (Outsourced SDR)', description: 'Dedicated outreach targeting corporate offices, event planners, hotels & hospitality venues for catering & lunch contracts', market_price: 5000, our_price: null, period: 'monthly' as const },
+  { service_name: 'Local SEO (Google Rankings)', description: 'Competitive local SEO — targeting high-value keywords like "best pizza in Myrtle Beach" with content, link building & technical SEO', market_price: 1500, our_price: null, period: 'monthly' as const },
+  { service_name: 'Google Business Profile Management', description: 'Daily GBP posts, custom graphics, responding to every Google review within 24hrs, Q&A management & monthly analytics', market_price: 400, our_price: null, period: 'monthly' as const },
+  { service_name: 'Digital Advertising (Google + Meta Ads)', description: 'Paid ad campaign setup, creative, audience targeting, management & optimization across Google and Meta', market_price: 1200, our_price: null, period: 'monthly' as const },
+  { service_name: 'Merchandise Deal (Opossum Works)', description: 'Negotiated zero-upfront partnership for branded beach-themed merchandise — client only pays supplier when items sell', market_price: 2500, our_price: null, period: 'one-time' as const },
+  { service_name: 'Hiring & Recruiting Support (Indeed)', description: 'Job post writing & publishing, listing management, applicant screening, and weekly candidate shortlist', market_price: 500, our_price: null, period: 'monthly' as const },
+  { service_name: 'Weekly Performance Reports', description: 'Detailed weekly breakdowns: outreach metrics, active opportunities, deals closed, next week focus', market_price: 500, our_price: null, period: 'monthly' as const },
+  { service_name: 'Dedicated Technical Support', description: 'On-call business tech support — call us, we answer and fix it. Website, email, DNS, software, anything digital.', market_price: 600, our_price: null, period: 'monthly' as const },
 ]
 
 const ClientServicesModal: React.FC<Props> = ({ isOpen, onClose, clientId, clientName, weeklyRate }) => {
