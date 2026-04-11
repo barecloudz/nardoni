@@ -27,7 +27,7 @@ const Benefits: React.FC = () => {
     {
       icon: DollarSign,
       title: '90-Day Guarantee',
-      description: 'Page 1 of Google in 90 days or we keep working for free until you get there.',
+      description: '$500/month to get you there and keep you there. If we can\'t within 90 days, we work for free until we do.',
       stat: '90',
       statLabel: 'Day Promise',
       gradient: 'from-orange-500 to-red-500'

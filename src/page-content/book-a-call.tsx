@@ -18,7 +18,7 @@ const serviceConfig: Record<string, { headline: string; sub: string; trust: stri
   },
   "ai-support": {
     headline: "Let's set up your AI customer support",
-    sub: "Pick a time. We'll show you how to handle every customer inquiry 24/7 — automatically.",
+    sub: "Pick a time. We'll show you how to handle every customer inquiry 24/7, automatically.",
     trust: "Never miss a customer inquiry again. No long-term contracts.",
   },
   "ai-phone": {
@@ -28,7 +28,7 @@ const serviceConfig: Record<string, { headline: string; sub: string; trust: stri
   },
   ads: {
     headline: "Let's launch your ad campaign",
-    sub: "Pick a time. We'll show you exactly how to get in front of customers on Google and Meta — starting this week.",
+    sub: "Pick a time. We'll show you exactly how to get in front of customers on Google and Meta, starting this week.",
     trust: "Ads that actually drive revenue. No long-term contracts.",
   },
   social: {

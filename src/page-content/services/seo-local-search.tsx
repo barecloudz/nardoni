@@ -20,11 +20,11 @@ const SEOLocalSearch: React.FC = () => {
     },
     {
       question: "How long does it take to start seeing results?",
-      answer: "Most clients start seeing movement within the first few weeks. Our goal is to get you onto the first page of Google within 90 days — and keep you there."
+      answer: "Most clients start seeing movement within the first few weeks. Our goal is to get you onto the first page of Google within 90 days and keep you there."
     },
     {
       question: "How much is this going to cost me upfront?",
-      answer: "$500 per month to get your business onto the first page of Google and keep it there. No long-term contracts — cancel anytime."
+      answer: "$500/month to get you there and keep you there. No long-term contracts, cancel anytime."
     },
     {
       question: "What happens if you don't get me results?",
@@ -40,7 +40,7 @@ const SEOLocalSearch: React.FC = () => {
     },
     {
       question: "What if this doesn't work for my type of business?",
-      answer: "We only take on clients we're confident we can get results for — because we've done it for many businesses just like yours. And if we don't deliver within 90 days, we keep working for free until we do."
+      answer: "We only take on clients we're confident we can get results for, because we've done it for many businesses just like yours. And if we can't get you there within 90 days, we work for free until we do."
     },
     {
       question: "How long am I locked into this contract?",
@@ -99,7 +99,7 @@ const SEOLocalSearch: React.FC = () => {
               className="mb-8"
             >
               <span className="inline-block bg-green-600 text-white font-bold px-8 py-3 rounded-full text-xl mb-6">
-                90-Day Guarantee — We Work for Free Until You Rank
+                90-Day Guarantee: We Work for Free Until You Rank
               </span>
             </motion.div>
             <h1 className="text-5xl md:text-7xl font-bold text-[#191919] mb-8 leading-tight">
@@ -111,7 +111,7 @@ const SEOLocalSearch: React.FC = () => {
               Or We Keep Working for Free Until You Do
             </p>
             <p className="text-xl text-gray-600 mb-8 max-w-3xl mx-auto">
-              Stop losing customers to your competitors. For $500/month, we guarantee first-page rankings for your local business — and if we don't hit it in 90 days, we keep working for free until we do.
+              $500/month to get you there and keep you there. If we can't get you there within 90 days, we work for free until we do.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center mb-8">
               <Link href="/book-a-call?service=seo">
@@ -151,7 +151,7 @@ const SEOLocalSearch: React.FC = () => {
                 number: '2',
                 icon: Handshake,
                 title: 'Paid Trial Offer',
-                description: "If we're a good fit we'll get started for $500/month — no long-term contracts, cancel anytime"
+                description: "If we're a good fit we'll get started for $500/month, no long-term contracts, cancel anytime"
               },
               {
                 number: '3',
@@ -372,7 +372,7 @@ const SEOLocalSearch: React.FC = () => {
               or We Keep Working for Free
             </h2>
             <p className="text-xl text-white/90 mb-8 max-w-2xl mx-auto">
-              We're confident in our SEO system because we've done it for many businesses just like yours. If we don't get you on the first page of Google within 90 days, we keep working until we do — at no extra cost.
+              $500/month to get you there and keep you there. If we can't get you there within 90 days, we work for free until we do.
             </p>
             <Link href="/book-a-call?service=seo">
               <motion.div

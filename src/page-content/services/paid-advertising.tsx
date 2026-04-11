@@ -127,7 +127,7 @@ const PaidAdvertising: React.FC = () => {
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div className="text-center mb-16" initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
             <h2 className="text-4xl md:text-5xl font-bold text-[#191919] mb-4">Our Advertising Strategies</h2>
-            <p className="text-xl text-gray-600">We don't just run ads—we build campaigns that convert and drive real business results.</p>
+            <p className="text-xl text-gray-600">We don't just run ads. We build campaigns that convert and drive real business results.</p>
           </motion.div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 max-w-6xl mx-auto">
             {strategies.map((strategy, index) => (

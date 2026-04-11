@@ -58,10 +58,10 @@ const Guarantee: React.FC = () => {
             className="mb-12"
           >
             <p className="text-xl md:text-2xl text-gray-300 mb-6">
-              Guaranteed. If we don't deliver in 90 days, we keep working for free until we do.
+              $500/month to get you there and keep you there.
             </p>
             <p className="text-lg text-gray-400">
-              $500/month. No long-term contracts. No excuses.
+              If we can't get you there within 90 days, we work for free until we do.
             </p>
           </motion.div>
 

@@ -18,7 +18,7 @@ const CallToAction: React.FC = () => {
     'Free 30-minute strategy call',
     'See exactly how we\'ll get you ranking',
     'No long-term contracts required',
-    '90-day page 1 guarantee or we keep working for free'
+    '$500/month to get you there and keep you there'
   ]
 
   return (
