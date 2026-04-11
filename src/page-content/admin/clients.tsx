@@ -7,17 +7,19 @@ import { getClients, insertClient, updateClient, deleteClient } from '../../lib/
 import AddClientModal from '../../components/admin/add-client-modal'
 import EditClientModal from '../../components/admin/edit-client-modal'
 import InviteClientModal from '../../components/admin/invite-client-modal'
+import ClientPortalPreview from '../../components/admin/client-portal-preview-modal'
 import { Card, CardContent, CardHeader, CardTitle } from '../../components/ui/card'
 import { Button } from '../../components/ui/button'
 import { Input } from '../../components/ui/input'
 import { Badge } from '../../components/ui/badge'
-import { Plus, Search, Edit, Trash2, Mail, Phone, Globe, UserPlus } from 'lucide-react'
+import { Plus, Search, Edit, Trash2, Mail, Phone, Globe, UserPlus, Monitor } from 'lucide-react'
 
 const AdminClients: React.FC = () => {
   const [searchTerm, setSearchTerm] = React.useState('')
   const [isAddClientModalOpen, setIsAddClientModalOpen] = React.useState(false)
   const [isEditClientModalOpen, setIsEditClientModalOpen] = React.useState(false)
   const [isInviteClientModalOpen, setIsInviteClientModalOpen] = React.useState(false)
+  const [isPreviewOpen, setIsPreviewOpen] = React.useState(false)
   const [selectedClient, setSelectedClient] = React.useState<any>(null)
   const queryClient = useQueryClient()
 
@@ -229,8 +231,16 @@ const AdminClients: React.FC = () => {
                             >
                               <UserPlus className="h-3 w-3" />
                             </Button>
-                            <Button 
-                              size="sm" 
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={() => { setSelectedClient(client); setIsPreviewOpen(true) }}
+                              title="Preview client portal"
+                            >
+                              <Monitor className="h-3 w-3" />
+                            </Button>
+                            <Button
+                              size="sm"
                               variant="outline"
                               onClick={() => handleDeleteClient(client.id)}
                               disabled={deleteClientMutation.isPending}
@@ -262,12 +272,18 @@ const AdminClients: React.FC = () => {
             client={selectedClient}
           />
           
-          <InviteClientModal 
+          <InviteClientModal
             isOpen={isInviteClientModalOpen}
             onClose={() => {
               setIsInviteClientModalOpen(false)
               setSelectedClient(null)
             }}
+            client={selectedClient}
+          />
+
+          <ClientPortalPreview
+            isOpen={isPreviewOpen}
+            onClose={() => { setIsPreviewOpen(false); setSelectedClient(null) }}
             client={selectedClient}
           />
         </motion.div>
