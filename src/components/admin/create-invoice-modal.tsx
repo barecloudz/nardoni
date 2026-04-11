@@ -10,7 +10,7 @@ import { createInvoice, getClients, supabase } from '../../lib/supabase'
 import { Button } from '../ui/button'
 import { Input } from '../ui/input'
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card'
-import { X, DollarSign, Plus, Trash2, FileText } from 'lucide-react'
+import { X, DollarSign, Plus, Trash2, FileText, Zap } from 'lucide-react'
 
 const invoiceItemSchema = z.object({
   description: z.string().min(1, 'Description is required'),
@@ -33,6 +33,8 @@ interface CreateInvoiceModalProps {
 
 const CreateInvoiceModal: React.FC<CreateInvoiceModalProps> = ({ isOpen, onClose }) => {
   const queryClient = useQueryClient()
+  const [sendViaStripe, setSendViaStripe] = React.useState(false)
+  const [stripeError, setStripeError] = React.useState('')
 
   // Fetch clients for dropdown
   const { data: clients = [] } = useQuery({
@@ -72,21 +74,23 @@ const CreateInvoiceModal: React.FC<CreateInvoiceModalProps> = ({ isOpen, onClose
 
   const createInvoiceMutation = useMutation({
     mutationFn: async (data: InvoiceFormData) => {
-      // Generate invoice number
+      setStripeError('')
+
+      // Find selected client for Stripe
+      const selectedClient = clients.find(c => c.id === data.client_id)
+
+      // Save to Supabase
       const invoiceNumber = `INV-${Date.now()}`
-      
-      // Create invoice
       const { data: invoice, error: invoiceError } = await createInvoice({
         number: invoiceNumber,
         client_id: data.client_id,
         amount: total,
         due_date: data.due_date,
-        status: 'draft'
+        status: sendViaStripe ? 'sent' : 'draft'
       })
 
       if (invoiceError) throw invoiceError
 
-      // Create invoice items
       const itemsToInsert = data.items.map(item => ({
         invoice_id: invoice.id,
         description: item.description,
@@ -101,16 +105,39 @@ const CreateInvoiceModal: React.FC<CreateInvoiceModalProps> = ({ isOpen, onClose
 
       if (itemsError) throw itemsError
 
+      // Also send via Stripe if toggled
+      if (sendViaStripe && selectedClient) {
+        const description = data.items.map(i => `${i.description} (x${i.quantity})`).join(', ')
+        const dueInDays = Math.max(1, Math.round(
+          (new Date(data.due_date).getTime() - Date.now()) / (1000 * 60 * 60 * 24)
+        ))
+
+        const res = await fetch('/api/stripe/invoices', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            customerEmail: selectedClient.email,
+            customerName: selectedClient.name,
+            description,
+            amount: total,
+            dueInDays,
+          }),
+        })
+        const json = await res.json()
+        if (!res.ok) throw new Error(json.error || 'Stripe invoice failed')
+      }
+
       return invoice
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['invoices'] })
       reset()
+      setSendViaStripe(false)
       onClose()
     },
-    onError: (error) => {
+    onError: (error: any) => {
       console.error('Error creating invoice:', error)
-      alert('Failed to create invoice. Please try again.')
+      setStripeError(error.message || 'Failed to create invoice. Please try again.')
     }
   })
 
@@ -259,27 +286,42 @@ const CreateInvoiceModal: React.FC<CreateInvoiceModalProps> = ({ isOpen, onClose
                 </div>
               </div>
 
-              <div className="flex items-center justify-end space-x-3 pt-4 border-t">
-                <Button type="button" variant="outline" onClick={onClose}>
-                  Cancel
-                </Button>
-                <Button 
-                  type="submit" 
-                  disabled={createInvoiceMutation.isPending}
-                  className="flex items-center space-x-2"
-                >
-                  {createInvoiceMutation.isPending ? (
-                    <>
-                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
-                      <span>Creating...</span>
-                    </>
-                  ) : (
-                    <>
-                      <DollarSign className="h-4 w-4" />
-                      <span>Create Invoice</span>
-                    </>
-                  )}
-                </Button>
+              <div className="pt-4 border-t space-y-4">
+                <label className="flex items-center space-x-3 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={sendViaStripe}
+                    onChange={e => setSendViaStripe(e.target.checked)}
+                    className="w-4 h-4 rounded border-gray-300 text-[#35c677]"
+                  />
+                  <span className="flex items-center space-x-2 text-sm font-medium text-gray-700">
+                    <Zap className="h-4 w-4 text-[#35c677]" />
+                    <span>Also send invoice to client via Stripe</span>
+                  </span>
+                </label>
+                {stripeError && <p className="text-red-500 text-sm">{stripeError}</p>}
+                <div className="flex items-center justify-end space-x-3">
+                  <Button type="button" variant="outline" onClick={onClose}>
+                    Cancel
+                  </Button>
+                  <Button
+                    type="submit"
+                    disabled={createInvoiceMutation.isPending}
+                    className="flex items-center space-x-2"
+                  >
+                    {createInvoiceMutation.isPending ? (
+                      <>
+                        <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                        <span>Creating...</span>
+                      </>
+                    ) : (
+                      <>
+                        <DollarSign className="h-4 w-4" />
+                        <span>{sendViaStripe ? 'Create & Send via Stripe' : 'Create Invoice'}</span>
+                      </>
+                    )}
+                  </Button>
+                </div>
               </div>
             </form>
           </CardContent>
