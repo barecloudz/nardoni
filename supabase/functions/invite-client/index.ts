@@ -78,9 +78,9 @@ serve(async (req) => {
       )
     }
 
-    // Check if user is admin
-    const isAdmin = user.email === 'admin@barecloudz.com'
-    
+    // Check if user is admin (role set in user metadata)
+    const isAdmin = user.user_metadata?.role === 'admin' || user.email === 'blake@nardonidigital.com'
+
     if (!isAdmin) {
       return new Response(
         JSON.stringify({ error: 'Admin access required' }),
