@@ -10,7 +10,7 @@ import { supabase } from '../../lib/supabase'
 import { Button } from '../ui/button'
 import { Input } from '../ui/input'
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card'
-import { X, Mail, Send, CheckCircle } from 'lucide-react'
+import { X, Mail, Send, CheckCircle, Copy } from 'lucide-react'
 
 const inviteSchema = z.object({
   email: z.string().email('Please enter a valid email address'),
@@ -34,6 +34,7 @@ const InviteClientModal: React.FC<InviteClientModalProps> = ({ isOpen, onClose, 
   const queryClient = useQueryClient()
   const [isSuccess, setIsSuccess] = React.useState(false)
   const [inviteDetails, setInviteDetails] = React.useState<{ email: string; password: string } | null>(null)
+  const [copied, setCopied] = React.useState(false)
 
   const {
     register,
@@ -124,7 +125,24 @@ const InviteClientModal: React.FC<InviteClientModalProps> = ({ isOpen, onClose, 
     reset()
     setIsSuccess(false)
     setInviteDetails(null)
+    setCopied(false)
     onClose()
+  }
+
+  const getMessageToCopy = (portalUrl: string) => {
+    if (!inviteDetails || !client) return ''
+    return `Hey ${client.name.split(' ')[0]},
+
+Your client portal is ready! You can log in to view your project, invoices, and what's next for your business.
+
+Portal: ${portalUrl}/auth/login
+Email: ${inviteDetails.email}
+Password: ${inviteDetails.password}
+
+Recommend changing your password after logging in.
+
+Talk soon,
+Nardoni Digital`
   }
 
   if (!isOpen || !client) return null
@@ -153,45 +171,55 @@ const InviteClientModal: React.FC<InviteClientModalProps> = ({ isOpen, onClose, 
           <CardContent>
             {isSuccess && inviteDetails ? (
               <motion.div
-                className="text-center py-6"
-                initial={{ opacity: 0, scale: 0.8 }}
+                className="space-y-4"
+                initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 0.5 }}
+                transition={{ duration: 0.3 }}
               >
-                <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <CheckCircle className="h-8 w-8 text-green-600" />
+                <div className="flex items-center space-x-3">
+                  <CheckCircle className="h-6 w-6 text-[#35c677] flex-shrink-0" />
+                  <h3 className="text-base font-semibold text-gray-900">
+                    Account created for {client?.name}
+                  </h3>
                 </div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-3">
-                  Client Account Created!
-                </h3>
-                <div className="bg-gray-50 rounded-lg p-4 mb-4 text-left">
-                  <h4 className="font-medium text-gray-900 mb-2">Login Credentials:</h4>
-                  <div className="space-y-2 text-sm">
-                    <div>
-                      <span className="text-gray-600">Email:</span>
-                      <span className="ml-2 font-mono bg-white px-2 py-1 rounded">
-                        {inviteDetails.email}
-                      </span>
-                    </div>
-                    <div>
-                      <span className="text-gray-600">Password:</span>
-                      <span className="ml-2 font-mono bg-white px-2 py-1 rounded">
-                        {inviteDetails.password}
-                      </span>
-                    </div>
+
+                <div className="bg-gray-50 rounded-lg p-4 text-sm space-y-2">
+                  <div className="flex items-center justify-between">
+                    <span className="text-gray-500">Email</span>
+                    <span className="font-mono text-[#191919]">{inviteDetails.email}</span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-gray-500">Password</span>
+                    <span className="font-mono text-[#191919]">{inviteDetails.password}</span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-gray-500">Login URL</span>
+                    <span className="font-mono text-[#191919] text-xs">{typeof window !== 'undefined' ? window.location.origin : ''}/auth/login</span>
                   </div>
                 </div>
-                <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-4">
-                  <p className="text-sm text-blue-800">
-                    <strong>Next Steps:</strong>
-                    <br />
-                    1. Share these credentials with {client.name}
-                    <br />
-                    2. They can login at: <span className="font-mono">{window.location.origin}/auth/login</span>
-                    <br />
-                    3. Recommend they change their password after first login
-                  </p>
+
+                <div>
+                  <p className="text-xs text-gray-500 mb-2 font-medium uppercase tracking-wide">Message to send</p>
+                  <pre className="bg-gray-50 rounded-lg p-3 text-xs text-gray-700 whitespace-pre-wrap font-sans leading-relaxed border border-gray-200">
+                    {typeof window !== 'undefined' ? getMessageToCopy(window.location.origin) : ''}
+                  </pre>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="mt-2 w-full flex items-center space-x-2"
+                    onClick={() => {
+                      if (typeof window !== 'undefined') {
+                        navigator.clipboard.writeText(getMessageToCopy(window.location.origin))
+                        setCopied(true)
+                        setTimeout(() => setCopied(false), 2000)
+                      }
+                    }}
+                  >
+                    {copied ? <CheckCircle className="h-3 w-3 text-[#35c677]" /> : <Copy className="h-3 w-3" />}
+                    <span>{copied ? 'Copied!' : 'Copy Message'}</span>
+                  </Button>
                 </div>
+
                 <Button onClick={handleClose} className="w-full">
                   Done
                 </Button>
