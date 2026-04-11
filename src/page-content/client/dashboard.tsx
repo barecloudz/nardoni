@@ -23,6 +23,7 @@ import {
   Building,
   User,
   MessageSquare,
+  FileBarChart,
 } from 'lucide-react'
 
 const milestones = [
@@ -262,6 +263,28 @@ const ClientDashboard: React.FC = () => {
               </div>
             </div>
           </div>
+        </motion.div>
+
+        {/* Reports shortcut */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.25 }}
+        >
+          <a href="/client/reports" className="block group">
+            <div className="flex items-center justify-between p-5 bg-white rounded-2xl border border-gray-200 hover:border-[#35c677] hover:shadow-md transition-all">
+              <div className="flex items-center space-x-4">
+                <div className="w-10 h-10 bg-[#191919] rounded-xl flex items-center justify-center">
+                  <FileBarChart className="h-5 w-5 text-[#35c677]" />
+                </div>
+                <div>
+                  <p className="font-semibold text-[#191919]">Weekly Reports</p>
+                  <p className="text-sm text-gray-500">See exactly what we're doing for you each week</p>
+                </div>
+              </div>
+              <ArrowRight className="h-5 w-5 text-gray-400 group-hover:text-[#35c677] transition-colors" />
+            </div>
+          </a>
         </motion.div>
 
         {/* Invoices */}

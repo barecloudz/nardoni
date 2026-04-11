@@ -19,7 +19,8 @@ import {
   Menu,
   X,
   PhoneCall,
-  Mail
+  Mail,
+  FileBarChart
 } from 'lucide-react'
 import { Button } from '../ui/button'
 import { authService } from '../../lib/auth'
@@ -55,6 +56,7 @@ const AdminSidebar: React.FC = () => {
     { icon: Users, label: 'Clients', href: '/admin/clients' },
     { icon: FileText, label: 'Marketing Plans', href: '/admin/marketing-plans' },
     { icon: DollarSign, label: 'Invoices', href: '/admin/invoices' },
+    { icon: FileBarChart, label: 'Reports', href: '/admin/reports' },
     { icon: BookOpen, label: 'Blog', href: '/admin/blog' },
     { icon: FolderOpen, label: 'Documents', href: '/admin/documents' },
     { icon: MessageSquare, label: 'Book a Call', href: '/admin/contacts' },
