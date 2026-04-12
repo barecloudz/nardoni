@@ -59,9 +59,12 @@ class AuthService {
 
   async getCurrentUser(): Promise<User | null> {
     try {
-      const { user: supabaseUser, error } = await getSupabaseUser()
-      
-      if (error || !supabaseUser) {
+      // Use getSession first (reads localStorage, no network) to avoid
+      // redirecting to login on F5 when the network call is slow/fails
+      const { data: { session } } = await supabase.auth.getSession()
+      const supabaseUser = session?.user ?? null
+
+      if (!supabaseUser) {
         this.authState.user = null
         this.authState.isAuthenticated = false
         return null
@@ -96,12 +99,9 @@ class AuthService {
   }
 
   private getUserRole(user: any): 'admin' | 'client' {
-    // Check user metadata role
-    if (user.user_metadata?.role === 'admin') {
+    if (user.user_metadata?.role === 'admin' || user.email === 'blake@nardonidigital.com') {
       return 'admin'
     }
-
-    // Default to client
     return 'client'
   }
 }
