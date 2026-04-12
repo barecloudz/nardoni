@@ -24,7 +24,48 @@ import {
   User,
   MessageSquare,
   FileBarChart,
+  Sparkles,
 } from 'lucide-react'
+
+// Services we can upsell — matched against what the client already has
+const UPSELL_CATALOG = [
+  {
+    id: 'seo',
+    name: 'Local SEO',
+    matchKey: 'seo', // substring match against service_name
+    headline: 'Get to page 1 of Google and stay there.',
+    body: 'We rank local businesses in the top 10 Google results for their keywords. $500/month — 90-day guarantee.',
+    tags: ['Page 1 Rankings', '90-Day Guarantee', 'Local SEO', 'Monthly Reports'],
+    href: '/book-a-call?service=seo',
+  },
+  {
+    id: 'gbp',
+    name: 'Google Business Profile',
+    matchKey: 'google business',
+    headline: 'Own your Google Business listing.',
+    body: 'Daily posts, review responses within 24hrs, custom graphics and monthly analytics. $400/month.',
+    tags: ['Daily Posts', 'Review Management', 'Q&A', 'Analytics'],
+    href: '/book-a-call?service=gbp',
+  },
+  {
+    id: 'ads',
+    name: 'Google + Meta Ads',
+    matchKey: 'ads',
+    headline: 'Turn ad spend into booked customers.',
+    body: 'Full paid ad management across Google and Meta — setup, creative, targeting and optimization. $1,200/month.',
+    tags: ['Google Ads', 'Meta Ads', 'Ad Creative', 'Optimization'],
+    href: '/book-a-call?service=ads',
+  },
+  {
+    id: 'cold-email',
+    name: 'Cold Email Outreach',
+    matchKey: 'cold email',
+    headline: 'Reach 3,300+ B2B prospects on autopilot.',
+    body: 'We manage your entire outreach — targeting, copy, follow-ups and reply handling. $3,500/month.',
+    tags: ['B2B Lead Gen', 'Copywriting', 'Reply Handling', 'Weekly Reports'],
+    href: '/book-a-call?service=outreach',
+  },
+]
 
 const milestones = [
   { label: 'Discovery & Strategy', done: true },
@@ -198,49 +239,65 @@ const ClientDashboard: React.FC = () => {
           </Card>
         </motion.div>
 
-        {/* SEO Upsell */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.2 }}
-        >
-          <div className="rounded-2xl border-2 border-[#35c677] bg-white p-6 sm:p-8 relative overflow-hidden">
-            <div className="absolute top-0 right-0 w-48 h-48 bg-[#35c677] opacity-5 rounded-full translate-x-16 -translate-y-16 pointer-events-none" />
-            <div className="relative flex flex-col sm:flex-row sm:items-start gap-6">
-              <div className="flex-shrink-0">
-                <div className="w-12 h-12 bg-[#35c677]/10 rounded-xl flex items-center justify-center">
-                  <Search className="h-6 w-6 text-[#35c677]" />
-                </div>
+        {/* Dynamic upsell — shows services the client doesn't already have */}
+        {(() => {
+          const services = portalData?.services || []
+          const serviceNames = services.map((s: any) => s.service_name?.toLowerCase() || '')
+          const upsells = UPSELL_CATALOG.filter(u =>
+            !serviceNames.some((name: string) => name.includes(u.matchKey))
+          ).slice(0, 2)
+
+          if (upsells.length === 0) return null
+
+          return (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.2 }}
+              className="space-y-4"
+            >
+              <div className="flex items-center space-x-2">
+                <Sparkles className="h-4 w-4 text-[#35c677]" />
+                <h3 className="text-sm font-semibold text-gray-700">Recommended for You</h3>
               </div>
-              <div className="flex-1">
-                <div className="flex items-center space-x-2 mb-2">
-                  <span className="text-xs font-semibold text-[#35c677] uppercase tracking-wide">Next Step</span>
-                  <Star className="h-3 w-3 text-[#35c677] fill-[#35c677]" />
+              {upsells.map((u, i) => (
+                <div
+                  key={u.id}
+                  className="rounded-2xl border-2 border-[#35c677] bg-white p-6 relative overflow-hidden"
+                >
+                  <div className="absolute top-0 right-0 w-40 h-40 bg-[#35c677] opacity-5 rounded-full translate-x-12 -translate-y-12 pointer-events-none" />
+                  <div className="relative flex flex-col sm:flex-row sm:items-start gap-5">
+                    <div className="w-11 h-11 bg-[#35c677]/10 rounded-xl flex items-center justify-center flex-shrink-0">
+                      <Search className="h-5 w-5 text-[#35c677]" />
+                    </div>
+                    <div className="flex-1">
+                      <div className="flex items-center space-x-2 mb-2">
+                        <span className="text-xs font-semibold text-[#35c677] uppercase tracking-wide">Add-on Service</span>
+                        <Star className="h-3 w-3 text-[#35c677] fill-[#35c677]" />
+                      </div>
+                      <h2 className="text-lg font-bold text-[#191919] mb-1.5">{u.headline}</h2>
+                      <p className="text-gray-600 text-sm mb-4 leading-relaxed">{u.body}</p>
+                      <div className="flex flex-wrap gap-2 mb-4">
+                        {u.tags.map(tag => (
+                          <span key={tag} className="flex items-center space-x-1 text-xs text-gray-600 bg-gray-100 px-3 py-1 rounded-full">
+                            <Zap className="h-3 w-3 text-[#35c677]" />
+                            <span>{tag}</span>
+                          </span>
+                        ))}
+                      </div>
+                      <a href={u.href} target="_blank" rel="noopener noreferrer">
+                        <Button className="bg-[#35c677] hover:bg-[#2db366] text-white flex items-center space-x-2">
+                          <span>Book a Free Strategy Call</span>
+                          <ArrowRight className="h-4 w-4" />
+                        </Button>
+                      </a>
+                    </div>
+                  </div>
                 </div>
-                <h2 className="text-xl font-bold text-[#191919] mb-2">
-                  Get to page 1 of Google and stay there.
-                </h2>
-                <p className="text-gray-600 text-sm mb-4 leading-relaxed">
-                  Your site looks great. Now let's make sure people can find it. We rank local businesses in the top 10 Google results for their keywords. <strong>$500/month to get you there and keep you there.</strong> If we can't get you there within 90 days, we work for free until we do.
-                </p>
-                <div className="flex flex-wrap gap-3 mb-5">
-                  {['Page 1 Google Rankings', '90-Day Guarantee', 'Local SEO', 'Monthly Reporting'].map(tag => (
-                    <span key={tag} className="flex items-center space-x-1 text-xs text-gray-600 bg-gray-100 px-3 py-1 rounded-full">
-                      <Zap className="h-3 w-3 text-[#35c677]" />
-                      <span>{tag}</span>
-                    </span>
-                  ))}
-                </div>
-                <a href="/book-a-call?service=seo" target="_blank" rel="noopener noreferrer">
-                  <Button className="bg-[#35c677] hover:bg-[#2db366] text-white flex items-center space-x-2">
-                    <span>Book a Free Strategy Call</span>
-                    <ArrowRight className="h-4 w-4" />
-                  </Button>
-                </a>
-              </div>
-            </div>
-          </div>
-        </motion.div>
+              ))}
+            </motion.div>
+          )
+        })()}
 
         {/* Reports shortcut */}
         <motion.div
