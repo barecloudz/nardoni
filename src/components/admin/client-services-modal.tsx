@@ -65,33 +65,42 @@ const ClientServicesModal: React.FC<Props> = ({ isOpen, onClose, clientId, clien
   })
   const [showAddForm, setShowAddForm] = React.useState(false)
 
+  const getToken = async () => {
+    const { data: { session } } = await supabase.auth.getSession()
+    return session?.access_token ? `Bearer ${session.access_token}` : ''
+  }
+
   const { data: services = [], isLoading } = useQuery({
     queryKey: ['client-service-values', clientId],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from('client_service_values')
-        .select('*')
-        .eq('client_id', clientId)
-        .order('display_order')
-      if (error) throw error
-      return data || []
+      const token = await getToken()
+      const res = await fetch(`/api/admin/service-values?clientId=${clientId}`, {
+        headers: { Authorization: token },
+      })
+      if (!res.ok) throw new Error('Failed to load services')
+      return res.json()
     },
     enabled: isOpen && !!clientId,
   })
 
   const addMutation = useMutation({
     mutationFn: async (item: Partial<ServiceItem>) => {
-      const { error } = await supabase.from('client_service_values').insert({
-        client_id: clientId,
-        service_name: item.service_name,
-        description: item.description || null,
-        market_price: item.market_price,
-        our_price: item.our_price ?? null,
-        period: item.period || 'monthly',
-        display_order: services.length,
-        active: true,
+      const token = await getToken()
+      const res = await fetch('/api/admin/service-values', {
+        method: 'POST',
+        headers: { Authorization: token, 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          client_id: clientId,
+          service_name: item.service_name,
+          description: item.description || null,
+          market_price: item.market_price,
+          our_price: item.our_price ?? null,
+          period: item.period || 'monthly',
+          display_order: services.length,
+          active: true,
+        }),
       })
-      if (error) throw error
+      if (!res.ok) throw new Error('Failed to add service')
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['client-service-values', clientId] })
@@ -103,16 +112,25 @@ const ClientServicesModal: React.FC<Props> = ({ isOpen, onClose, clientId, clien
 
   const deleteMutation = useMutation({
     mutationFn: async (id: string) => {
-      const { error } = await supabase.from('client_service_values').delete().eq('id', id)
-      if (error) throw error
+      const token = await getToken()
+      const res = await fetch(`/api/admin/service-values?id=${id}`, {
+        method: 'DELETE',
+        headers: { Authorization: token },
+      })
+      if (!res.ok) throw new Error('Failed to delete service')
     },
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ['client-service-values', clientId] }),
   })
 
   const toggleMutation = useMutation({
     mutationFn: async ({ id, active }: { id: string; active: boolean }) => {
-      const { error } = await supabase.from('client_service_values').update({ active }).eq('id', id)
-      if (error) throw error
+      const token = await getToken()
+      const res = await fetch('/api/admin/service-values', {
+        method: 'PATCH',
+        headers: { Authorization: token, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id, active }),
+      })
+      if (!res.ok) throw new Error('Failed to update service')
     },
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ['client-service-values', clientId] }),
   })

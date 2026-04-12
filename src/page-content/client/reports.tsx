@@ -3,45 +3,29 @@
 import React from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { motion } from 'framer-motion'
-import { supabase, getCurrentUser } from '../../lib/supabase'
+import { supabase } from '../../lib/supabase'
 import { WeeklyReportCard, ClientValueBreakdown } from '../../components/client/weekly-report-card'
 import { FileBarChart } from 'lucide-react'
 
 const ClientReports: React.FC = () => {
-  const [currentUser, setCurrentUser] = React.useState<any>(null)
   const [expandedId, setExpandedId] = React.useState<string | null>(null)
 
-  React.useEffect(() => {
-    getCurrentUser().then(({ user }) => setCurrentUser(user))
-  }, [])
-
-  const { data: clientRecord } = useQuery({
-    queryKey: ['client-record', currentUser?.id],
+  const { data: portalData, isLoading } = useQuery({
+    queryKey: ['client-portal-data'],
     queryFn: async () => {
-      const { data } = await supabase
-        .from('clients')
-        .select('*')
-        .eq('user_id', currentUser.id)
-        .single()
-      return data
+      const { data: { session } } = await supabase.auth.getSession()
+      const token = session?.access_token ? `Bearer ${session.access_token}` : ''
+      const res = await fetch('/api/client/portal-data', {
+        headers: { Authorization: token },
+      })
+      if (!res.ok) return null
+      return res.json()
     },
-    enabled: !!currentUser,
   })
 
-  const { data: reports = [], isLoading } = useQuery({
-    queryKey: ['client-reports-portal', clientRecord?.id],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from('client_reports')
-        .select('*')
-        .eq('client_id', clientRecord.id)
-        .eq('status', 'published')
-        .order('week_start', { ascending: false })
-      if (error) throw error
-      return data || []
-    },
-    enabled: !!clientRecord?.id,
-  })
+  const clientRecord = portalData?.client || null
+  const reports = portalData?.reports || []
+  const services = portalData?.services || []
 
   // Auto-expand the most recent report
   React.useEffect(() => {
@@ -96,7 +80,7 @@ const ClientReports: React.FC = () => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
         >
-          <ClientValueBreakdown clientId={clientRecord.id} weeklyRate={300} />
+          <ClientValueBreakdown clientId={clientRecord.id} weeklyRate={300} prefetchedServices={services} />
         </motion.div>
       )}
     </div>

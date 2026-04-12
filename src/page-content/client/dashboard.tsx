@@ -3,7 +3,7 @@
 import React from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { motion } from 'framer-motion'
-import { supabase, getCurrentUser } from '../../lib/supabase'
+import { supabase } from '../../lib/supabase'
 import { authService } from '../../lib/auth'
 import { Card, CardContent, CardHeader, CardTitle } from '../../components/ui/card'
 import { Button } from '../../components/ui/button'
@@ -35,53 +35,30 @@ const milestones = [
 ]
 
 const ClientDashboard: React.FC = () => {
-  const [currentUser, setCurrentUser] = React.useState<any>(null)
-
-  React.useEffect(() => {
-    const fetchUser = async () => {
-      const { user } = await getCurrentUser()
-      setCurrentUser(user)
-    }
-    fetchUser()
-  }, [])
-
-  // Fetch the client record (company name, website URL, etc.)
-  const { data: clientRecord } = useQuery({
-    queryKey: ['client-record', currentUser?.id],
+  const { data: portalData } = useQuery({
+    queryKey: ['client-portal-data'],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from('clients')
-        .select('*')
-        .eq('user_id', currentUser.id)
-        .single()
-      if (error) return null
-      return data
+      const { data: { session } } = await supabase.auth.getSession()
+      const token = session?.access_token ? `Bearer ${session.access_token}` : ''
+      const res = await fetch('/api/client/portal-data', {
+        headers: { Authorization: token },
+      })
+      if (!res.ok) return null
+      return res.json()
     },
-    enabled: !!currentUser,
   })
 
-  // Fetch invoices
-  const { data: invoices = [] } = useQuery({
-    queryKey: ['client-invoices', currentUser?.id],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from('invoices')
-        .select('*')
-        .eq('client_id', clientRecord?.id)
-        .order('created_at', { ascending: false })
-      if (error) throw error
-      return data || []
-    },
-    enabled: !!clientRecord?.id,
-  })
+  const clientRecord = portalData?.client || null
+  const invoices = portalData?.invoices || []
+  const currentUser = clientRecord
 
   const handleLogout = async () => {
     await authService.logout()
     window.location.href = '/auth/login'
   }
 
-  const clientName = clientRecord?.name || currentUser?.user_metadata?.name || currentUser?.email?.split('@')[0] || 'there'
-  const companyName = clientRecord?.company || currentUser?.user_metadata?.company || ''
+  const clientName = clientRecord?.name || 'there'
+  const companyName = clientRecord?.company || ''
   const websiteUrl = clientRecord?.website || ''
   const firstName = clientName.split(' ')[0]
 
@@ -109,7 +86,7 @@ const ClientDashboard: React.FC = () => {
             <div className="flex items-center space-x-3">
               <div className="hidden md:flex items-center space-x-2 text-sm text-gray-500">
                 <User className="h-4 w-4" />
-                <span>{currentUser?.email}</span>
+                <span>{clientRecord?.email}</span>
               </div>
               <Button variant="outline" size="sm" asChild>
                 <a href="mailto:hello@nardonidigital.com" className="flex items-center space-x-1">
