@@ -29,35 +29,45 @@ const AdminReports: React.FC = () => {
 
   const selectedClient = clients.find((c: any) => c.id === selectedClientId)
 
+  const getToken = async () => {
+    const { data: { session } } = await supabase.auth.getSession()
+    return session?.access_token ? `Bearer ${session.access_token}` : ''
+  }
+
   const { data: reports = [], isLoading } = useQuery({
     queryKey: ['client-reports', selectedClientId],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from('client_reports')
-        .select('*')
-        .eq('client_id', selectedClientId)
-        .order('week_start', { ascending: false })
-      if (error) throw error
-      return data || []
+      const token = await getToken()
+      const res = await fetch(`/api/admin/reports?clientId=${selectedClientId}`, {
+        headers: { Authorization: token },
+      })
+      if (!res.ok) throw new Error('Failed to load reports')
+      return res.json()
     },
     enabled: !!selectedClientId,
   })
 
   const deleteMutation = useMutation({
     mutationFn: async (id: string) => {
-      const { error } = await supabase.from('client_reports').delete().eq('id', id)
-      if (error) throw error
+      const token = await getToken()
+      const res = await fetch(`/api/admin/reports?id=${id}`, {
+        method: 'DELETE',
+        headers: { Authorization: token },
+      })
+      if (!res.ok) throw new Error('Failed to delete')
     },
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ['client-reports', selectedClientId] }),
   })
 
   const togglePublishMutation = useMutation({
     mutationFn: async ({ id, status }: { id: string; status: string }) => {
-      const { error } = await supabase
-        .from('client_reports')
-        .update({ status, updated_at: new Date().toISOString() })
-        .eq('id', id)
-      if (error) throw error
+      const token = await getToken()
+      const res = await fetch('/api/admin/reports', {
+        method: 'PATCH',
+        headers: { Authorization: token, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id, status }),
+      })
+      if (!res.ok) throw new Error('Failed to update')
     },
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ['client-reports', selectedClientId] }),
   })

@@ -55,6 +55,9 @@ const CreateReportModal: React.FC<Props> = ({ isOpen, onClose, clientId, clientN
 
   const saveMutation = useMutation({
     mutationFn: async ({ data, publish }: { data: FormData; publish: boolean }) => {
+      const { data: { session } } = await supabase.auth.getSession()
+      const token = session?.access_token ? `Bearer ${session.access_token}` : ''
+
       const payload = {
         client_id: clientId,
         week_start: data.week_start,
@@ -66,20 +69,22 @@ const CreateReportModal: React.FC<Props> = ({ isOpen, onClose, clientId, clientN
         next_week_focus: data.next_week_focus || null,
         notes: data.notes || null,
         status: publish ? 'published' : 'draft',
-        updated_at: new Date().toISOString(),
       }
 
       if (report?.id) {
-        const { error } = await supabase
-          .from('client_reports')
-          .update(payload)
-          .eq('id', report.id)
-        if (error) throw error
+        const res = await fetch('/api/admin/reports', {
+          method: 'PATCH',
+          headers: { Authorization: token, 'Content-Type': 'application/json' },
+          body: JSON.stringify({ id: report.id, ...payload }),
+        })
+        if (!res.ok) throw new Error('Failed to update report')
       } else {
-        const { error } = await supabase
-          .from('client_reports')
-          .insert(payload)
-        if (error) throw error
+        const res = await fetch('/api/admin/reports', {
+          method: 'POST',
+          headers: { Authorization: token, 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
+        })
+        if (!res.ok) throw new Error('Failed to create report')
       }
     },
     onSuccess: () => {
