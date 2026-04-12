@@ -5,6 +5,7 @@ import { motion } from 'framer-motion'
 import { useQuery } from '@tanstack/react-query'
 import { supabase } from '../../lib/supabase'
 import { WeeklyReportCard, ClientValueBreakdown } from '../client/weekly-report-card'
+
 import { Button } from '../ui/button'
 import { Badge } from '../ui/badge'
 import {
@@ -39,32 +40,22 @@ const ClientPortalPreview: React.FC<Props> = ({ isOpen, onClose, client }) => {
   const [activeTab, setActiveTab] = React.useState<Tab>('dashboard')
   const [expandedReportId, setExpandedReportId] = React.useState<string | null>(null)
 
-  const { data: invoices = [] } = useQuery({
-    queryKey: ['preview-invoices', client?.id],
+  const { data: previewData, isLoading: reportsLoading } = useQuery({
+    queryKey: ['preview-data', client?.id],
     queryFn: async () => {
-      const { data } = await supabase
-        .from('invoices')
-        .select('*')
-        .eq('client_id', client!.id)
-        .order('created_at', { ascending: false })
-      return data || []
+      const { data: { session } } = await supabase.auth.getSession()
+      const token = session?.access_token
+      const res = await fetch(`/api/admin/client-preview?clientId=${client!.id}`, {
+        headers: token ? { Authorization: `Bearer ${token}` } : {},
+      })
+      if (!res.ok) throw new Error('Failed to load preview data')
+      return res.json()
     },
     enabled: !!client?.id && isOpen,
   })
 
-  const { data: reports = [], isLoading: reportsLoading } = useQuery({
-    queryKey: ['preview-reports', client?.id],
-    queryFn: async () => {
-      const { data } = await supabase
-        .from('client_reports')
-        .select('*')
-        .eq('client_id', client!.id)
-        .eq('status', 'published')
-        .order('week_start', { ascending: false })
-      return data || []
-    },
-    enabled: !!client?.id && isOpen,
-  })
+  const reports = previewData?.reports || []
+  const invoices = previewData?.invoices || []
 
   React.useEffect(() => {
     if (reports.length > 0 && expandedReportId === null) {
@@ -311,7 +302,7 @@ const ClientPortalPreview: React.FC<Props> = ({ isOpen, onClose, client }) => {
                 </div>
               )}
 
-              <ClientValueBreakdown clientId={client.id} weeklyRate={300} />
+              <ClientValueBreakdown clientId={client.id} weeklyRate={300} prefetchedServices={previewData?.services} />
             </div>
           )}
         </div>

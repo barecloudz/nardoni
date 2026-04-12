@@ -91,10 +91,10 @@ const AdminSidebar: React.FC = () => {
       )}
 
       {/* Sidebar */}
-      <div className={`w-64 bg-white border-r border-gray-200 h-screen fixed left-0 top-0 z-40 transform transition-transform duration-300 lg:translate-x-0 ${
+      <div className={`w-64 bg-white border-r border-gray-200 h-screen fixed left-0 top-0 z-40 transform transition-transform duration-300 lg:translate-x-0 flex flex-col ${
         isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full'
       }`}>
-        <div className="p-6 border-b border-gray-200">
+        <div className="p-6 border-b border-gray-200 flex-shrink-0">
           <div className="flex items-center space-x-3">
             <img
               src="/images/drawing.svg"
@@ -106,7 +106,7 @@ const AdminSidebar: React.FC = () => {
           <p className="text-sm text-gray-500 mt-1">Admin Panel</p>
         </div>
 
-        <nav className="mt-6">
+        <nav className="flex-1 overflow-y-auto mt-6">
           <div className="px-4 space-y-2">
             {sidebarItems.map((item) => {
               const Icon = item.icon
@@ -149,7 +149,7 @@ const AdminSidebar: React.FC = () => {
           </div>
         </nav>
 
-        <div className="absolute bottom-6 left-4 right-4">
+        <div className="p-4 border-t border-gray-200 flex-shrink-0">
           <Button
             variant="outline"
             className="w-full flex items-center space-x-2"

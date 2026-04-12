@@ -270,8 +270,8 @@ export const WeeklyReportCard: React.FC<Props> = ({ report, clientId, isExpanded
 }
 
 // The full value breakdown shown below all reports
-export const ClientValueBreakdown: React.FC<{ clientId: string; weeklyRate?: number }> = ({ clientId, weeklyRate = 300 }) => {
-  const { data: services = [] } = useQuery({
+export const ClientValueBreakdown: React.FC<{ clientId: string; weeklyRate?: number; prefetchedServices?: any[] }> = ({ clientId, weeklyRate = 300, prefetchedServices }) => {
+  const { data: fetchedServices = [] } = useQuery({
     queryKey: ['client-service-values', clientId],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -283,8 +283,10 @@ export const ClientValueBreakdown: React.FC<{ clientId: string; weeklyRate?: num
       if (error) return []
       return data || []
     },
-    enabled: !!clientId,
+    enabled: !!clientId && !prefetchedServices,
   })
+
+  const services = prefetchedServices ?? fetchedServices
 
   if (services.length === 0) return null
 
