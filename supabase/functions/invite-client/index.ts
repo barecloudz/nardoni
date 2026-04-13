@@ -86,8 +86,10 @@ async function sendInviteEmail({
                         <td style="padding:6px 0;color:#111827;font-size:13px;font-weight:600;">${email}</td>
                       </tr>
                       <tr>
-                        <td style="padding:6px 0;color:#6b7280;font-size:13px;">Password</td>
-                        <td style="padding:6px 0;color:#111827;font-size:13px;font-weight:600;font-family:monospace;">${temporaryPassword}</td>
+                        <td style="padding:6px 0;color:#6b7280;font-size:13px;vertical-align:middle;">Password</td>
+                        <td style="padding:6px 0;">
+                          <span style="display:inline-block;background-color:#191919;color:#35c677;font-family:monospace;font-size:13px;font-weight:700;padding:4px 10px;border-radius:6px;letter-spacing:0.04em;">${temporaryPassword}</span>
+                        </td>
                       </tr>
                     </table>
                   </td>
