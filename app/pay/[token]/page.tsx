@@ -41,10 +41,10 @@ export default function PayPage({ params }: { params: { token: string } }) {
           <h1 className="text-xl font-bold text-gray-900 mb-2">Offer not found</h1>
           <p className="text-gray-500 text-sm">This link may have expired or been removed. Contact us for a new one.</p>
           <a
-            href="mailto:hello@nardonidigital.com"
+            href="mailto:nardonidigital@gmail.com"
             className="inline-block mt-4 text-sm text-[#35c677] font-medium hover:underline"
           >
-            hello@nardonidigital.com
+            nardonidigital@gmail.com
           </a>
         </div>
       </div>
@@ -69,14 +69,11 @@ export default function PayPage({ params }: { params: { token: string } }) {
       {/* Top nav */}
       <nav className="bg-white border-b border-gray-100 px-6 py-4">
         <div className="max-w-xl mx-auto flex items-center justify-between">
-          <div className="flex items-center space-x-2.5">
-            <div className="w-8 h-8 bg-[#35c677] rounded-lg flex items-center justify-center">
-              <span className="text-white font-black text-sm">N</span>
-            </div>
-            <span className="font-bold text-[#191919]">Nardoni Digital</span>
+          <div className="flex items-center">
+            <img src="/img/logo.png" alt="Nardoni Digital" className="h-8 w-auto" />
           </div>
           <a
-            href="mailto:hello@nardonidigital.com"
+            href="mailto:nardonidigital@gmail.com"
             className="text-sm text-gray-500 hover:text-[#35c677] transition-colors"
           >
             Questions? Get in touch
@@ -174,7 +171,7 @@ export default function PayPage({ params }: { params: { token: string } }) {
                 </a>
               ) : (
                 <a
-                  href="mailto:hello@nardonidigital.com"
+                  href="mailto:nardonidigital@gmail.com"
                   className="w-full flex items-center justify-center space-x-2 bg-[#191919] hover:bg-gray-800 text-white font-bold py-4 px-6 rounded-2xl transition-colors text-base"
                 >
                   <span>Contact Us to Get Started</span>
@@ -206,8 +203,8 @@ export default function PayPage({ params }: { params: { token: string } }) {
           >
             <p className="text-xs text-gray-400">
               Questions?{' '}
-              <a href="mailto:hello@nardonidigital.com" className="text-[#35c677] hover:underline font-medium">
-                hello@nardonidigital.com
+              <a href="mailto:nardonidigital@gmail.com" className="text-[#35c677] hover:underline font-medium">
+                nardonidigital@gmail.com
               </a>
             </p>
             <p className="text-xs text-gray-300">© {new Date().getFullYear()} Nardoni Digital</p>
