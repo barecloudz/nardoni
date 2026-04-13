@@ -70,7 +70,7 @@ export default function PayPage({ params }: { params: { token: string } }) {
       <nav className="bg-white border-b border-gray-100 px-6 py-4">
         <div className="max-w-xl mx-auto flex items-center justify-between">
           <div className="flex items-center">
-            <img src="/img/logo.png" alt="Nardoni Digital" className="h-8 w-auto" />
+            <img src="/images/drawing.svg" alt="Nardoni Digital" className="h-8 w-auto" />
           </div>
           <a
             href="mailto:nardonidigital@gmail.com"

@@ -53,7 +53,7 @@ export default function ResetPasswordPage() {
         className="w-full max-w-md"
       >
         <div className="text-center mb-6">
-          <img src="/img/logo.png" alt="Nardoni Digital" className="h-8 w-auto mx-auto" />
+          <img src="/images/drawing.svg" alt="Nardoni Digital" className="h-8 w-auto mx-auto" />
         </div>
 
         <Card className="shadow-xl">

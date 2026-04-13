@@ -59,7 +59,7 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
 
           {/* Logo */}
           <Link href="/client/dashboard">
-            <img src="/img/logo.png" alt="Nardoni Digital" className="h-8 w-auto" />
+            <img src="/images/drawing.svg" alt="Nardoni Digital" className="h-8 w-auto" />
           </Link>
 
           {/* Desktop nav links */}
