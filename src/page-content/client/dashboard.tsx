@@ -4,14 +4,12 @@ import React from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { motion } from 'framer-motion'
 import { supabase } from '../../lib/supabase'
-import { authService } from '../../lib/auth'
 import { Card, CardContent, CardHeader, CardTitle } from '../../components/ui/card'
 import { Button } from '../../components/ui/button'
 import { Badge } from '../../components/ui/badge'
 import {
   ExternalLink,
   Download,
-  LogOut,
   CheckCircle,
   Circle,
   TrendingUp,
@@ -21,8 +19,6 @@ import {
   ArrowRight,
   Star,
   Building,
-  User,
-  MessageSquare,
   FileBarChart,
   Sparkles,
 } from 'lucide-react'
@@ -91,12 +87,6 @@ const ClientDashboard: React.FC = () => {
 
   const clientRecord = portalData?.client || null
   const invoices = portalData?.invoices || []
-  const currentUser = clientRecord
-
-  const handleLogout = async () => {
-    await authService.logout()
-    window.location.href = '/auth/login'
-  }
 
   const clientName = clientRecord?.name || 'there'
   const companyName = clientRecord?.company || ''
@@ -113,37 +103,8 @@ const ClientDashboard: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <header className="bg-white border-b border-gray-200 sticky top-0 z-10">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
-            <div className="flex items-center space-x-3">
-              <div className="w-9 h-9 bg-[#35c677] rounded-lg flex items-center justify-center">
-                <span className="text-white font-bold text-sm">N</span>
-              </div>
-              <span className="font-semibold text-[#191919]">Nardoni Digital</span>
-            </div>
-            <div className="flex items-center space-x-3">
-              <div className="hidden md:flex items-center space-x-2 text-sm text-gray-500">
-                <User className="h-4 w-4" />
-                <span>{clientRecord?.email}</span>
-              </div>
-              <Button variant="outline" size="sm" asChild>
-                <a href="mailto:hello@nardonidigital.com" className="flex items-center space-x-1">
-                  <MessageSquare className="h-4 w-4" />
-                  <span className="hidden sm:inline">Support</span>
-                </a>
-              </Button>
-              <Button variant="ghost" size="sm" onClick={handleLogout}>
-                <LogOut className="h-4 w-4" />
-              </Button>
-            </div>
-          </div>
-        </div>
-      </header>
-
-      <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8 max-w-5xl">
+    <div>
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8 max-w-5xl">
 
         {/* Welcome + Website Live */}
         <motion.div
@@ -360,7 +321,7 @@ const ClientDashboard: React.FC = () => {
           </Card>
         </motion.div>
 
-      </main>
+      </div>
     </div>
   )
 }
