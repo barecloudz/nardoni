@@ -90,7 +90,8 @@ const InviteClientModal: React.FC<InviteClientModalProps> = ({ isOpen, onClose, 
           temporaryPassword: data.temporaryPassword,
           clientId: client.id,
           clientName: client.name,
-          clientCompany: client.company
+          clientCompany: client.company,
+          portalUrl: window.location.origin,
         })
       })
 
@@ -178,46 +179,30 @@ Nardoni Digital`
               >
                 <div className="flex items-center space-x-3">
                   <CheckCircle className="h-6 w-6 text-[#35c677] flex-shrink-0" />
-                  <h3 className="text-base font-semibold text-gray-900">
-                    Account created for {client?.name}
-                  </h3>
+                  <div>
+                    <h3 className="text-base font-semibold text-gray-900">Account created for {client?.name}</h3>
+                    <p className="text-sm text-gray-500 mt-0.5">Credentials emailed to {inviteDetails.email}</p>
+                  </div>
                 </div>
 
-                <div className="bg-gray-50 rounded-lg p-4 text-sm space-y-2">
+                <div className="bg-gray-50 rounded-xl p-4 text-sm space-y-2.5 border border-gray-100">
                   <div className="flex items-center justify-between">
                     <span className="text-gray-500">Email</span>
-                    <span className="font-mono text-[#191919]">{inviteDetails.email}</span>
+                    <span className="font-mono text-[#191919] text-xs">{inviteDetails.email}</span>
                   </div>
                   <div className="flex items-center justify-between">
-                    <span className="text-gray-500">Password</span>
-                    <span className="font-mono text-[#191919]">{inviteDetails.password}</span>
+                    <span className="text-gray-500">Temp password</span>
+                    <span className="font-mono text-[#191919] text-xs">{inviteDetails.password}</span>
                   </div>
                   <div className="flex items-center justify-between">
-                    <span className="text-gray-500">Login URL</span>
+                    <span className="text-gray-500">Portal</span>
                     <span className="font-mono text-[#191919] text-xs">{typeof window !== 'undefined' ? window.location.origin : ''}/auth/login</span>
                   </div>
                 </div>
 
-                <div>
-                  <p className="text-xs text-gray-500 mb-2 font-medium uppercase tracking-wide">Message to send</p>
-                  <pre className="bg-gray-50 rounded-lg p-3 text-xs text-gray-700 whitespace-pre-wrap font-sans leading-relaxed border border-gray-200">
-                    {typeof window !== 'undefined' ? getMessageToCopy(window.location.origin) : ''}
-                  </pre>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="mt-2 w-full flex items-center space-x-2"
-                    onClick={() => {
-                      if (typeof window !== 'undefined') {
-                        navigator.clipboard.writeText(getMessageToCopy(window.location.origin))
-                        setCopied(true)
-                        setTimeout(() => setCopied(false), 2000)
-                      }
-                    }}
-                  >
-                    {copied ? <CheckCircle className="h-3 w-3 text-[#35c677]" /> : <Copy className="h-3 w-3" />}
-                    <span>{copied ? 'Copied!' : 'Copy Message'}</span>
-                  </Button>
+                <div className="flex items-center space-x-2 bg-[#35c677]/10 border border-[#35c677]/20 rounded-lg p-3">
+                  <Mail className="h-4 w-4 text-[#35c677] flex-shrink-0" />
+                  <p className="text-sm text-[#35c677] font-medium">Welcome email sent automatically</p>
                 </div>
 
                 <Button onClick={handleClose} className="w-full">
@@ -264,13 +249,6 @@ Nardoni Digital`
                   )}
                   <p className="text-xs text-gray-500 mt-1">
                     Client should change this password after first login
-                  </p>
-                </div>
-
-                <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3">
-                  <p className="text-sm text-yellow-800">
-                    <strong>Important:</strong> You'll need to manually share the login credentials with the client. 
-                    Consider using a secure method like encrypted email or password manager.
                   </p>
                 </div>
 
