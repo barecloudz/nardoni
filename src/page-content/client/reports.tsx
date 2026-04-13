@@ -35,7 +35,7 @@ const ClientReports: React.FC = () => {
   }, [reports])
 
   return (
-    <div className="space-y-8">
+    <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6 max-w-5xl">
       <div>
         <h2 className="text-2xl font-bold text-[#191919]">Weekly Reports</h2>
         <p className="text-gray-500 text-sm mt-1">Your weekly breakdown of everything we're doing for you.</p>
@@ -88,3 +88,4 @@ const ClientReports: React.FC = () => {
 }
 
 export default ClientReports
+

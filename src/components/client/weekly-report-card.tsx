@@ -712,7 +712,7 @@ export const ClientValueBreakdown: React.FC<{ clientId: string; weeklyRate?: num
                 <div key={s.id} className="flex items-start justify-between">
                   <div className="flex-1 min-w-0 pr-4">
                     <p className="text-white text-sm font-medium leading-snug">{s.service_name}</p>
-                    {s.description && <p className="text-gray-500 text-xs mt-0.5 leading-snug">{s.description}</p>}
+                    {s.description && <p className="text-gray-300 text-xs mt-0.5 leading-snug">{s.description}</p>}
                   </div>
                   <div className="text-right flex-shrink-0">
                     <p className="text-gray-600 text-xs line-through">${Number(s.market_price).toLocaleString()}</p>
@@ -733,7 +733,7 @@ export const ClientValueBreakdown: React.FC<{ clientId: string; weeklyRate?: num
                 <div key={s.id} className="flex items-start justify-between">
                   <div className="flex-1 min-w-0 pr-4">
                     <p className="text-white text-sm font-medium leading-snug">{s.service_name}</p>
-                    {s.description && <p className="text-gray-500 text-xs mt-0.5 leading-snug">{s.description}</p>}
+                    {s.description && <p className="text-gray-300 text-xs mt-0.5 leading-snug">{s.description}</p>}
                   </div>
                   <div className="text-right flex-shrink-0">
                     <p className="text-gray-600 text-xs line-through">${Number(s.market_price).toLocaleString()}/mo</p>
