@@ -190,7 +190,7 @@ const ClientDashboard: React.FC = () => {
                     <div className="pt-0.5">
                       <p className={`font-medium text-sm ${m.done ? 'text-[#191919]' : m.next ? 'text-[#35c677] font-semibold' : 'text-gray-400'}`}>
                         {m.label}
-                        {m.next && <span className="ml-2 text-xs bg-[#35c677]/10 text-[#35c677] px-2 py-0.5 rounded-full">Up next</span>}
+                        {m.next && <span className="ml-2 text-xs bg-[#35c677]/10 text-[#35c677] px-2 py-0.5 rounded-full">Ongoing</span>}
                       </p>
                       {m.done && <p className="text-xs text-gray-400 mt-0.5">Complete</p>}
                     </div>
