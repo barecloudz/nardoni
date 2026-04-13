@@ -122,8 +122,14 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSuccess }) => {
               )}
             </div>
 
-            <Button 
-              type="submit" 
+            <div className="flex justify-end -mt-1">
+              <a href="/auth/forgot-password" className="text-xs text-gray-400 hover:text-[#35c677] transition-colors">
+                Forgot password?
+              </a>
+            </div>
+
+            <Button
+              type="submit"
               className="w-full flex items-center justify-center space-x-2"
               disabled={isLoading}
             >
