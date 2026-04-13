@@ -129,13 +129,13 @@ const ClientDashboard: React.FC = () => {
                 <p className="text-gray-400 text-sm mb-5">{companyName}</p>
               )}
               {websiteUrl ? (
-                <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3">
-                  <div className="flex items-center space-x-2 bg-white/10 rounded-lg px-4 py-2 flex-1 min-w-0">
+                <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full min-w-0">
+                  <div className="flex items-center space-x-2 bg-white/10 rounded-lg px-4 py-2 min-w-0 overflow-hidden flex-1">
                     <Globe className="h-4 w-4 text-[#35c677] flex-shrink-0" />
-                    <span className="text-sm font-mono truncate">{websiteUrl}</span>
+                    <span className="text-sm font-mono truncate block min-w-0">{websiteUrl}</span>
                   </div>
-                  <a href={websiteUrl} target="_blank" rel="noopener noreferrer">
-                    <Button className="bg-[#35c677] hover:bg-[#2db366] text-white flex items-center space-x-2 whitespace-nowrap">
+                  <a href={websiteUrl} target="_blank" rel="noopener noreferrer" className="flex-shrink-0">
+                    <Button className="bg-[#35c677] hover:bg-[#2db366] text-white flex items-center justify-center space-x-2 w-full sm:w-auto">
                       <span>Visit Your Site</span>
                       <ExternalLink className="h-4 w-4" />
                     </Button>
