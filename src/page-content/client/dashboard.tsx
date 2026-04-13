@@ -63,7 +63,7 @@ const UPSELL_CATALOG = [
   },
 ]
 
-const milestones = [
+const DEFAULT_MILESTONES = [
   { label: 'Discovery & Strategy', done: true },
   { label: 'Design & Development', done: true },
   { label: 'Review & Revisions', done: true },
@@ -87,6 +87,7 @@ const ClientDashboard: React.FC = () => {
 
   const clientRecord = portalData?.client || null
   const invoices = portalData?.invoices || []
+  const milestones = clientRecord?.milestones || DEFAULT_MILESTONES
 
   const clientName = clientRecord?.name || 'there'
   const companyName = clientRecord?.company || ''
