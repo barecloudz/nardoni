@@ -5,11 +5,12 @@ import { useRouter, usePathname } from 'next/navigation'
 import Link from 'next/link'
 import { authService } from '../../src/lib/auth'
 import { LoadingSpinner } from '../../src/components/ui/loading-spinner'
-import { LayoutDashboard, FileBarChart, LogOut, MessageSquare } from 'lucide-react'
+import { LayoutDashboard, FileBarChart, LogOut, MessageSquare, UserCircle } from 'lucide-react'
 
 const NAV_ITEMS = [
   { href: '/client/dashboard', label: 'Dashboard', icon: LayoutDashboard },
   { href: '/client/reports',   label: 'Reports',   icon: FileBarChart },
+  { href: '/client/account',   label: 'Account',   icon: UserCircle },
 ]
 
 export default function ClientLayout({ children }: { children: React.ReactNode }) {
