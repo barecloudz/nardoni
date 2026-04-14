@@ -1,58 +1,24 @@
 'use client'
 
 import React from 'react'
+import Link from 'next/link'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { supabase, getClients } from '../../lib/supabase'
 import { Button } from '../ui/button'
 import { Input } from '../ui/input'
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card'
-import { X, Link2, Copy, CheckCircle2, ExternalLink, Sparkles, ArrowRight, Plus, Trash2 } from 'lucide-react'
+import { X, Link2, Copy, CheckCircle2, ExternalLink, Sparkles, ArrowRight, Plus, Trash2, Package } from 'lucide-react'
 
-const CATALOG = [
-  {
-    name: 'Local SEO (Google Rankings)',
-    description: 'We rank your business in the top 10 Google results for your target keywords. 90-day guarantee — if we can\'t get you there, we work for free until we do.',
-    features: 'Page 1 Google Rankings\n90-Day Guarantee\nLocal SEO Strategy\nMonthly Reporting\nKeyword Research',
-    price: 500,
-    period: 'monthly',
-  },
-  {
-    name: 'Google Business Profile Management',
-    description: 'Daily posts, custom graphics, responding to every Google review within 24hrs, Q&A management and monthly analytics.',
-    features: 'Daily GBP Posts\nCustom Graphics\nReview Responses (24hr)\nQ&A Management\nMonthly Analytics',
-    price: 400,
-    period: 'monthly',
-  },
-  {
-    name: 'Cold Email Outreach',
-    description: 'B2B lead generation via cold email — ICP targeting, sequence copywriting, A/B testing, reply handling and weekly reporting.',
-    features: 'ICP Targeting\nSequence Copywriting\nA/B Testing\nReply Management\nWeekly Reporting',
-    price: 3500,
-    period: 'monthly',
-  },
-  {
-    name: 'Google + Meta Ads Management',
-    description: 'Paid ad campaign setup, creative, audience targeting, management and optimization across Google and Meta.',
-    features: 'Campaign Setup\nAd Creative\nAudience Targeting\nBid Optimization\nMonthly Reporting',
-    price: 1200,
-    period: 'monthly',
-  },
-  {
-    name: 'Custom Website',
-    description: 'Fully custom-built website — no templates, clean React build, mobile-first design, fast and optimized.',
-    features: 'Custom Design\nMobile-First\nSEO Optimized\nFast Load Times\nHosting Setup',
-    price: 3500,
-    period: 'one-time',
-  },
-  {
-    name: 'Weekly Performance Reports',
-    description: 'Detailed weekly breakdowns of outreach metrics, active opportunities, deals closed and next week focus.',
-    features: 'Weekly Delivery\nOutreach Metrics\nOpportunity Tracking\nWins Summary\nNext Week Plan',
-    price: 500,
-    period: 'monthly',
-  },
-]
+interface CatalogItem {
+  id: string
+  name: string
+  description: string | null
+  features: string | null
+  price: number
+  period: string
+  is_active: boolean
+}
 
 interface Addon {
   name: string
@@ -97,10 +63,24 @@ const CreatePaymentLinkModal: React.FC<Props> = ({ isOpen, onClose }) => {
     return session?.access_token ? `Bearer ${session.access_token}` : ''
   }
 
-  const applyPreset = (preset: typeof CATALOG[0]) => {
+  const { data: catalog = [], isLoading: catalogLoading } = useQuery<CatalogItem[]>({
+    queryKey: ['service-catalog'],
+    queryFn: async () => {
+      const token = await getToken()
+      const res = await fetch('/api/admin/service-catalog', {
+        headers: { Authorization: token },
+      })
+      if (!res.ok) return []
+      const items: CatalogItem[] = await res.json()
+      return items.filter(i => i.is_active)
+    },
+    enabled: isOpen,
+  })
+
+  const applyPreset = (preset: CatalogItem) => {
     setServiceName(preset.name)
-    setDescription(preset.description)
-    setFeatures(preset.features)
+    setDescription(preset.description || '')
+    setFeatures(preset.features || '')
     setPrice(String(preset.price))
     setPeriod(preset.period)
   }
@@ -271,21 +251,39 @@ const CreatePaymentLinkModal: React.FC<Props> = ({ isOpen, onClose }) => {
                 {/* Quick-pick catalog */}
                 <div>
                   <label className={lbl}>Quick-pick a service</label>
-                  <div className="flex flex-wrap gap-2">
-                    {CATALOG.map(preset => (
-                      <button
-                        key={preset.name}
-                        onClick={() => applyPreset(preset)}
-                        className={`text-xs px-3 py-1.5 rounded-full border transition-colors ${
-                          serviceName === preset.name
-                            ? 'border-[#35c677] bg-[#35c677]/10 text-[#35c677] font-semibold'
-                            : 'border-gray-200 text-gray-600 hover:border-[#35c677]/50 hover:text-[#35c677]'
-                        }`}
-                      >
-                        {preset.name}
-                      </button>
-                    ))}
-                  </div>
+                  {catalogLoading ? (
+                    <div className="flex gap-2">
+                      {[...Array(3)].map((_, i) => (
+                        <div key={i} className="h-7 w-24 bg-gray-100 rounded-full animate-pulse" />
+                      ))}
+                    </div>
+                  ) : catalog.length === 0 ? (
+                    <div className="flex items-center gap-2 text-sm text-gray-400 py-1">
+                      <Package className="h-4 w-4 shrink-0" />
+                      <span>
+                        No services in catalog.{' '}
+                        <Link href="/admin/service-catalog" className="text-[#35c677] underline underline-offset-2 hover:text-[#2db366]">
+                          Add services here
+                        </Link>
+                      </span>
+                    </div>
+                  ) : (
+                    <div className="flex flex-wrap gap-2">
+                      {catalog.map(preset => (
+                        <button
+                          key={preset.id}
+                          onClick={() => applyPreset(preset)}
+                          className={`text-xs px-3 py-1.5 rounded-full border transition-colors ${
+                            serviceName === preset.name
+                              ? 'border-[#35c677] bg-[#35c677]/10 text-[#35c677] font-semibold'
+                              : 'border-gray-200 text-gray-600 hover:border-[#35c677]/50 hover:text-[#35c677]'
+                          }`}
+                        >
+                          {preset.name}
+                        </button>
+                      ))}
+                    </div>
+                  )}
                 </div>
 
                 <div className="border-t border-dashed border-gray-200 pt-4 space-y-4">
