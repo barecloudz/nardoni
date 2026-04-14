@@ -153,9 +153,7 @@ export default function PayPage({ params }: { params: { token: string } }) {
             {/* Header */}
             <div className="bg-[#191919] px-8 py-7">
               <div className="flex items-center space-x-2 mb-1">
-                <div className="w-5 h-5 bg-[#35c677] rounded flex items-center justify-center">
-                  <span className="text-white font-black text-xs">N</span>
-                </div>
+                <img src="/images/drawing.svg" alt="Nardoni Digital" className="h-5 w-auto brightness-0 invert" />
                 <span className="text-gray-400 text-xs font-medium uppercase tracking-widest">Service Offer</span>
               </div>
               <h1 className="text-2xl font-black text-white mt-2 leading-snug">{offer.service_name}</h1>

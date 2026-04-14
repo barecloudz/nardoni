@@ -50,6 +50,18 @@ export const createStripePaymentLink = async ({
   // Create the payment link
   const link = await stripe.paymentLinks.create({
     line_items: [{ price: price.id, quantity: 1 }],
+    custom_fields: [
+      {
+        key: 'first_name',
+        label: { type: 'custom', custom: 'First Name' },
+        type: 'text',
+      },
+      {
+        key: 'company_name',
+        label: { type: 'custom', custom: 'Company Name' },
+        type: 'text',
+      },
+    ],
   })
 
   return link
