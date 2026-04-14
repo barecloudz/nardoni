@@ -130,16 +130,31 @@ export async function PATCH(req: NextRequest) {
 
   if (!id) return NextResponse.json({ error: 'id required' }, { status: 400 })
 
-  // Fetch the current offer so we know the base price + period for addon link generation
+  // Fetch the current offer so we know the base price + period for link generation
   const { data: current } = await supabaseAdmin
     .from('service_offers')
-    .select('price, period, service_name')
+    .select('price, period, service_name, stripe_payment_link_url, stripe_payment_link_id')
     .eq('id', id)
     .single()
 
   const baseName = service_name ?? current?.service_name
   const basePrice = current?.price ?? 0
   const basePeriod = current?.period ?? 'monthly'
+
+  // Regenerate base Stripe link if missing
+  let baseStripeUrl = current?.stripe_payment_link_url
+  let baseStripeLinkId = current?.stripe_payment_link_id
+  if (!baseStripeUrl) {
+    try {
+      const link = await createStripePaymentLink({
+        name: baseName,
+        amount: Math.round(basePrice * 100),
+        recurring: RECURRING_MAP[basePeriod],
+      })
+      baseStripeUrl = link.url
+      baseStripeLinkId = link.id
+    } catch { /* keep null */ }
+  }
 
   // Regenerate Stripe links for addons that are missing one
   let resolvedAddons = addons ?? undefined
@@ -171,6 +186,10 @@ export async function PATCH(req: NextRequest) {
   if (features !== undefined) updates.features = features || null
   if (resolvedAddons !== undefined) updates.addons = resolvedAddons
   if (service_cards !== undefined) updates.service_cards = service_cards
+  if (baseStripeUrl) {
+    updates.stripe_payment_link_url = baseStripeUrl
+    updates.stripe_payment_link_id = baseStripeLinkId
+  }
 
   const { data, error } = await supabaseAdmin
     .from('service_offers')
