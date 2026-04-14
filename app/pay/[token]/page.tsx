@@ -213,6 +213,37 @@ export default function PayPage({ params }: { params: { token: string } }) {
               </div>
             )}
 
+            {/* Cold Outreach warmup warning */}
+            <AnimatePresence>
+              {Array.from(selectedAddons).some(i => addons[i]?.name?.toLowerCase().includes('cold outreach') || addons[i]?.name?.toLowerCase().includes('outreach')) && (
+                <motion.div
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: 'auto' }}
+                  exit={{ opacity: 0, height: 0 }}
+                  transition={{ duration: 0.25 }}
+                  className="overflow-hidden"
+                >
+                  <div className="mx-8 mt-4 rounded-2xl border border-amber-200 bg-amber-50 px-5 py-4">
+                    <div className="flex items-start gap-3">
+                      <span className="text-amber-500 text-lg leading-none mt-0.5">⚠️</span>
+                      <div>
+                        <p className="text-sm font-bold text-amber-700">This requires 4–6 weeks of email warmup before we can send.</p>
+                        <p className="text-xs text-amber-600 mt-1.5 leading-relaxed">
+                          Cold email outreach can't start the day you sign up. Your sending domain needs to be gradually warmed up over 4–6 weeks — sending small volumes first, building trust with email providers before ramping up.
+                        </p>
+                        <p className="text-xs text-amber-600 mt-2 leading-relaxed">
+                          <span className="font-semibold">If we skip warmup and just send:</span> your domain gets flagged as spam almost immediately. Once flagged, your emails land in junk for everyone — including your own customers and business contacts. In severe cases the domain gets blacklisted entirely, which is very difficult to recover from and can permanently damage your business email reputation.
+                        </p>
+                        <p className="text-xs text-amber-700 font-semibold mt-2">
+                          We do this the right way — warmup is included and handled by us.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+
             {/* Add-ons */}
             {addons.length > 0 && (
               <div className="px-8 py-6 border-b border-gray-100">
