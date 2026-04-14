@@ -22,7 +22,12 @@ export const getStripePaymentLinks = async () => {
   return links.data
 }
 
-// Create a payment link for a service
+const CHECKOUT_CUSTOM_FIELDS = [
+  { key: 'first_name', label: { type: 'custom' as const, custom: 'First Name' }, type: 'text' as const },
+  { key: 'company_name', label: { type: 'custom' as const, custom: 'Company Name' }, type: 'text' as const },
+]
+
+// Create a payment link for a service (single line item)
 export const createStripePaymentLink = async ({
   name,
   amount,
@@ -34,36 +39,44 @@ export const createStripePaymentLink = async ({
   currency?: string
   recurring?: 'week' | 'month' | 'year'
 }) => {
-  // Create a product
   const product = await stripe.products.create({ name })
-
-  // Create a price
   const price = await stripe.prices.create({
     product: product.id,
     unit_amount: amount,
     currency,
-    ...(recurring && {
-      recurring: { interval: recurring },
-    }),
+    ...(recurring && { recurring: { interval: recurring } }),
   })
-
-  // Create the payment link
   const link = await stripe.paymentLinks.create({
     line_items: [{ price: price.id, quantity: 1 }],
-    custom_fields: [
-      {
-        key: 'first_name',
-        label: { type: 'custom', custom: 'First Name' },
-        type: 'text',
-      },
-      {
-        key: 'company_name',
-        label: { type: 'custom', custom: 'Company Name' },
-        type: 'text',
-      },
-    ],
+    custom_fields: CHECKOUT_CUSTOM_FIELDS,
   })
+  return link
+}
 
+// Create a payment link with multiple line items (e.g. recurring base + one-time add-on)
+export const createStripePaymentLinkMulti = async ({
+  items,
+  currency = 'usd',
+}: {
+  items: Array<{ name: string; amount: number; recurring?: 'week' | 'month' | 'year' }>
+  currency?: string
+}) => {
+  const lineItems = await Promise.all(
+    items.map(async item => {
+      const product = await stripe.products.create({ name: item.name })
+      const price = await stripe.prices.create({
+        product: product.id,
+        unit_amount: item.amount,
+        currency,
+        ...(item.recurring && { recurring: { interval: item.recurring } }),
+      })
+      return { price: price.id, quantity: 1 }
+    })
+  )
+  const link = await stripe.paymentLinks.create({
+    line_items: lineItems,
+    custom_fields: CHECKOUT_CUSTOM_FIELDS,
+  })
   return link
 }
 

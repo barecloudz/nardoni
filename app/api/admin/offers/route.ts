@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
-import { createStripePaymentLink } from '../../../../src/lib/stripe'
+import { createStripePaymentLink, createStripePaymentLinkMulti } from '../../../../src/lib/stripe'
 
 const supabaseAdmin = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -28,6 +28,103 @@ const RECURRING_MAP: Record<string, 'week' | 'month' | 'year' | undefined> = {
   yearly: 'year',
 }
 
+// Returns all non-empty subsets of an array of indices
+function subsets(indices: number[]): number[][] {
+  return indices.reduce<number[][]>(
+    (acc, i) => acc.concat(acc.map(s => [...s, i])),
+    [[]]
+  ).filter(s => s.length > 0)
+}
+
+// Build Stripe line items for a given set of addons + base offer
+function buildLineItems(
+  baseName: string,
+  basePrice: number,
+  basePeriod: string,
+  selectedAddons: any[]
+) {
+  const recurring = RECURRING_MAP[basePeriod]
+
+  // Separate recurring vs one-time addons
+  const recurringAddons = selectedAddons.filter(a => (a.period || basePeriod) !== 'one-time')
+  const onetimeAddons = selectedAddons.filter(a => (a.period || basePeriod) === 'one-time')
+
+  const items: Array<{ name: string; amount: number; recurring?: 'week' | 'month' | 'year' }> = []
+
+  // Base + all recurring addons combined into one recurring line item
+  const recurringTotal = basePrice + recurringAddons.reduce((s: number, a: any) => s + a.price, 0)
+  const recurringName = recurringAddons.length > 0
+    ? `${baseName} + ${recurringAddons.map((a: any) => a.name).join(' + ')}`
+    : baseName
+  items.push({ name: recurringName, amount: Math.round(recurringTotal * 100), recurring })
+
+  // Each one-time addon as its own line item
+  for (const a of onetimeAddons) {
+    items.push({ name: a.name, amount: Math.round(a.price * 100) })
+  }
+
+  return items
+}
+
+// Generate all Stripe links for an offer: base + each addon combo
+// Returns addons array with stripe_combos populated, plus the base stripe URL
+async function generateAllStripeLinks(
+  serviceName: string,
+  price: number,
+  period: string,
+  addons: any[]
+): Promise<{ stripeUrl: string; stripeLinkId: string; addonsWithLinks: any[] }> {
+  // Base link (no addons)
+  const baseLink = await createStripePaymentLink({
+    name: serviceName,
+    amount: Math.round(price * 100),
+    recurring: RECURRING_MAP[period],
+  })
+
+  if (!addons || addons.length === 0) {
+    return { stripeUrl: baseLink.url, stripeLinkId: baseLink.id, addonsWithLinks: [] }
+  }
+
+  // Build all non-empty subsets of addon indices
+  const allSubsets = subsets(addons.map((_: any, i: number) => i))
+
+  // Map: subset key → stripe URL (e.g. "0" → url, "1" → url, "0,1" → url)
+  const comboMap: Record<string, string> = {}
+  for (const subset of allSubsets) {
+    const key = subset.join(',')
+    const selectedAddons = subset.map(i => addons[i])
+    const items = buildLineItems(serviceName, price, period, selectedAddons)
+    try {
+      const link = items.length === 1
+        ? await createStripePaymentLink({ ...items[0] })
+        : await createStripePaymentLinkMulti({ items })
+      comboMap[key] = link.url
+    } catch {
+      comboMap[key] = ''
+    }
+  }
+
+  // Attach stripe_combos to each addon so the pay page can look up the right URL
+  const addonsWithLinks = addons.map((addon: any, i: number) => {
+    const soloKey = String(i)
+    const combos: Record<string, string> = {}
+    // All subsets that include this addon
+    for (const [key, url] of Object.entries(comboMap)) {
+      const indices = key.split(',').map(Number)
+      if (indices.includes(i)) {
+        combos[key] = url
+      }
+    }
+    return {
+      ...addon,
+      stripe_payment_link_url: comboMap[soloKey] || '',
+      stripe_combos: combos,
+    }
+  })
+
+  return { stripeUrl: baseLink.url, stripeLinkId: baseLink.id, addonsWithLinks }
+}
+
 // GET /api/admin/offers
 export async function GET(req: NextRequest) {
   const user = await verifyAdmin(req)
@@ -46,7 +143,7 @@ export async function GET(req: NextRequest) {
   return NextResponse.json(data)
 }
 
-// POST /api/admin/offers — create offer + auto-generate Stripe links for base + every addon
+// POST /api/admin/offers
 export async function POST(req: NextRequest) {
   const user = await verifyAdmin(req)
   if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
@@ -58,44 +155,17 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'service_name and price are required' }, { status: 400 })
   }
 
-  // Create base Stripe payment link
   let stripeUrl = null
   let stripeLinkId = null
+  let addonsWithLinks = addons || null
+
   try {
-    const link = await createStripePaymentLink({
-      name: service_name,
-      amount: Math.round(price * 100),
-      recurring: RECURRING_MAP[period],
-    })
-    stripeUrl = link.url
-    stripeLinkId = link.id
+    const result = await generateAllStripeLinks(service_name, price, period, addons || [])
+    stripeUrl = result.stripeUrl
+    stripeLinkId = result.stripeLinkId
+    addonsWithLinks = result.addonsWithLinks.length > 0 ? result.addonsWithLinks : null
   } catch (e: any) {
     return NextResponse.json({ error: `Stripe error: ${e.message}` }, { status: 500 })
-  }
-
-  // Auto-generate Stripe links for each addon
-  let addonsWithLinks = null
-  if (Array.isArray(addons) && addons.length > 0) {
-    addonsWithLinks = await Promise.all(
-      addons.map(async (addon: any) => {
-        const addonPeriod: string = addon.period || period
-        const isOneTime = addonPeriod === 'one-time'
-        // Recurring addons: link price = base + addon (one payment covers the full package)
-        // One-time addons: link price = addon price only (charged separately)
-        const linkAmount = isOneTime ? addon.price : price + addon.price
-        const linkName = isOneTime ? addon.name : `${service_name} + ${addon.name}`
-        try {
-          const link = await createStripePaymentLink({
-            name: linkName,
-            amount: Math.round(linkAmount * 100),
-            recurring: isOneTime ? undefined : RECURRING_MAP[period],
-          })
-          return { ...addon, stripe_payment_link_url: link.url }
-        } catch {
-          return { ...addon, stripe_payment_link_url: '' }
-        }
-      })
-    )
   }
 
   const { data, error } = await supabaseAdmin
@@ -120,7 +190,7 @@ export async function POST(req: NextRequest) {
   return NextResponse.json(data)
 }
 
-// PATCH /api/admin/offers — update offer; regenerates Stripe links for any addon missing one
+// PATCH /api/admin/offers
 export async function PATCH(req: NextRequest) {
   const user = await verifyAdmin(req)
   if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
@@ -130,7 +200,6 @@ export async function PATCH(req: NextRequest) {
 
   if (!id) return NextResponse.json({ error: 'id required' }, { status: 400 })
 
-  // Fetch the current offer so we know the base price + period for link generation
   const { data: current } = await supabaseAdmin
     .from('service_offers')
     .select('price, period, service_name, stripe_payment_link_url, stripe_payment_link_id')
@@ -141,54 +210,37 @@ export async function PATCH(req: NextRequest) {
   const basePrice = current?.price ?? 0
   const basePeriod = current?.period ?? 'monthly'
 
+  const updates: Record<string, any> = {}
+  if (service_name !== undefined) updates.service_name = service_name
+  if (description !== undefined) updates.description = description || null
+  if (features !== undefined) updates.features = features || null
+  if (service_cards !== undefined) updates.service_cards = service_cards
+
   // Regenerate base Stripe link if missing
-  let baseStripeUrl = current?.stripe_payment_link_url
-  let baseStripeLinkId = current?.stripe_payment_link_id
-  if (!baseStripeUrl) {
+  if (!current?.stripe_payment_link_url) {
     try {
       const link = await createStripePaymentLink({
         name: baseName,
         amount: Math.round(basePrice * 100),
         recurring: RECURRING_MAP[basePeriod],
       })
-      baseStripeUrl = link.url
-      baseStripeLinkId = link.id
+      updates.stripe_payment_link_url = link.url
+      updates.stripe_payment_link_id = link.id
     } catch { /* keep null */ }
   }
 
-  // Regenerate Stripe links for addons that are missing one
-  let resolvedAddons = addons ?? undefined
-  if (Array.isArray(addons)) {
-    resolvedAddons = await Promise.all(
-      addons.map(async (addon: any) => {
-        if (addon.stripe_payment_link_url) return addon
-        const addonPeriod: string = addon.period || basePeriod
-        const isOneTime = addonPeriod === 'one-time'
-        const linkAmount = isOneTime ? addon.price : basePrice + addon.price
-        const linkName = isOneTime ? addon.name : `${baseName} + ${addon.name}`
-        try {
-          const link = await createStripePaymentLink({
-            name: linkName,
-            amount: Math.round(linkAmount * 100),
-            recurring: isOneTime ? undefined : RECURRING_MAP[basePeriod],
-          })
-          return { ...addon, stripe_payment_link_url: link.url }
-        } catch {
-          return addon
-        }
-      })
-    )
-  }
-
-  const updates: Record<string, any> = {}
-  if (service_name !== undefined) updates.service_name = service_name
-  if (description !== undefined) updates.description = description || null
-  if (features !== undefined) updates.features = features || null
-  if (resolvedAddons !== undefined) updates.addons = resolvedAddons
-  if (service_cards !== undefined) updates.service_cards = service_cards
-  if (baseStripeUrl) {
-    updates.stripe_payment_link_url = baseStripeUrl
-    updates.stripe_payment_link_id = baseStripeLinkId
+  // Regenerate all combo Stripe links for addons
+  if (addons !== undefined) {
+    try {
+      const result = await generateAllStripeLinks(baseName, basePrice, basePeriod, addons || [])
+      updates.addons = result.addonsWithLinks.length > 0 ? result.addonsWithLinks : null
+      if (!current?.stripe_payment_link_url) {
+        updates.stripe_payment_link_url = result.stripeUrl
+        updates.stripe_payment_link_id = result.stripeLinkId
+      }
+    } catch {
+      updates.addons = addons
+    }
   }
 
   const { data, error } = await supabaseAdmin

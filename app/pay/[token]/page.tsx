@@ -102,11 +102,21 @@ export default function PayPage({ params }: { params: { token: string } }) {
   const recurringTotal = offer.price + selectedRecurring.reduce((s, a) => s + a.price, 0)
   const onetimeTotal = selectedOneTime.reduce((s, a) => s + a.price, 0)
 
-  // Payment URL: if exactly 1 addon selected use its URL, else base
-  const activePaymentUrl =
-    selectedAddons.size === 1
-      ? (addons[Array.from(selectedAddons)[0]]?.stripe_payment_link_url || offer.stripe_payment_link_url)
-      : offer.stripe_payment_link_url
+  // Payment URL: look up the exact combo link for the current addon selection
+  const comboKey = Array.from(selectedAddons).sort((a, b) => a - b).join(',')
+  const activePaymentUrl = (() => {
+    if (selectedAddons.size === 0) return offer.stripe_payment_link_url
+    // Check each selected addon's stripe_combos for the full combo key
+    for (const i of Array.from(selectedAddons)) {
+      const url = addons[i]?.stripe_combos?.[comboKey]
+      if (url) return url
+    }
+    // Fallback to single addon URL if only one selected
+    if (selectedAddons.size === 1) {
+      return addons[Array.from(selectedAddons)[0]]?.stripe_payment_link_url || offer.stripe_payment_link_url
+    }
+    return offer.stripe_payment_link_url
+  })()
 
   const formatPrice = (amount: number) =>
     new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(amount)
