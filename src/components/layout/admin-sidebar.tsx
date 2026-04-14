@@ -22,7 +22,8 @@ import {
   Mail,
   FileBarChart,
   CheckSquare,
-  Package
+  Package,
+  Link2,
 } from 'lucide-react'
 import { Button } from '../ui/button'
 import { authService } from '../../lib/auth'
@@ -59,6 +60,7 @@ const AdminSidebar: React.FC = () => {
     { icon: FileText, label: 'Marketing Plans', href: '/admin/marketing-plans' },
     { icon: DollarSign, label: 'Invoices', href: '/admin/invoices' },
     { icon: Package, label: 'Service Catalog', href: '/admin/service-catalog' },
+    { icon: Link2, label: 'Offers', href: '/admin/offers' },
     { icon: FileBarChart, label: 'Reports', href: '/admin/reports' },
     { icon: CheckSquare, label: 'Tasks', href: '/admin/tasks' },
     { icon: BookOpen, label: 'Blog', href: '/admin/blog' },

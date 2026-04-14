@@ -46,7 +46,7 @@ export async function POST(req: NextRequest) {
   if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
   const body = await req.json()
-  const { client_id, service_name, description, features, price, period } = body
+  const { client_id, service_name, description, features, price, period, addons, service_cards } = body
 
   if (!service_name || !price) {
     return NextResponse.json({ error: 'service_name and price are required' }, { status: 400 })
@@ -56,10 +56,15 @@ export async function POST(req: NextRequest) {
   let stripeUrl = null
   let stripeLinkId = null
   try {
+    const recurringMap: Record<string, 'week' | 'month' | 'year' | undefined> = {
+      weekly: 'week',
+      monthly: 'month',
+      yearly: 'year',
+    }
     const link = await createStripePaymentLink({
       name: service_name,
       amount: Math.round(price * 100),
-      recurring: period === 'monthly' ? 'month' : period === 'yearly' ? 'year' : undefined,
+      recurring: recurringMap[period],
     })
     stripeUrl = link.url
     stripeLinkId = link.id
@@ -78,8 +83,39 @@ export async function POST(req: NextRequest) {
       period,
       stripe_payment_link_url: stripeUrl,
       stripe_payment_link_id: stripeLinkId,
+      addons: addons || null,
+      service_cards: service_cards || null,
       status: 'pending',
     }])
+    .select()
+    .single()
+
+  if (error) return NextResponse.json({ error: error.message }, { status: 500 })
+  return NextResponse.json(data)
+}
+
+// PATCH /api/admin/offers — update offer fields (not price/Stripe)
+export async function PATCH(req: NextRequest) {
+  const user = await verifyAdmin(req)
+  if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+
+  const body = await req.json()
+  const { id, service_name, description, features, addons, service_cards, stripe_payment_link_url } = body
+
+  if (!id) return NextResponse.json({ error: 'id required' }, { status: 400 })
+
+  const updates: Record<string, any> = {}
+  if (service_name !== undefined) updates.service_name = service_name
+  if (description !== undefined) updates.description = description || null
+  if (features !== undefined) updates.features = features || null
+  if (addons !== undefined) updates.addons = addons
+  if (service_cards !== undefined) updates.service_cards = service_cards
+  if (stripe_payment_link_url !== undefined) updates.stripe_payment_link_url = stripe_payment_link_url || null
+
+  const { data, error } = await supabaseAdmin
+    .from('service_offers')
+    .update(updates)
+    .eq('id', id)
     .select()
     .single()
 

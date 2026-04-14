@@ -16,7 +16,7 @@ export async function GET(
 
   const { data: offer, error } = await supabaseAdmin
     .from('service_offers')
-    .select('id, service_name, description, features, price, period, stripe_payment_link_url, status, client_id, addons')
+    .select('id, service_name, description, features, price, period, stripe_payment_link_url, status, client_id, addons, service_cards')
     .eq('token', token)
     .single()
 

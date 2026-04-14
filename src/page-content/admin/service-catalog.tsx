@@ -128,6 +128,7 @@ async function deleteItem(id: string): Promise<void> {
 // ─── Period label ─────────────────────────────────────────────────────────────
 
 function periodLabel(period: string) {
+  if (period === 'weekly') return '/wk'
   if (period === 'monthly') return '/mo'
   if (period === 'yearly') return '/yr'
   return ''
@@ -469,6 +470,7 @@ const ServiceCatalog: React.FC = () => {
                         className={inputCls}
                       >
                         <option value="one-time">One-time</option>
+                        <option value="weekly">Weekly</option>
                         <option value="monthly">Monthly</option>
                         <option value="yearly">Yearly</option>
                       </select>

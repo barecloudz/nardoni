@@ -32,7 +32,7 @@ export const createStripePaymentLink = async ({
   name: string
   amount: number // in cents
   currency?: string
-  recurring?: 'month' | 'year'
+  recurring?: 'week' | 'month' | 'year'
 }) => {
   // Create a product
   const product = await stripe.products.create({ name })
