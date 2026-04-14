@@ -30,16 +30,23 @@ const CHECKOUT_CUSTOM_FIELDS = [
 // Create a payment link for a service (single line item)
 export const createStripePaymentLink = async ({
   name,
+  description,
   amount,
   currency = 'usd',
   recurring,
+  submitMessage,
 }: {
   name: string
+  description?: string
   amount: number // in cents
   currency?: string
   recurring?: 'week' | 'month' | 'year'
+  submitMessage?: string
 }) => {
-  const product = await stripe.products.create({ name })
+  const product = await stripe.products.create({
+    name,
+    ...(description && { description }),
+  })
   const price = await stripe.prices.create({
     product: product.id,
     unit_amount: amount,
@@ -49,6 +56,9 @@ export const createStripePaymentLink = async ({
   const link = await stripe.paymentLinks.create({
     line_items: [{ price: price.id, quantity: 1 }],
     custom_fields: CHECKOUT_CUSTOM_FIELDS,
+    ...(submitMessage && {
+      custom_text: { submit: { message: submitMessage } },
+    }),
   })
   return link
 }
@@ -57,13 +67,18 @@ export const createStripePaymentLink = async ({
 export const createStripePaymentLinkMulti = async ({
   items,
   currency = 'usd',
+  submitMessage,
 }: {
-  items: Array<{ name: string; amount: number; recurring?: 'week' | 'month' | 'year' }>
+  items: Array<{ name: string; description?: string; amount: number; recurring?: 'week' | 'month' | 'year' }>
   currency?: string
+  submitMessage?: string
 }) => {
   const lineItems = await Promise.all(
     items.map(async item => {
-      const product = await stripe.products.create({ name: item.name })
+      const product = await stripe.products.create({
+        name: item.name,
+        ...(item.description && { description: item.description }),
+      })
       const price = await stripe.prices.create({
         product: product.id,
         unit_amount: item.amount,
@@ -76,6 +91,9 @@ export const createStripePaymentLinkMulti = async ({
   const link = await stripe.paymentLinks.create({
     line_items: lineItems,
     custom_fields: CHECKOUT_CUSTOM_FIELDS,
+    ...(submitMessage && {
+      custom_text: { submit: { message: submitMessage } },
+    }),
   })
   return link
 }

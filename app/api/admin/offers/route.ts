@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 import { createStripePaymentLink, createStripePaymentLinkMulti } from '../../../../src/lib/stripe'
 
+const SUBMIT_MESSAGE = 'Questions? Email us at nardonidigital@gmail.com — we\'ll get back to you same day.'
+
 const supabaseAdmin = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
   process.env.SUPABASE_SERVICE_ROLE_KEY!,
@@ -72,13 +74,16 @@ async function generateAllStripeLinks(
   serviceName: string,
   price: number,
   period: string,
-  addons: any[]
+  addons: any[],
+  offerDescription?: string
 ): Promise<{ stripeUrl: string; stripeLinkId: string; addonsWithLinks: any[] }> {
   // Base link (no addons)
   const baseLink = await createStripePaymentLink({
     name: serviceName,
+    description: offerDescription,
     amount: Math.round(price * 100),
     recurring: RECURRING_MAP[period],
+    submitMessage: SUBMIT_MESSAGE,
   })
 
   if (!addons || addons.length === 0) {
@@ -96,8 +101,8 @@ async function generateAllStripeLinks(
     const items = buildLineItems(serviceName, price, period, selectedAddons)
     try {
       const link = items.length === 1
-        ? await createStripePaymentLink({ ...items[0] })
-        : await createStripePaymentLinkMulti({ items })
+        ? await createStripePaymentLink({ ...items[0], submitMessage: SUBMIT_MESSAGE })
+        : await createStripePaymentLinkMulti({ items, submitMessage: SUBMIT_MESSAGE })
       comboMap[key] = link.url
     } catch {
       comboMap[key] = ''
@@ -160,7 +165,7 @@ export async function POST(req: NextRequest) {
   let addonsWithLinks = addons || null
 
   try {
-    const result = await generateAllStripeLinks(service_name, price, period, addons || [])
+    const result = await generateAllStripeLinks(service_name, price, period, addons || [], description)
     stripeUrl = result.stripeUrl
     stripeLinkId = result.stripeLinkId
     addonsWithLinks = result.addonsWithLinks.length > 0 ? result.addonsWithLinks : null
@@ -221,8 +226,10 @@ export async function PATCH(req: NextRequest) {
     try {
       const link = await createStripePaymentLink({
         name: baseName,
+        description: body.description,
         amount: Math.round(basePrice * 100),
         recurring: RECURRING_MAP[basePeriod],
+        submitMessage: SUBMIT_MESSAGE,
       })
       updates.stripe_payment_link_url = link.url
       updates.stripe_payment_link_id = link.id
@@ -232,7 +239,7 @@ export async function PATCH(req: NextRequest) {
   // Regenerate all combo Stripe links for addons
   if (addons !== undefined) {
     try {
-      const result = await generateAllStripeLinks(baseName, basePrice, basePeriod, addons || [])
+      const result = await generateAllStripeLinks(baseName, basePrice, basePeriod, addons || [], body.description)
       updates.addons = result.addonsWithLinks.length > 0 ? result.addonsWithLinks : null
       if (!current?.stripe_payment_link_url) {
         updates.stripe_payment_link_url = result.stripeUrl
