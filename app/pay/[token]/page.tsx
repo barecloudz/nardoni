@@ -1,8 +1,8 @@
 'use client'
 
 import React from 'react'
-import { motion } from 'framer-motion'
-import { CheckCircle2, ArrowRight, ShieldCheck, Lock, AlertCircle, Loader2 } from 'lucide-react'
+import { motion, AnimatePresence } from 'framer-motion'
+import { CheckCircle2, ArrowRight, ShieldCheck, Lock, AlertCircle, Loader2, Plus } from 'lucide-react'
 
 const PERIOD_LABELS: Record<string, string> = {
   'one-time': 'one-time',
@@ -10,10 +10,18 @@ const PERIOD_LABELS: Record<string, string> = {
   'yearly': 'per year',
 }
 
+interface Addon {
+  name: string
+  description: string
+  price: number
+  stripe_payment_link_url: string
+}
+
 export default function PayPage({ params }: { params: { token: string } }) {
   const [offer, setOffer] = React.useState<any>(null)
   const [loading, setLoading] = React.useState(true)
   const [notFound, setNotFound] = React.useState(false)
+  const [selectedAddon, setSelectedAddon] = React.useState<number | null>(null)
 
   React.useEffect(() => {
     fetch(`/api/offers/${params.token}`)
@@ -55,13 +63,24 @@ export default function PayPage({ params }: { params: { token: string } }) {
     ? offer.features.split('\n').map((f: string) => f.replace(/^[-•✓]\s*/, '').trim()).filter(Boolean)
     : []
 
-  const priceDisplay = new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'USD',
-    maximumFractionDigits: 0,
-  }).format(offer.price)
+  const addons: Addon[] = Array.isArray(offer.addons) ? offer.addons : []
+
+  const activeAddon = selectedAddon !== null ? addons[selectedAddon] : null
+  const totalPrice = offer.price + (activeAddon ? activeAddon.price : 0)
+  const activePaymentUrl = activeAddon?.stripe_payment_link_url || offer.stripe_payment_link_url
+
+  const formatPrice = (amount: number) =>
+    new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD',
+      maximumFractionDigits: 0,
+    }).format(amount)
 
   const periodLabel = PERIOD_LABELS[offer.period] || offer.period
+
+  const toggleAddon = (index: number) => {
+    setSelectedAddon(prev => (prev === index ? null : index))
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 flex flex-col">
@@ -142,15 +161,109 @@ export default function PayPage({ params }: { params: { token: string } }) {
               </div>
             )}
 
+            {/* Add-ons */}
+            {addons.length > 0 && (
+              <div className="px-8 py-6 border-b border-gray-100">
+                <p className="text-xs font-semibold text-gray-400 uppercase tracking-widest mb-4">
+                  Optional add-ons
+                </p>
+                <div className="space-y-3">
+                  {addons.map((addon, i) => {
+                    const isSelected = selectedAddon === i
+                    return (
+                      <motion.button
+                        key={i}
+                        onClick={() => toggleAddon(i)}
+                        whileTap={{ scale: 0.985 }}
+                        className={`w-full text-left rounded-2xl border-2 px-4 py-4 transition-all duration-200 ${
+                          isSelected
+                            ? 'border-[#35c677] bg-[#35c677]/5'
+                            : 'border-gray-100 bg-gray-50 hover:border-[#35c677]/40 hover:bg-[#35c677]/3'
+                        }`}
+                      >
+                        <div className="flex items-start justify-between gap-3">
+                          <div className="flex items-start space-x-3 flex-1 min-w-0">
+                            {/* Checkbox indicator */}
+                            <div className={`mt-0.5 flex-shrink-0 w-5 h-5 rounded-full border-2 flex items-center justify-center transition-colors duration-200 ${
+                              isSelected ? 'border-[#35c677] bg-[#35c677]' : 'border-gray-300 bg-white'
+                            }`}>
+                              <AnimatePresence>
+                                {isSelected && (
+                                  <motion.svg
+                                    key="check"
+                                    initial={{ scale: 0, opacity: 0 }}
+                                    animate={{ scale: 1, opacity: 1 }}
+                                    exit={{ scale: 0, opacity: 0 }}
+                                    transition={{ duration: 0.15 }}
+                                    className="w-3 h-3 text-white"
+                                    fill="none"
+                                    viewBox="0 0 12 12"
+                                    stroke="currentColor"
+                                    strokeWidth={2.5}
+                                  >
+                                    <path strokeLinecap="round" strokeLinejoin="round" d="M2 6l3 3 5-5" />
+                                  </motion.svg>
+                                )}
+                              </AnimatePresence>
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <p className={`text-sm font-semibold leading-snug ${isSelected ? 'text-[#191919]' : 'text-gray-700'}`}>
+                                {addon.name}
+                              </p>
+                              {addon.description && (
+                                <p className="text-xs text-gray-500 mt-0.5 leading-relaxed">
+                                  {addon.description}
+                                </p>
+                              )}
+                            </div>
+                          </div>
+                          {/* Price badge */}
+                          <div className={`flex-shrink-0 text-xs font-bold px-2.5 py-1 rounded-full transition-colors duration-200 ${
+                            isSelected
+                              ? 'bg-[#35c677] text-white'
+                              : 'bg-gray-200 text-gray-600'
+                          }`}>
+                            +{formatPrice(addon.price)}/{periodLabel === 'one-time' ? 'one-time' : periodLabel.replace('per ', '')}
+                          </div>
+                        </div>
+                      </motion.button>
+                    )
+                  })}
+                </div>
+              </div>
+            )}
+
             {/* Price + CTA */}
             <div className="px-8 py-7">
               <div className="flex items-end justify-between mb-6">
                 <div>
                   <p className="text-xs text-gray-400 uppercase tracking-wide mb-1">Investment</p>
                   <div className="flex items-baseline space-x-1.5">
-                    <span className="text-4xl font-black text-[#191919]">{priceDisplay}</span>
+                    <motion.span
+                      key={totalPrice}
+                      initial={{ opacity: 0.6, y: -4 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.25, ease: 'easeOut' }}
+                      className="text-4xl font-black text-[#191919]"
+                    >
+                      {formatPrice(totalPrice)}
+                    </motion.span>
                     <span className="text-gray-400 text-sm">{periodLabel}</span>
                   </div>
+                  <AnimatePresence>
+                    {activeAddon && (
+                      <motion.p
+                        key="breakdown"
+                        initial={{ opacity: 0, height: 0 }}
+                        animate={{ opacity: 1, height: 'auto' }}
+                        exit={{ opacity: 0, height: 0 }}
+                        transition={{ duration: 0.2 }}
+                        className="text-xs text-gray-400 mt-1 overflow-hidden"
+                      >
+                        {formatPrice(offer.price)} base + {formatPrice(activeAddon.price)} add-on
+                      </motion.p>
+                    )}
+                  </AnimatePresence>
                 </div>
                 {offer.period !== 'one-time' && (
                   <div className="text-right">
@@ -159,9 +272,9 @@ export default function PayPage({ params }: { params: { token: string } }) {
                 )}
               </div>
 
-              {offer.stripe_payment_link_url ? (
+              {activePaymentUrl ? (
                 <a
-                  href={offer.stripe_payment_link_url}
+                  href={activePaymentUrl}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="w-full flex items-center justify-center space-x-2 bg-[#35c677] hover:bg-[#2db366] text-white font-bold py-4 px-6 rounded-2xl transition-colors text-base"

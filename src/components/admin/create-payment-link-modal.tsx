@@ -1,13 +1,13 @@
 'use client'
 
 import React from 'react'
-import { motion } from 'framer-motion'
+import { motion, AnimatePresence } from 'framer-motion'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { supabase, getClients } from '../../lib/supabase'
 import { Button } from '../ui/button'
 import { Input } from '../ui/input'
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card'
-import { X, Link2, Copy, CheckCircle2, ExternalLink, Sparkles, ArrowRight } from 'lucide-react'
+import { X, Link2, Copy, CheckCircle2, ExternalLink, Sparkles, ArrowRight, Plus, Trash2 } from 'lucide-react'
 
 const CATALOG = [
   {
@@ -54,6 +54,13 @@ const CATALOG = [
   },
 ]
 
+interface Addon {
+  name: string
+  description: string
+  price: string
+  stripe_payment_link_url: string
+}
+
 interface Props {
   isOpen: boolean
   onClose: () => void
@@ -74,6 +81,8 @@ const CreatePaymentLinkModal: React.FC<Props> = ({ isOpen, onClose }) => {
   const [features, setFeatures] = React.useState('')
   const [price, setPrice] = React.useState('')
   const [period, setPeriod] = React.useState('one-time')
+  const [stripeLink, setStripeLink] = React.useState('')
+  const [addons, setAddons] = React.useState<Addon[]>([])
 
   const { data: clients = [] } = useQuery({
     queryKey: ['clients'],
@@ -96,6 +105,27 @@ const CreatePaymentLinkModal: React.FC<Props> = ({ isOpen, onClose }) => {
     setPeriod(preset.period)
   }
 
+  // Add-on helpers
+  const addAddon = () => {
+    if (addons.length >= 3) return
+    setAddons(prev => [...prev, { name: '', description: '', price: '', stripe_payment_link_url: '' }])
+  }
+
+  const removeAddon = (index: number) => {
+    setAddons(prev => prev.filter((_, i) => i !== index))
+  }
+
+  const updateAddon = (index: number, field: keyof Addon, value: string) => {
+    setAddons(prev => prev.map((a, i) => i === index ? { ...a, [field]: value } : a))
+  }
+
+  // Progress tracking
+  const hasServiceName = serviceName.trim().length > 0
+  const hasPrice = price.trim().length > 0
+  const hasAddons = addons.some(a => a.name.trim().length > 0)
+  const completedCount = [hasServiceName, hasPrice].filter(Boolean).length
+  const progressPct = Math.round((completedCount / 2) * 100)
+
   const handleSubmit = async () => {
     if (!serviceName || !price) {
       setError('Service name and price are required.')
@@ -105,6 +135,17 @@ const CreatePaymentLinkModal: React.FC<Props> = ({ isOpen, onClose }) => {
     setError('')
     try {
       const token = await getToken()
+
+      // Clean up addons — only include rows with a name
+      const cleanAddons = addons
+        .filter(a => a.name.trim())
+        .map(a => ({
+          name: a.name.trim(),
+          description: a.description.trim(),
+          price: Number(a.price) || 0,
+          stripe_payment_link_url: a.stripe_payment_link_url.trim(),
+        }))
+
       const res = await fetch('/api/admin/offers', {
         method: 'POST',
         headers: { Authorization: token, 'Content-Type': 'application/json' },
@@ -115,6 +156,8 @@ const CreatePaymentLinkModal: React.FC<Props> = ({ isOpen, onClose }) => {
           features,
           price: Number(price),
           period,
+          stripe_payment_link_url: stripeLink || undefined,
+          addons: cleanAddons.length > 0 ? cleanAddons : null,
         }),
       })
       const json = await res.json()
@@ -150,6 +193,8 @@ const CreatePaymentLinkModal: React.FC<Props> = ({ isOpen, onClose }) => {
     setFeatures('')
     setPrice('')
     setPeriod('one-time')
+    setStripeLink('')
+    setAddons([])
     onClose()
   }
 
@@ -169,7 +214,7 @@ const CreatePaymentLinkModal: React.FC<Props> = ({ isOpen, onClose }) => {
         className="w-full max-w-2xl max-h-[90vh] overflow-y-auto"
       >
         <Card>
-          <CardHeader>
+          <CardHeader className="pb-0">
             <div className="flex items-center justify-between">
               <CardTitle className="flex items-center space-x-2">
                 <Link2 className="h-5 w-5 text-[#35c677]" />
@@ -184,8 +229,27 @@ const CreatePaymentLinkModal: React.FC<Props> = ({ isOpen, onClose }) => {
                 Creates a branded payment page at <span className="font-mono text-xs bg-gray-100 px-1.5 py-0.5 rounded">/pay/[token]</span> + a Stripe checkout link.
               </p>
             )}
+
+            {/* Progress bar */}
+            {step === 'form' && (
+              <div className="mt-4">
+                <div className="flex items-center justify-between mb-1.5">
+                  <span className="text-xs text-gray-400 font-medium">Offer completeness</span>
+                  <span className="text-xs font-bold text-[#35c677]">{progressPct}%</span>
+                </div>
+                <div className="h-1.5 bg-gray-100 rounded-full overflow-hidden">
+                  <motion.div
+                    className="h-full bg-[#35c677] rounded-full"
+                    initial={{ width: 0 }}
+                    animate={{ width: `${progressPct}%` }}
+                    transition={{ duration: 0.4, ease: 'easeOut' }}
+                  />
+                </div>
+              </div>
+            )}
           </CardHeader>
-          <CardContent className="space-y-5">
+
+          <CardContent className="space-y-5 pt-5">
 
             {step === 'form' ? (
               <>
@@ -225,8 +289,27 @@ const CreatePaymentLinkModal: React.FC<Props> = ({ isOpen, onClose }) => {
                 </div>
 
                 <div className="border-t border-dashed border-gray-200 pt-4 space-y-4">
+
+                  {/* Section checklist */}
+                  <div className="flex items-center gap-4 text-xs">
+                    <div className={`flex items-center gap-1.5 transition-colors ${hasServiceName ? 'text-[#35c677]' : 'text-gray-300'}`}>
+                      <CheckCircle2 className="h-3.5 w-3.5" />
+                      <span className="font-medium">Service name</span>
+                    </div>
+                    <div className={`flex items-center gap-1.5 transition-colors ${hasPrice ? 'text-[#35c677]' : 'text-gray-300'}`}>
+                      <CheckCircle2 className="h-3.5 w-3.5" />
+                      <span className="font-medium">Price</span>
+                    </div>
+                    <div className={`flex items-center gap-1.5 transition-colors ${hasAddons ? 'text-[#35c677]' : 'text-gray-300'}`}>
+                      <CheckCircle2 className="h-3.5 w-3.5" />
+                      <span className="font-medium">Add-ons (optional)</span>
+                    </div>
+                  </div>
+
                   <div>
-                    <label className={lbl}>Service Name *</label>
+                    <label className={lbl}>
+                      Service Name *
+                    </label>
                     <Input
                       value={serviceName}
                       onChange={e => setServiceName(e.target.value)}
@@ -287,20 +370,134 @@ const CreatePaymentLinkModal: React.FC<Props> = ({ isOpen, onClose }) => {
                       </select>
                     </div>
                   </div>
+
+                  <div>
+                    <label className={lbl}>Stripe Payment Link URL</label>
+                    <Input
+                      value={stripeLink}
+                      onChange={e => setStripeLink(e.target.value)}
+                      placeholder="https://buy.stripe.com/..."
+                    />
+                  </div>
+                </div>
+
+                {/* Add-ons section */}
+                <div className="border-t border-dashed border-gray-200 pt-4">
+                  <div className="flex items-center justify-between mb-3">
+                    <div>
+                      <p className="text-sm font-medium text-gray-700">Add-ons</p>
+                      <p className="text-xs text-gray-400 mt-0.5">Optional upgrades shown on the payment page</p>
+                    </div>
+                    {addons.length < 3 && (
+                      <button
+                        onClick={addAddon}
+                        className="flex items-center gap-1.5 text-xs font-semibold text-[#35c677] hover:text-[#2db366] border border-[#35c677]/30 hover:border-[#35c677] bg-[#35c677]/5 hover:bg-[#35c677]/10 px-3 py-1.5 rounded-full transition-all"
+                      >
+                        <Plus className="h-3.5 w-3.5" />
+                        Add optional add-on
+                      </button>
+                    )}
+                  </div>
+
+                  <AnimatePresence>
+                    {addons.map((addon, i) => (
+                      <motion.div
+                        key={i}
+                        initial={{ opacity: 0, y: -8, height: 0 }}
+                        animate={{ opacity: 1, y: 0, height: 'auto' }}
+                        exit={{ opacity: 0, y: -8, height: 0 }}
+                        transition={{ duration: 0.2 }}
+                        className="overflow-hidden"
+                      >
+                        <div className="border border-gray-200 rounded-xl p-4 mb-3 bg-gray-50 space-y-3">
+                          <div className="flex items-center justify-between">
+                            <span className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Add-on {i + 1}</span>
+                            <button
+                              onClick={() => removeAddon(i)}
+                              className="text-gray-400 hover:text-red-400 transition-colors"
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </button>
+                          </div>
+                          <div className="grid grid-cols-2 gap-3">
+                            <div>
+                              <label className="block text-xs text-gray-500 mb-1">Name</label>
+                              <input
+                                value={addon.name}
+                                onChange={e => updateAddon(i, 'name', e.target.value)}
+                                placeholder="e.g. Priority Support"
+                                className={inputCls}
+                              />
+                            </div>
+                            <div>
+                              <label className="block text-xs text-gray-500 mb-1">Price (USD)</label>
+                              <div className="relative">
+                                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-xs">$</span>
+                                <input
+                                  type="number"
+                                  min="0"
+                                  value={addon.price}
+                                  onChange={e => updateAddon(i, 'price', e.target.value)}
+                                  placeholder="100"
+                                  className={inputCls + ' pl-6'}
+                                />
+                              </div>
+                            </div>
+                          </div>
+                          <div>
+                            <label className="block text-xs text-gray-500 mb-1">Description</label>
+                            <input
+                              value={addon.description}
+                              onChange={e => updateAddon(i, 'description', e.target.value)}
+                              placeholder="Short description of what this add-on includes"
+                              className={inputCls}
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-xs text-gray-500 mb-1">Stripe Payment Link URL</label>
+                            <input
+                              value={addon.stripe_payment_link_url}
+                              onChange={e => updateAddon(i, 'stripe_payment_link_url', e.target.value)}
+                              placeholder="https://buy.stripe.com/..."
+                              className={inputCls}
+                            />
+                          </div>
+                        </div>
+                      </motion.div>
+                    ))}
+                  </AnimatePresence>
+
+                  {addons.length === 3 && (
+                    <p className="text-xs text-gray-400 text-center py-1">Maximum 3 add-ons reached</p>
+                  )}
                 </div>
 
                 {error && <p className="text-red-500 text-sm">{error}</p>}
 
-                <div className="flex items-center justify-end space-x-3 pt-2 border-t">
-                  <Button variant="outline" onClick={handleClose}>Cancel</Button>
-                  <Button
-                    onClick={handleSubmit}
-                    disabled={loading || !serviceName || !price}
-                    className="bg-[#35c677] hover:bg-[#2db366] text-white"
-                  >
-                    {loading ? 'Creating...' : 'Create Offer'}
-                    {!loading && <ArrowRight className="h-4 w-4 ml-1.5" />}
-                  </Button>
+                {/* Footer with progress checklist + actions */}
+                <div className="flex items-center justify-between pt-3 border-t gap-3">
+                  <div className="flex items-center gap-3 text-xs text-gray-400">
+                    <span className={hasServiceName ? 'text-[#35c677] font-medium' : ''}>
+                      {hasServiceName ? '✓' : '○'} Name
+                    </span>
+                    <span className={hasPrice ? 'text-[#35c677] font-medium' : ''}>
+                      {hasPrice ? '✓' : '○'} Price
+                    </span>
+                    {hasAddons && (
+                      <span className="text-[#35c677] font-medium">✓ Add-ons</span>
+                    )}
+                  </div>
+                  <div className="flex items-center space-x-3">
+                    <Button variant="outline" onClick={handleClose}>Cancel</Button>
+                    <Button
+                      onClick={handleSubmit}
+                      disabled={loading || !serviceName || !price}
+                      className="bg-[#35c677] hover:bg-[#2db366] text-white"
+                    >
+                      {loading ? 'Creating...' : 'Create Offer'}
+                      {!loading && <ArrowRight className="h-4 w-4 ml-1.5" />}
+                    </Button>
+                  </div>
                 </div>
               </>
             ) : (
