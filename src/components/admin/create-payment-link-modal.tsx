@@ -175,13 +175,13 @@ const CreatePaymentLinkModal: React.FC<Props> = ({ isOpen, onClose }) => {
       const token = await getToken()
 
       const cleanAddons = addons
-        .filter(a => a.name.trim())
+        .filter(a => String(a.name ?? '').trim())
         .map(a => ({
-          name: a.name.trim(),
-          description: a.description.trim(),
+          name: String(a.name ?? '').trim(),
+          description: String(a.description ?? '').trim(),
           price: Number(a.price) || 0,
           period: a.period || 'monthly',
-          stripe_payment_link_url: a.stripe_payment_link_url.trim(),
+          stripe_payment_link_url: String(a.stripe_payment_link_url ?? '').trim(),
         }))
 
       const cleanCards = serviceCards

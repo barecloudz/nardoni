@@ -153,8 +153,14 @@ const OffersPage: React.FC = () => {
   const handleSave = () => {
     if (!editOffer) return
     const cleanAddons = editAddons
-      .filter(a => a.name.trim())
-      .map(a => ({ name: a.name.trim(), description: a.description.trim(), price: Number(a.price) || 0, period: a.period || 'monthly', stripe_payment_link_url: a.stripe_payment_link_url.trim() }))
+      .filter(a => String(a.name ?? '').trim())
+      .map(a => ({
+        name: String(a.name ?? '').trim(),
+        description: String(a.description ?? '').trim(),
+        price: Number(a.price) || 0,
+        period: a.period || 'monthly',
+        stripe_payment_link_url: String(a.stripe_payment_link_url ?? '').trim(),
+      }))
     const cleanCards = editCards
       .filter(c => c.name.trim())
       .map(c => ({ name: c.name.trim(), description: c.description.trim(), icon: c.icon }))
