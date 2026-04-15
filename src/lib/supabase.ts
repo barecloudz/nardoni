@@ -229,6 +229,17 @@ export const createInvoice = async (invoiceData: {
   return { data, error }
 }
 
+export const updateInvoice = async (id: string, updates: { status?: string }) => {
+  const { data, error } = await supabase
+    .from('invoices')
+    .update(updates)
+    .eq('id', id)
+    .select()
+    .single()
+
+  return { data, error }
+}
+
 export const getBlogPosts = async () => {
   const { data, error } = await supabase
     .from('blog_posts')

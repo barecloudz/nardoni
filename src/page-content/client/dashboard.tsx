@@ -71,6 +71,32 @@ const DEFAULT_MILESTONES = [
   { label: 'SEO & Google Rankings', done: false, next: true },
 ]
 
+const handleInvoiceDownload = (invoice: any) => {
+  const html = `<!DOCTYPE html><html><head><title>Invoice ${invoice.number}</title>
+    <style>
+      body{font-family:sans-serif;max-width:680px;margin:40px auto;color:#191919;font-size:14px;}
+      .total{text-align:right;margin-top:16px;font-size:18px;font-weight:bold;color:#35c677;}
+      @media print{.no-print{display:none;}}
+    </style></head><body>
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:32px;">
+      <div><h2 style="margin:0;font-size:24px;">Nardoni Digital LLC</h2>
+      <p style="margin:4px 0;color:#666;">224 Thompson St, Unit #2030<br/>Hendersonville, NC 28792<br/>803-977-4285</p></div>
+      <div style="text-align:right;"><h1 style="margin:0;font-size:32px;color:#35c677;">INVOICE</h1>
+      <p style="margin:4px 0;color:#666;">${invoice.number}</p></div>
+    </div>
+    <div style="background:#f9f9f9;padding:16px;border-radius:8px;margin-bottom:24px;">
+      <p style="margin:0 0 4px;"><strong>Amount Due:</strong> $${Number(invoice.amount).toFixed(2)}</p>
+      <p style="margin:0 0 4px;"><strong>Due Date:</strong> ${new Date(invoice.due_date).toLocaleDateString()}</p>
+      <p style="margin:0;"><strong>Status:</strong> ${invoice.status}</p>
+    </div>
+    <div class="no-print" style="margin-top:32px;">
+      <button onclick="window.print()" style="padding:10px 24px;background:#35c677;color:white;border:none;border-radius:6px;cursor:pointer;font-size:14px;">Print / Save as PDF</button>
+    </div>
+    </body></html>`
+  const win = window.open('', '_blank')
+  if (win) { win.document.write(html); win.document.close() }
+}
+
 const ClientDashboard: React.FC = () => {
   const { data: portalData } = useQuery({
     queryKey: ['client-portal-data'],
@@ -310,7 +336,7 @@ const ClientDashboard: React.FC = () => {
                       <div className="flex items-center space-x-3">
                         <span className="font-semibold text-[#35c677]">${invoice.amount.toLocaleString()}</span>
                         <Badge variant={getStatusColor(invoice.status) as any}>{invoice.status}</Badge>
-                        <Button size="sm" variant="outline">
+                        <Button size="sm" variant="outline" onClick={() => handleInvoiceDownload(invoice)} title="Download invoice">
                           <Download className="h-3 w-3" />
                         </Button>
                       </div>

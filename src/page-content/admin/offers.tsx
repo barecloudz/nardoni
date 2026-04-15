@@ -73,6 +73,24 @@ async function fetchOffers(): Promise<Offer[]> {
   return res.json()
 }
 
+async function createOffer(payload: {
+  service_name: string
+  price: number
+  period: string
+  description?: string
+  features?: string
+}) {
+  const token = await getToken()
+  const res = await fetch('/api/admin/offers', {
+    method: 'POST',
+    headers: { Authorization: token, 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload),
+  })
+  const json = await res.json()
+  if (!res.ok) throw new Error(json.error || 'Failed to create offer')
+  return json
+}
+
 async function deleteOffer(id: string) {
   const token = await getToken()
   const res = await fetch(`/api/admin/offers?id=${id}`, {
@@ -106,6 +124,15 @@ const OffersPage: React.FC = () => {
   const [editOffer, setEditOffer] = React.useState<Offer | null>(null)
   const [copiedId, setCopiedId] = React.useState<string | null>(null)
   const [search, setSearch] = React.useState('')
+  const [isCreating, setIsCreating] = React.useState(false)
+
+  // Create form state
+  const [newName, setNewName] = React.useState('')
+  const [newPrice, setNewPrice] = React.useState('')
+  const [newPeriod, setNewPeriod] = React.useState('monthly')
+  const [newDescription, setNewDescription] = React.useState('')
+  const [newFeatures, setNewFeatures] = React.useState('')
+  const [createError, setCreateError] = React.useState('')
 
   // Edit form state
   const [editName, setEditName] = React.useState('')
@@ -125,6 +152,29 @@ const OffersPage: React.FC = () => {
     mutationFn: deleteOffer,
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ['service-offers'] }),
   })
+
+  const createMutation = useMutation({
+    mutationFn: createOffer,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['service-offers'] })
+      setIsCreating(false)
+      setNewName('')
+      setNewPrice('')
+      setNewPeriod('monthly')
+      setNewDescription('')
+      setNewFeatures('')
+      setCreateError('')
+    },
+    onError: (e: any) => setCreateError(e.message),
+  })
+
+  const handleCreate = () => {
+    if (!newName.trim()) { setCreateError('Service name is required.'); return }
+    const price = parseFloat(newPrice)
+    if (!newPrice || isNaN(price) || price <= 0) { setCreateError('Enter a valid price.'); return }
+    setCreateError('')
+    createMutation.mutate({ service_name: newName.trim(), price, period: newPeriod, description: newDescription.trim() || undefined, features: newFeatures.trim() || undefined })
+  }
 
   const updateMutation = useMutation({
     mutationFn: ({ id, payload }: { id: string; payload: any }) => updateOffer(id, payload),
@@ -219,14 +269,20 @@ const OffersPage: React.FC = () => {
             All service offers. Click the edit icon to update any offer.
           </p>
         </div>
-        <div className="relative w-64">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
-          <input
-            value={search}
-            onChange={e => setSearch(e.target.value)}
-            placeholder="Search offers..."
-            className="w-full pl-9 pr-3 py-2 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#35c677]/30 focus:border-[#35c677]"
-          />
+        <div className="flex items-center gap-3">
+          <div className="relative w-48">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+            <input
+              value={search}
+              onChange={e => setSearch(e.target.value)}
+              placeholder="Search offers..."
+              className="w-full pl-9 pr-3 py-2 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#35c677]/30 focus:border-[#35c677]"
+            />
+          </div>
+          <Button onClick={() => { setIsCreating(true); setCreateError('') }} className="bg-[#35c677] hover:bg-[#2db366] text-white flex items-center gap-1.5">
+            <Plus className="h-4 w-4" />
+            New Offer
+          </Button>
         </div>
       </div>
 
@@ -248,9 +304,13 @@ const OffersPage: React.FC = () => {
             <Link2 className="h-10 w-10 text-[#35c677]" />
           </div>
           <h2 className="text-xl font-bold text-[#191919] mb-2">No offers yet</h2>
-          <p className="text-gray-500 text-sm max-w-xs">
-            Create a payment offer from the Dashboard and it will appear here.
+          <p className="text-gray-500 text-sm max-w-xs mb-5">
+            Create your first payment offer to share with clients.
           </p>
+          <Button onClick={() => { setIsCreating(true); setCreateError('') }} className="bg-[#35c677] hover:bg-[#2db366] text-white flex items-center gap-1.5">
+            <Plus className="h-4 w-4" />
+            New Offer
+          </Button>
         </div>
       )}
 
@@ -354,6 +414,104 @@ const OffersPage: React.FC = () => {
           </AnimatePresence>
         </div>
       )}
+
+      {/* Create Modal */}
+      <AnimatePresence>
+        {isCreating && (
+          <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.96, y: 8 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.96, y: 8 }}
+              transition={{ duration: 0.2 }}
+              className="w-full max-w-lg"
+            >
+              <Card>
+                <CardHeader className="pb-0">
+                  <div className="flex items-center justify-between">
+                    <CardTitle className="flex items-center gap-2">
+                      <Plus className="h-5 w-5 text-[#35c677]" />
+                      New Payment Offer
+                    </CardTitle>
+                    <Button variant="ghost" size="sm" onClick={() => setIsCreating(false)}>
+                      <X className="h-4 w-4" />
+                    </Button>
+                  </div>
+                  <p className="text-xs text-gray-400 mt-1">
+                    A Stripe payment link will be generated automatically. Add service cards and add-ons after creation via the edit button.
+                  </p>
+                </CardHeader>
+                <CardContent className="space-y-4 pt-5">
+                  <div>
+                    <label className={lbl}>Service Name *</label>
+                    <Input value={newName} onChange={e => setNewName(e.target.value)} placeholder="e.g. Local SEO Package" />
+                  </div>
+                  <div className="grid grid-cols-2 gap-3">
+                    <div>
+                      <label className={lbl}>Price (USD) *</label>
+                      <div className="relative">
+                        <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm">$</span>
+                        <Input
+                          type="number"
+                          min="0"
+                          step="0.01"
+                          value={newPrice}
+                          onChange={e => setNewPrice(e.target.value)}
+                          placeholder="500"
+                          className="pl-7"
+                        />
+                      </div>
+                    </div>
+                    <div>
+                      <label className={lbl}>Billing Period *</label>
+                      <select value={newPeriod} onChange={e => setNewPeriod(e.target.value)} className={inputCls}>
+                        <option value="one-time">One-time</option>
+                        <option value="weekly">Weekly</option>
+                        <option value="monthly">Monthly</option>
+                        <option value="yearly">Yearly</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div>
+                    <label className={lbl}>Description <span className="text-gray-400 font-normal">(optional)</span></label>
+                    <textarea
+                      value={newDescription}
+                      onChange={e => setNewDescription(e.target.value)}
+                      rows={2}
+                      placeholder="Brief description shown on the payment page"
+                      className={inputCls + ' resize-none'}
+                    />
+                  </div>
+                  <div>
+                    <label className={lbl}>
+                      What's Included <span className="text-gray-400 font-normal">(optional — one item per line)</span>
+                    </label>
+                    <textarea
+                      value={newFeatures}
+                      onChange={e => setNewFeatures(e.target.value)}
+                      rows={3}
+                      placeholder="Keyword research&#10;Monthly ranking report&#10;On-page optimization"
+                      className={inputCls + ' resize-none font-mono text-xs'}
+                    />
+                  </div>
+                  {createError && <p className="text-red-500 text-sm">{createError}</p>}
+                  <div className="flex items-center justify-end gap-3 pt-3 border-t">
+                    <Button variant="outline" onClick={() => setIsCreating(false)}>Cancel</Button>
+                    <Button
+                      onClick={handleCreate}
+                      disabled={createMutation.isPending}
+                      className="bg-[#35c677] hover:bg-[#2db366] text-white"
+                    >
+                      {createMutation.isPending ? 'Creating (generating Stripe link)...' : 'Create Offer'}
+                      {!createMutation.isPending && <ArrowRight className="h-4 w-4 ml-1.5" />}
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
 
       {/* Edit Modal */}
       <AnimatePresence>
