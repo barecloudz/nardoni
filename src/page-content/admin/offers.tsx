@@ -228,6 +228,11 @@ const OffersPage: React.FC = () => {
     })
   }
 
+  const updateStatusMutation = useMutation({
+    mutationFn: ({ id, status }: { id: string; status: string }) => updateOffer(id, { status }),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['service-offers'] }),
+  })
+
   const copyLink = (offer: Offer) => {
     const url = `${origin}/pay/${offer.token}`
     navigator.clipboard.writeText(url)
@@ -352,6 +357,25 @@ const OffersPage: React.FC = () => {
                                 <span className="truncate max-w-xs">{offer.description}</span>
                               </>
                             )}
+                          </div>
+                          <div className="flex items-center gap-2 mb-2">
+                            <select
+                              value={offer.status || 'pending'}
+                              onChange={e => updateStatusMutation.mutate({ id: offer.id, status: e.target.value })}
+                              disabled={updateStatusMutation.isPending}
+                              className={`text-xs font-semibold px-2.5 py-1 rounded-full border-0 cursor-pointer appearance-none pr-5 ${
+                                offer.status === 'paid' ? 'bg-green-100 text-green-700' :
+                                offer.status === 'active' ? 'bg-blue-100 text-blue-700' :
+                                offer.status === 'cancelled' ? 'bg-red-100 text-red-600' :
+                                'bg-yellow-100 text-yellow-700'
+                              }`}
+                              style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%23666'/%3E%3C/svg%3E")`, backgroundRepeat: 'no-repeat', backgroundPosition: 'right 6px center', backgroundSize: '8px' }}
+                            >
+                              <option value="pending">pending</option>
+                              <option value="active">active</option>
+                              <option value="paid">paid</option>
+                              <option value="cancelled">cancelled</option>
+                            </select>
                           </div>
                           <div className="flex items-center gap-2 text-xs font-mono text-gray-400 bg-gray-50 rounded-lg px-3 py-1.5 border border-gray-100 w-fit max-w-full">
                             <span className="truncate">{payUrl}</span>

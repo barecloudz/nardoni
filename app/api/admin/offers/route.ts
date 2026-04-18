@@ -201,7 +201,7 @@ export async function PATCH(req: NextRequest) {
   if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
   const body = await req.json()
-  const { id, service_name, description, features, addons, service_cards } = body
+  const { id, service_name, description, features, addons, service_cards, status } = body
 
   if (!id) return NextResponse.json({ error: 'id required' }, { status: 400 })
 
@@ -220,6 +220,7 @@ export async function PATCH(req: NextRequest) {
   if (description !== undefined) updates.description = description || null
   if (features !== undefined) updates.features = features || null
   if (service_cards !== undefined) updates.service_cards = service_cards
+  if (status !== undefined) updates.status = status
 
   // Regenerate base Stripe link if missing
   if (!current?.stripe_payment_link_url) {
