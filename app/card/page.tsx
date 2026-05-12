@@ -71,10 +71,10 @@ export default function CardPage() {
 
         .card-page {
           min-height: 100dvh;
-          background-color: #0c0c0c;
+          background-color: #f5f4f0;
           background-image:
-            radial-gradient(ellipse 80% 60% at 50% -10%, rgba(180,180,180,0.07) 0%, transparent 70%),
-            url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+            radial-gradient(ellipse 80% 60% at 50% -10%, rgba(180,180,180,0.25) 0%, transparent 70%),
+            url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
           display: flex;
           flex-direction: column;
           align-items: center;
@@ -89,7 +89,7 @@ export default function CardPage() {
           content: '';
           position: absolute;
           inset: 0;
-          background: radial-gradient(ellipse 60% 40% at 50% 100%, rgba(160,160,160,0.04) 0%, transparent 70%);
+          background: radial-gradient(ellipse 60% 40% at 50% 100%, rgba(160,160,160,0.12) 0%, transparent 70%);
           pointer-events: none;
         }
 
@@ -100,10 +100,10 @@ export default function CardPage() {
           background: linear-gradient(145deg, #e0e0e0 0%, #a0a0a0 25%, #606060 50%, #909090 75%, #d8d8d8 100%);
           padding: 2px;
           box-shadow:
-            0 0 0 1px rgba(255,255,255,0.05),
-            0 4px 24px rgba(0,0,0,0.6),
-            0 0 40px rgba(200,200,200,0.08),
-            inset 0 1px 0 rgba(255,255,255,0.1);
+            0 0 0 1px rgba(0,0,0,0.08),
+            0 4px 24px rgba(0,0,0,0.15),
+            0 0 40px rgba(180,180,180,0.3),
+            inset 0 1px 0 rgba(255,255,255,0.8);
           flex-shrink: 0;
         }
 
@@ -111,7 +111,7 @@ export default function CardPage() {
           width: 100%;
           height: 100%;
           border-radius: 50%;
-          background: linear-gradient(160deg, #1e1e1e 0%, #141414 100%);
+          background: linear-gradient(160deg, #2a2a2a 0%, #1a1a1a 100%);
           display: flex;
           align-items: center;
           justify-content: center;
@@ -135,7 +135,7 @@ export default function CardPage() {
           font-weight: 300;
           letter-spacing: 0.12em;
           text-transform: uppercase;
-          background: linear-gradient(160deg, #ffffff 0%, #d4d4d4 35%, #a0a0a0 60%, #c8c8c8 80%, #f0f0f0 100%);
+          background: linear-gradient(160deg, #1a1a1a 0%, #404040 35%, #6a6a6a 60%, #404040 80%, #1a1a1a 100%);
           -webkit-background-clip: text;
           -webkit-text-fill-color: transparent;
           background-clip: text;
@@ -149,14 +149,14 @@ export default function CardPage() {
           font-weight: 300;
           letter-spacing: 0.22em;
           text-transform: uppercase;
-          color: #686868;
+          color: #888880;
           text-align: center;
         }
 
         .divider {
           width: 48px;
           height: 1px;
-          background: linear-gradient(90deg, transparent, #505050, transparent);
+          background: linear-gradient(90deg, transparent, #b0b0a8, transparent);
           margin: 0 auto;
         }
 
@@ -188,10 +188,10 @@ export default function CardPage() {
             #f0f0f0 100%
           );
           box-shadow:
-            0 2px 0 rgba(255,255,255,0.6) inset,
-            0 -1px 0 rgba(0,0,0,0.2) inset,
-            0 4px 16px rgba(0,0,0,0.5),
-            0 1px 3px rgba(0,0,0,0.3);
+            0 2px 0 rgba(255,255,255,0.9) inset,
+            0 -1px 0 rgba(0,0,0,0.12) inset,
+            0 2px 8px rgba(0,0,0,0.12),
+            0 1px 3px rgba(0,0,0,0.08);
         }
 
         .link-btn::before {
@@ -204,7 +204,7 @@ export default function CardPage() {
           background: linear-gradient(
             90deg,
             transparent,
-            rgba(255,255,255,0.35),
+            rgba(255,255,255,0.5),
             transparent
           );
           transform: skewX(-20deg);
@@ -219,23 +219,23 @@ export default function CardPage() {
         .link-btn:hover {
           transform: translateY(-2px);
           box-shadow:
-            0 2px 0 rgba(255,255,255,0.6) inset,
-            0 -1px 0 rgba(0,0,0,0.2) inset,
-            0 8px 28px rgba(0,0,0,0.6),
-            0 2px 6px rgba(0,0,0,0.4);
+            0 2px 0 rgba(255,255,255,0.9) inset,
+            0 -1px 0 rgba(0,0,0,0.12) inset,
+            0 6px 20px rgba(0,0,0,0.15),
+            0 2px 6px rgba(0,0,0,0.1);
         }
 
         .link-btn:active {
           transform: translateY(0px);
           box-shadow:
-            0 1px 0 rgba(255,255,255,0.4) inset,
-            0 -1px 0 rgba(0,0,0,0.3) inset,
-            0 2px 8px rgba(0,0,0,0.4);
+            0 1px 0 rgba(255,255,255,0.7) inset,
+            0 -1px 0 rgba(0,0,0,0.15) inset,
+            0 1px 4px rgba(0,0,0,0.1);
         }
 
         .link-btn .btn-icon {
           flex-shrink: 0;
-          opacity: 0.6;
+          opacity: 0.5;
           color: #1a1a1a;
         }
 
@@ -250,7 +250,7 @@ export default function CardPage() {
           font-size: 0.7rem;
           letter-spacing: 0.14em;
           text-transform: uppercase;
-          color: #3a3a3a;
+          color: #999990;
           text-align: center;
         }
 
