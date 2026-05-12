@@ -288,7 +288,7 @@ export default function CardPage() {
           {/* Name + tagline */}
           <div className="animate-in delay-1" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px' }}>
             <h1 className="company-name">Nardoni Digital</h1>
-            <p className="tagline">AI-Powered Marketing &amp; Automation</p>
+            <p className="tagline">Web &amp; App Development &nbsp;·&nbsp; Marketing &nbsp;·&nbsp; AI Automations</p>
           </div>
 
           {/* Divider */}
