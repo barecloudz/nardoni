@@ -93,41 +93,6 @@ export default function CardPage() {
           pointer-events: none;
         }
 
-        .avatar-ring {
-          width: 88px;
-          height: 88px;
-          border-radius: 50%;
-          background: linear-gradient(145deg, #e0e0e0 0%, #a0a0a0 25%, #606060 50%, #909090 75%, #d8d8d8 100%);
-          padding: 2px;
-          box-shadow:
-            0 0 0 1px rgba(0,0,0,0.08),
-            0 4px 24px rgba(0,0,0,0.15),
-            0 0 40px rgba(180,180,180,0.3),
-            inset 0 1px 0 rgba(255,255,255,0.8);
-          flex-shrink: 0;
-        }
-
-        .avatar-inner {
-          width: 100%;
-          height: 100%;
-          border-radius: 50%;
-          background: linear-gradient(160deg, #2a2a2a 0%, #1a1a1a 100%);
-          display: flex;
-          align-items: center;
-          justify-content: center;
-        }
-
-        .avatar-initials {
-          font-family: 'Cormorant Garamond', serif;
-          font-size: 28px;
-          font-weight: 600;
-          letter-spacing: 0.05em;
-          background: linear-gradient(160deg, #ffffff 0%, #c8c8c8 40%, #909090 100%);
-          -webkit-background-clip: text;
-          -webkit-text-fill-color: transparent;
-          background-clip: text;
-          line-height: 1;
-        }
 
         .company-name {
           font-family: 'Cormorant Garamond', serif;
@@ -173,70 +138,101 @@ export default function CardPage() {
           font-size: 0.88rem;
           font-weight: 400;
           letter-spacing: 0.04em;
-          color: #1a1a1a;
+          color: #2a2a2a;
           position: relative;
           overflow: hidden;
           cursor: pointer;
-          transition: transform 0.2s ease, box-shadow 0.2s ease;
+          transition: transform 0.25s ease, box-shadow 0.25s ease, background 0.25s ease;
           background: linear-gradient(
-            180deg,
-            #e8e8e8 0%,
-            #d0d0d0 20%,
-            #b8b8b8 45%,
-            #c8c8c8 65%,
-            #e0e0e0 85%,
-            #f0f0f0 100%
+            160deg,
+            rgba(255,255,255,0.82) 0%,
+            rgba(255,255,255,0.55) 40%,
+            rgba(248,248,248,0.62) 70%,
+            rgba(255,255,255,0.78) 100%
           );
+          backdrop-filter: blur(20px) saturate(160%);
+          -webkit-backdrop-filter: blur(20px) saturate(160%);
+          border: 1px solid rgba(255,255,255,0.92);
           box-shadow:
-            0 2px 0 rgba(255,255,255,0.9) inset,
-            0 -1px 0 rgba(0,0,0,0.12) inset,
-            0 2px 8px rgba(0,0,0,0.12),
-            0 1px 3px rgba(0,0,0,0.08);
+            inset 0 1.5px 0 rgba(255,255,255,1),
+            inset 0 -1px 0 rgba(180,180,180,0.25),
+            inset 1px 0 0 rgba(255,255,255,0.7),
+            inset -1px 0 0 rgba(200,200,200,0.2),
+            0 4px 24px rgba(0,0,0,0.07),
+            0 1px 4px rgba(0,0,0,0.05),
+            0 0 0 0.5px rgba(200,200,200,0.4);
         }
 
         .link-btn::before {
           content: '';
           position: absolute;
           top: 0;
+          left: 0;
+          right: 0;
+          height: 50%;
+          background: linear-gradient(
+            180deg,
+            rgba(255,255,255,0.55) 0%,
+            rgba(255,255,255,0) 100%
+          );
+          border-radius: 100px 100px 0 0;
+          pointer-events: none;
+        }
+
+        .link-btn::after {
+          content: '';
+          position: absolute;
+          top: 0;
           left: -100%;
-          width: 60%;
+          width: 55%;
           height: 100%;
           background: linear-gradient(
             90deg,
             transparent,
-            rgba(255,255,255,0.5),
+            rgba(255,255,255,0.4),
             transparent
           );
-          transform: skewX(-20deg);
-          transition: left 0.5s ease;
+          transform: skewX(-18deg);
+          transition: left 0.55s ease;
           pointer-events: none;
         }
 
-        .link-btn:hover::before {
+        .link-btn:hover::after {
           left: 160%;
         }
 
         .link-btn:hover {
           transform: translateY(-2px);
+          background: linear-gradient(
+            160deg,
+            rgba(255,255,255,0.92) 0%,
+            rgba(255,255,255,0.65) 40%,
+            rgba(248,248,248,0.72) 70%,
+            rgba(255,255,255,0.88) 100%
+          );
           box-shadow:
-            0 2px 0 rgba(255,255,255,0.9) inset,
-            0 -1px 0 rgba(0,0,0,0.12) inset,
-            0 6px 20px rgba(0,0,0,0.15),
-            0 2px 6px rgba(0,0,0,0.1);
+            inset 0 1.5px 0 rgba(255,255,255,1),
+            inset 0 -1px 0 rgba(180,180,180,0.2),
+            inset 1px 0 0 rgba(255,255,255,0.8),
+            inset -1px 0 0 rgba(200,200,200,0.15),
+            0 8px 32px rgba(0,0,0,0.1),
+            0 2px 8px rgba(0,0,0,0.07),
+            0 0 0 0.5px rgba(200,200,200,0.4);
         }
 
         .link-btn:active {
           transform: translateY(0px);
           box-shadow:
-            0 1px 0 rgba(255,255,255,0.7) inset,
-            0 -1px 0 rgba(0,0,0,0.15) inset,
-            0 1px 4px rgba(0,0,0,0.1);
+            inset 0 1px 0 rgba(255,255,255,0.9),
+            inset 0 -1px 0 rgba(180,180,180,0.3),
+            0 1px 6px rgba(0,0,0,0.08),
+            0 0 0 0.5px rgba(200,200,200,0.4);
         }
 
         .link-btn .btn-icon {
           flex-shrink: 0;
-          opacity: 0.5;
-          color: #1a1a1a;
+          opacity: 0.45;
+          color: #2a2a2a;
         }
 
         .link-btn .btn-label {
@@ -284,11 +280,9 @@ export default function CardPage() {
       <div className="card-page">
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '20px', width: '100%', maxWidth: '460px' }}>
 
-          {/* Avatar */}
-          <div className={`avatar-ring animate-in delay-0 ${mounted ? '' : ''}`}>
-            <div className="avatar-inner">
-              <span className="avatar-initials">ND</span>
-            </div>
+          {/* Logo */}
+          <div className="animate-in delay-0" style={{ width: 88, height: 88, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <img src="/images/drawing.svg" alt="Nardoni Digital" style={{ width: 72, height: 72, objectFit: 'contain', filter: 'brightness(0) saturate(100%)' }} />
           </div>
 
           {/* Name + tagline */}
