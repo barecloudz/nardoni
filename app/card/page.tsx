@@ -71,96 +71,90 @@ export default function CardPage() {
 
         .card-page {
           min-height: 100dvh;
-          background-color: #f5f4f0;
+          background-color: #f2f1ed;
           background-image:
-            radial-gradient(ellipse 80% 60% at 50% -10%, rgba(180,180,180,0.25) 0%, transparent 70%),
-            url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+            radial-gradient(ellipse 70% 55% at 50% 30%, rgba(210,210,205,0.55) 0%, transparent 65%),
+            radial-gradient(ellipse 50% 40% at 50% 85%, rgba(190,190,185,0.2) 0%, transparent 60%),
+            url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.035'/%3E%3C/svg%3E");
           display: flex;
           flex-direction: column;
           align-items: center;
           justify-content: center;
-          padding: 3rem 1.5rem;
+          padding: 2.5rem 1.5rem;
           font-family: 'DM Sans', sans-serif;
           position: relative;
           overflow: hidden;
         }
 
-        .card-page::before {
-          content: '';
-          position: absolute;
-          inset: 0;
-          background: radial-gradient(ellipse 60% 40% at 50% 100%, rgba(160,160,160,0.12) 0%, transparent 70%);
-          pointer-events: none;
-        }
-
-
         .company-name {
           font-family: 'Cormorant Garamond', serif;
-          font-size: clamp(2rem, 6vw, 2.75rem);
+          font-size: clamp(1.85rem, 6vw, 2.6rem);
           font-weight: 300;
-          letter-spacing: 0.12em;
+          letter-spacing: 0.14em;
           text-transform: uppercase;
-          background: linear-gradient(160deg, #1a1a1a 0%, #404040 35%, #6a6a6a 60%, #404040 80%, #1a1a1a 100%);
+          background: linear-gradient(160deg, #111111 0%, #383838 40%, #585858 65%, #2e2e2e 85%, #111111 100%);
           -webkit-background-clip: text;
           -webkit-text-fill-color: transparent;
           background-clip: text;
           line-height: 1.1;
           text-align: center;
+          margin: 0;
         }
 
         .tagline {
           font-family: 'DM Sans', sans-serif;
-          font-size: 0.78rem;
-          font-weight: 300;
-          letter-spacing: 0.22em;
+          font-size: 0.72rem;
+          font-weight: 400;
+          letter-spacing: 0.18em;
           text-transform: uppercase;
-          color: #888880;
+          color: #4a4a46;
           text-align: center;
         }
 
         .divider {
-          width: 48px;
+          width: 40px;
           height: 1px;
-          background: linear-gradient(90deg, transparent, #b0b0a8, transparent);
+          background: linear-gradient(90deg, transparent, #8a8a84, transparent);
           margin: 0 auto;
         }
 
         .link-btn {
           width: 100%;
-          max-width: 420px;
+          max-width: 400px;
           display: flex;
           align-items: center;
           gap: 12px;
-          padding: 15px 24px;
+          padding: 14px 22px;
           border-radius: 100px;
           text-decoration: none;
           font-family: 'DM Sans', sans-serif;
-          font-size: 0.88rem;
-          font-weight: 400;
-          letter-spacing: 0.04em;
-          color: #2a2a2a;
+          font-size: 0.875rem;
+          font-weight: 500;
+          letter-spacing: 0.02em;
+          color: #1c1c1a;
           position: relative;
           overflow: hidden;
           cursor: pointer;
-          transition: transform 0.25s ease, box-shadow 0.25s ease, background 0.25s ease;
+          transition: transform 0.22s ease, box-shadow 0.22s ease;
           background: linear-gradient(
-            160deg,
-            rgba(255,255,255,0.82) 0%,
-            rgba(255,255,255,0.55) 40%,
-            rgba(248,248,248,0.62) 70%,
-            rgba(255,255,255,0.78) 100%
+            175deg,
+            rgba(255,255,255,0.96) 0%,
+            rgba(242,244,246,0.88) 30%,
+            rgba(232,235,238,0.82) 60%,
+            rgba(248,249,250,0.92) 100%
           );
-          backdrop-filter: blur(20px) saturate(160%);
-          -webkit-backdrop-filter: blur(20px) saturate(160%);
-          border: 1px solid rgba(255,255,255,0.92);
+          backdrop-filter: blur(24px) saturate(140%);
+          -webkit-backdrop-filter: blur(24px) saturate(140%);
+          border: 1px solid rgba(255,255,255,0.98);
           box-shadow:
-            inset 0 1.5px 0 rgba(255,255,255,1),
-            inset 0 -1px 0 rgba(180,180,180,0.25),
-            inset 1px 0 0 rgba(255,255,255,0.7),
-            inset -1px 0 0 rgba(200,200,200,0.2),
-            0 4px 24px rgba(0,0,0,0.07),
-            0 1px 4px rgba(0,0,0,0.05),
-            0 0 0 0.5px rgba(200,200,200,0.4);
+            inset 0 2px 0 rgba(255,255,255,1),
+            inset 0 -1px 0 rgba(160,165,170,0.22),
+            inset 1px 0 0 rgba(255,255,255,0.8),
+            inset -1px 0 0 rgba(190,195,200,0.18),
+            0 2px 0 rgba(255,255,255,0.9),
+            0 4px 16px rgba(0,0,0,0.09),
+            0 1px 4px rgba(0,0,0,0.06),
+            0 0 0 1px rgba(170,175,180,0.22);
         }
 
         .link-btn::before {
@@ -169,10 +163,10 @@ export default function CardPage() {
           top: 0;
           left: 0;
           right: 0;
-          height: 50%;
+          height: 46%;
           background: linear-gradient(
             180deg,
-            rgba(255,255,255,0.55) 0%,
+            rgba(255,255,255,0.7) 0%,
             rgba(255,255,255,0) 100%
           );
           border-radius: 100px 100px 0 0;
@@ -183,17 +177,17 @@ export default function CardPage() {
           content: '';
           position: absolute;
           top: 0;
-          left: -100%;
-          width: 55%;
+          left: -110%;
+          width: 50%;
           height: 100%;
           background: linear-gradient(
             90deg,
             transparent,
-            rgba(255,255,255,0.4),
+            rgba(255,255,255,0.55),
             transparent
           );
-          transform: skewX(-18deg);
-          transition: left 0.55s ease;
+          transform: skewX(-15deg);
+          transition: left 0.6s ease;
           pointer-events: none;
         }
 
@@ -203,36 +197,30 @@ export default function CardPage() {
 
         .link-btn:hover {
           transform: translateY(-2px);
-          background: linear-gradient(
-            160deg,
-            rgba(255,255,255,0.92) 0%,
-            rgba(255,255,255,0.65) 40%,
-            rgba(248,248,248,0.72) 70%,
-            rgba(255,255,255,0.88) 100%
-          );
           box-shadow:
-            inset 0 1.5px 0 rgba(255,255,255,1),
-            inset 0 -1px 0 rgba(180,180,180,0.2),
-            inset 1px 0 0 rgba(255,255,255,0.8),
-            inset -1px 0 0 rgba(200,200,200,0.15),
-            0 8px 32px rgba(0,0,0,0.1),
-            0 2px 8px rgba(0,0,0,0.07),
-            0 0 0 0.5px rgba(200,200,200,0.4);
+            inset 0 2px 0 rgba(255,255,255,1),
+            inset 0 -1px 0 rgba(160,165,170,0.18),
+            inset 1px 0 0 rgba(255,255,255,0.9),
+            inset -1px 0 0 rgba(190,195,200,0.14),
+            0 2px 0 rgba(255,255,255,0.9),
+            0 8px 28px rgba(0,0,0,0.12),
+            0 3px 8px rgba(0,0,0,0.07),
+            0 0 0 1px rgba(170,175,180,0.2);
         }
 
         .link-btn:active {
-          transform: translateY(0px);
+          transform: translateY(0);
           box-shadow:
-            inset 0 1px 0 rgba(255,255,255,0.9),
-            inset 0 -1px 0 rgba(180,180,180,0.3),
-            0 1px 6px rgba(0,0,0,0.08),
-            0 0 0 0.5px rgba(200,200,200,0.4);
+            inset 0 1px 0 rgba(255,255,255,0.95),
+            inset 0 -1px 0 rgba(160,165,170,0.28),
+            0 1px 4px rgba(0,0,0,0.08),
+            0 0 0 1px rgba(170,175,180,0.25);
         }
 
         .link-btn .btn-icon {
           flex-shrink: 0;
-          opacity: 0.45;
-          color: #2a2a2a;
+          opacity: 0.55;
+          color: #1c1c1a;
         }
 
         .link-btn .btn-label {
@@ -243,50 +231,44 @@ export default function CardPage() {
 
         .footer-text {
           font-family: 'DM Sans', sans-serif;
-          font-size: 0.7rem;
-          letter-spacing: 0.14em;
+          font-size: 0.68rem;
+          letter-spacing: 0.16em;
           text-transform: uppercase;
-          color: #999990;
+          color: #5a5a56;
           text-align: center;
         }
 
         @keyframes fadeSlideUp {
-          from {
-            opacity: 0;
-            transform: translateY(20px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
+          from { opacity: 0; transform: translateY(18px); }
+          to   { opacity: 1; transform: translateY(0); }
         }
 
         .animate-in {
-          animation: fadeSlideUp 0.6s ease forwards;
+          animation: fadeSlideUp 0.55s ease forwards;
           opacity: 0;
         }
 
         .delay-0  { animation-delay: 0.05s; }
         .delay-1  { animation-delay: 0.15s; }
         .delay-2  { animation-delay: 0.25s; }
-        .delay-3  { animation-delay: 0.38s; }
-        .delay-4  { animation-delay: 0.46s; }
-        .delay-5  { animation-delay: 0.54s; }
-        .delay-6  { animation-delay: 0.62s; }
-        .delay-7  { animation-delay: 0.70s; }
-        .delay-8  { animation-delay: 0.78s; }
+        .delay-3  { animation-delay: 0.36s; }
+        .delay-4  { animation-delay: 0.44s; }
+        .delay-5  { animation-delay: 0.52s; }
+        .delay-6  { animation-delay: 0.60s; }
+        .delay-7  { animation-delay: 0.68s; }
+        .delay-8  { animation-delay: 0.76s; }
       `}</style>
 
       <div className="card-page">
-        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '20px', width: '100%', maxWidth: '460px' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '16px', width: '100%', maxWidth: '440px' }}>
 
           {/* Logo */}
-          <div className="animate-in delay-0" style={{ width: 88, height: 88, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <img src="/images/drawing.svg" alt="Nardoni Digital" style={{ width: 72, height: 72, objectFit: 'contain', filter: 'brightness(0) saturate(100%)' }} />
+          <div className="animate-in delay-0" style={{ width: 80, height: 80, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <img src="/images/drawing.svg" alt="Nardoni Digital" style={{ width: 68, height: 68, objectFit: 'contain' }} />
           </div>
 
           {/* Name + tagline */}
-          <div className="animate-in delay-1" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px' }}>
+          <div className="animate-in delay-1" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '7px' }}>
             <h1 className="company-name">Nardoni Digital</h1>
             <p className="tagline">Web &amp; App Development &nbsp;·&nbsp; Marketing &nbsp;·&nbsp; AI Automations</p>
           </div>
@@ -297,7 +279,7 @@ export default function CardPage() {
           {/* Links */}
           <div
             className="animate-in delay-3"
-            style={{ display: 'flex', flexDirection: 'column', gap: '12px', width: '100%', alignItems: 'center' }}
+            style={{ display: 'flex', flexDirection: 'column', gap: '10px', width: '100%', alignItems: 'center' }}
           >
             {links.map((link, i) => {
               const isExternal = link.href.startsWith('tel:') || link.href.startsWith('mailto:')
