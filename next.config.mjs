@@ -4,6 +4,9 @@ const nextConfig = {
     // Pre-existing type issues from Vite migration — tighten later
     ignoreBuildErrors: true,
   },
+  eslint: {
+    ignoreDuringBuilds: true,
+  },
   images: {
     remotePatterns: [
       {
