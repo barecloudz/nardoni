@@ -296,33 +296,13 @@ const AdminSettings: React.FC = () => {
                       <span>Stripe Settings</span>
                     </CardTitle>
                     <p className="text-sm text-gray-600">
-                      Configure payment processing settings
+                      Payment processing configuration
                     </p>
                   </CardHeader>
-                  <CardContent className="space-y-4">
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Admin Email (for Stripe)
-                      </label>
-                      <Input type="email" defaultValue="admin@barecloudz.com" />
-                      <p className="text-xs text-gray-500 mt-1">
-                        Email address for Stripe account management
-                      </p>
+                  <CardContent>
+                    <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 text-sm text-blue-800">
+                      Stripe keys and webhook secrets are managed via environment variables on Netlify. To update them, go to your <strong>Netlify site → Environment Variables</strong> and update <code>STRIPE_SECRET_KEY</code> and <code>STRIPE_WEBHOOK_SECRET</code>.
                     </div>
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Default Currency
-                      </label>
-                      <select className="w-full p-2 border border-gray-200 rounded-md">
-                        <option value="USD">USD ($)</option>
-                        <option value="EUR">EUR (€)</option>
-                        <option value="GBP">GBP (£)</option>
-                      </select>
-                      <p className="text-xs text-gray-500 mt-1">
-                        Default currency for invoices and payments
-                      </p>
-                    </div>
-                    <Button className="w-full">Update Stripe Settings</Button>
                   </CardContent>
                 </Card>
               </div>
@@ -372,9 +352,9 @@ const AdminSettings: React.FC = () => {
                     <div className="flex items-center justify-between">
                       <div>
                         <h4 className="font-medium">Two-Factor Authentication</h4>
-                        <p className="text-sm text-gray-500">Add extra security to your account</p>
+                        <p className="text-sm text-gray-500">Managed via your Supabase project authentication settings</p>
                       </div>
-                      <Button variant="outline">Enable 2FA</Button>
+                      <Badge variant="secondary">Via Supabase</Badge>
                     </div>
                     <div className="flex items-center justify-between">
                       <div>
@@ -439,7 +419,7 @@ const AdminSettings: React.FC = () => {
                       <input type="checkbox" defaultChecked className="toggle" />
                     </div>
                   </div>
-                  <Button className="w-full">Save Preferences</Button>
+                  <p className="text-xs text-gray-400 text-center pt-2">Notification preferences — coming soon</p>
                 </CardContent>
               </Card>
             )}
