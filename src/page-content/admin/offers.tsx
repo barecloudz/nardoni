@@ -79,6 +79,7 @@ async function createOffer(payload: {
   period: string
   description?: string
   features?: string
+  pass_fee?: boolean
 }) {
   const token = await getToken()
   const res = await fetch('/api/admin/offers', {
@@ -132,6 +133,7 @@ const OffersPage: React.FC = () => {
   const [newPeriod, setNewPeriod] = React.useState('monthly')
   const [newDescription, setNewDescription] = React.useState('')
   const [newFeatures, setNewFeatures] = React.useState('')
+  const [newPassFee, setNewPassFee] = React.useState(false)
   const [createError, setCreateError] = React.useState('')
 
   // Edit form state
@@ -163,6 +165,7 @@ const OffersPage: React.FC = () => {
       setNewPeriod('monthly')
       setNewDescription('')
       setNewFeatures('')
+      setNewPassFee(false)
       setCreateError('')
     },
     onError: (e: any) => setCreateError(e.message),
@@ -173,7 +176,7 @@ const OffersPage: React.FC = () => {
     const price = parseFloat(newPrice)
     if (!newPrice || isNaN(price) || price <= 0) { setCreateError('Enter a valid price.'); return }
     setCreateError('')
-    createMutation.mutate({ service_name: newName.trim(), price, period: newPeriod, description: newDescription.trim() || undefined, features: newFeatures.trim() || undefined })
+    createMutation.mutate({ service_name: newName.trim(), price, period: newPeriod, description: newDescription.trim() || undefined, features: newFeatures.trim() || undefined, pass_fee: newPassFee })
   }
 
   const updateMutation = useMutation({
@@ -518,6 +521,28 @@ const OffersPage: React.FC = () => {
                       className={inputCls + ' resize-none font-mono text-xs'}
                     />
                   </div>
+                  {/* Pass Stripe fee to customer */}
+                  <div
+                    onClick={() => setNewPassFee(p => !p)}
+                    className={`flex items-center justify-between p-3 rounded-xl border-2 cursor-pointer transition-all duration-200 ${
+                      newPassFee ? 'border-amber-400 bg-amber-50' : 'border-gray-200 bg-gray-50 hover:border-gray-300'
+                    }`}
+                  >
+                    <div>
+                      <p className={`text-sm font-semibold ${newPassFee ? 'text-amber-800' : 'text-gray-700'}`}>
+                        Pass Stripe fee to customer
+                      </p>
+                      <p className={`text-xs mt-0.5 ${newPassFee ? 'text-amber-600' : 'text-gray-400'}`}>
+                        {newPassFee && newPrice
+                          ? `Customer pays $${(Math.ceil((parseFloat(newPrice) + 0.30) / (1 - 0.029) * 100) / 100).toFixed(2)} — you keep $${parseFloat(newPrice).toFixed(2)}`
+                          : '2.9% + $0.30 added so you receive the full amount'}
+                      </p>
+                    </div>
+                    <div className={`w-10 h-6 rounded-full transition-colors duration-200 flex items-center px-0.5 flex-shrink-0 ${newPassFee ? 'bg-amber-400' : 'bg-gray-300'}`}>
+                      <div className={`w-5 h-5 bg-white rounded-full shadow transition-transform duration-200 ${newPassFee ? 'translate-x-4' : 'translate-x-0'}`} />
+                    </div>
+                  </div>
+
                   {createError && <p className="text-red-500 text-sm">{createError}</p>}
                   <div className="flex items-center justify-end gap-3 pt-3 border-t">
                     <Button variant="outline" onClick={() => setIsCreating(false)}>Cancel</Button>

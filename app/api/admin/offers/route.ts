@@ -154,18 +154,23 @@ export async function POST(req: NextRequest) {
   if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
   const body = await req.json()
-  const { client_id, service_name, description, features, price, period, addons, service_cards } = body
+  const { client_id, service_name, description, features, price, period, addons, service_cards, pass_fee } = body
 
   if (!service_name || !price) {
     return NextResponse.json({ error: 'service_name and price are required' }, { status: 400 })
   }
+
+  // When pass_fee is enabled, adjust price so customer covers Stripe's 2.9% + $0.30
+  const stripePrice = pass_fee
+    ? Math.ceil((price + 0.30) / (1 - 0.029) * 100) / 100
+    : price
 
   let stripeUrl = null
   let stripeLinkId = null
   let addonsWithLinks = addons || null
 
   try {
-    const result = await generateAllStripeLinks(service_name, price, period, addons || [], description)
+    const result = await generateAllStripeLinks(service_name, stripePrice, period, addons || [], description)
     stripeUrl = result.stripeUrl
     stripeLinkId = result.stripeLinkId
     addonsWithLinks = result.addonsWithLinks.length > 0 ? result.addonsWithLinks : null
@@ -187,6 +192,7 @@ export async function POST(req: NextRequest) {
       addons: addonsWithLinks,
       service_cards: service_cards || null,
       status: 'pending',
+      pass_fee: pass_fee ?? false,
     }])
     .select()
     .single()

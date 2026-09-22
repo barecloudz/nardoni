@@ -99,8 +99,12 @@ export default function PayPage({ params }: { params: { token: string } }) {
   const selectedRecurring = selectedList.filter(a => (a.period ?? offer.period) !== 'one-time')
   const selectedOneTime = selectedList.filter(a => (a.period ?? offer.period) === 'one-time')
 
-  const recurringTotal = offer.price + selectedRecurring.reduce((s, a) => s + a.price, 0)
-  const onetimeTotal = selectedOneTime.reduce((s, a) => s + a.price, 0)
+  // If pass_fee is enabled, the Stripe link was generated at the fee-adjusted price
+  const adjustPrice = (p: number) =>
+    offer.pass_fee ? Math.ceil((p + 0.30) / (1 - 0.029) * 100) / 100 : p
+
+  const recurringTotal = adjustPrice(offer.price) + selectedRecurring.reduce((s, a) => s + adjustPrice(a.price), 0)
+  const onetimeTotal = selectedOneTime.reduce((s, a) => s + adjustPrice(a.price), 0)
 
   // Payment URL: look up the exact combo link for the current addon selection
   const comboKey = Array.from(selectedAddons).sort((a, b) => a - b).join(',')
@@ -138,7 +142,7 @@ export default function PayPage({ params }: { params: { token: string } }) {
       {/* Top nav */}
       <nav className="bg-white border-b border-gray-100 px-6 py-4">
         <div className="max-w-2xl mx-auto flex items-center justify-between">
-          <img src="/images/drawing.svg" alt="Nardoni Digital" className="h-8 w-auto" />
+          <img src="/images/drawing.svg" alt="Nardoni Digital" className="h-8 w-auto brightness-0" />
           <a href="mailto:nardonidigital@gmail.com" className="text-sm text-gray-500 hover:text-[#35c677] transition-colors">
             Questions? Get in touch
           </a>
@@ -342,6 +346,11 @@ export default function PayPage({ params }: { params: { token: string } }) {
                     </motion.div>
                   )}
                 </AnimatePresence>
+
+                {/* Fee note */}
+                {offer.pass_fee && (
+                  <p className="text-xs text-amber-600 mt-1">Includes 2.9% + $0.30 Stripe processing fee</p>
+                )}
 
                 {/* Breakdown */}
                 <AnimatePresence>

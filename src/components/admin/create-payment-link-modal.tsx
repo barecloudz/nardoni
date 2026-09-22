@@ -96,6 +96,7 @@ const CreatePaymentLinkModal: React.FC<Props> = ({ isOpen, onClose }) => {
   const [price, setPrice] = React.useState('')
   const [period, setPeriod] = React.useState('one-time')
   const [stripeLink, setStripeLink] = React.useState('')
+  const [passFee, setPassFee] = React.useState(false)
   const [addons, setAddons] = React.useState<Addon[]>([])
   const [serviceCards, setServiceCards] = React.useState<ServiceCard[]>([])
 
@@ -203,6 +204,7 @@ const CreatePaymentLinkModal: React.FC<Props> = ({ isOpen, onClose }) => {
           price: Number(price),
           period,
           stripe_payment_link_url: stripeLink || undefined,
+          pass_fee: passFee,
           addons: cleanAddons.length > 0 ? cleanAddons : null,
           service_cards: cleanCards.length > 0 ? cleanCards : null,
         }),
@@ -241,6 +243,7 @@ const CreatePaymentLinkModal: React.FC<Props> = ({ isOpen, onClose }) => {
     setPrice('')
     setPeriod('one-time')
     setStripeLink('')
+    setPassFee(false)
     setAddons([])
     setServiceCards([])
     onClose()
@@ -614,6 +617,28 @@ const CreatePaymentLinkModal: React.FC<Props> = ({ isOpen, onClose }) => {
                       </motion.div>
                     ))}
                   </AnimatePresence>
+                </div>
+
+                {/* Pass Stripe fee to customer */}
+                <div
+                  onClick={() => setPassFee(p => !p)}
+                  className={`flex items-center justify-between p-3 rounded-xl border-2 cursor-pointer transition-all duration-200 ${
+                    passFee ? 'border-amber-400 bg-amber-50' : 'border-gray-200 bg-gray-50 hover:border-gray-300'
+                  }`}
+                >
+                  <div>
+                    <p className={`text-sm font-semibold ${passFee ? 'text-amber-800' : 'text-gray-700'}`}>
+                      Pass Stripe fee to customer
+                    </p>
+                    <p className={`text-xs mt-0.5 ${passFee ? 'text-amber-600' : 'text-gray-400'}`}>
+                      {passFee && price
+                        ? `Customer pays $${(Math.ceil((parseFloat(price) + 0.30) / (1 - 0.029) * 100) / 100).toFixed(2)} — you keep $${parseFloat(price).toFixed(2)}`
+                        : '2.9% + $0.30 added so you receive the full amount'}
+                    </p>
+                  </div>
+                  <div className={`w-10 h-6 rounded-full transition-colors duration-200 flex items-center px-0.5 flex-shrink-0 ${passFee ? 'bg-amber-400' : 'bg-gray-300'}`}>
+                    <div className={`w-5 h-5 bg-white rounded-full shadow transition-transform duration-200 ${passFee ? 'translate-x-4' : 'translate-x-0'}`} />
+                  </div>
                 </div>
 
                 {error && <p className="text-red-500 text-sm">{error}</p>}

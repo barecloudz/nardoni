@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 
+export const dynamic = 'force-dynamic'
+
 const supabaseAdmin = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
   process.env.SUPABASE_SERVICE_ROLE_KEY!,
@@ -16,7 +18,7 @@ export async function GET(
 
   const { data: offer, error } = await supabaseAdmin
     .from('service_offers')
-    .select('id, service_name, description, features, price, period, stripe_payment_link_url, status, client_id, addons, service_cards')
+    .select('id, service_name, description, features, price, period, stripe_payment_link_url, status, client_id, addons, service_cards, pass_fee')
     .eq('token', token)
     .single()
 
